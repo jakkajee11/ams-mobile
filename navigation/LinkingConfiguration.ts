@@ -10,6 +10,20 @@ export default {
   prefixes: [Linking.makeUrl('/')],
   config: {
     screens: {
+      Auth: {
+        screens: {
+          Login: {
+            screens: {
+              LoginScreen: 'Login'
+            }
+          },
+          ForgotPassword: {
+            screens: {
+              ForgotPasswordScreen: 'Forgot Password'
+            }
+          }
+        }
+      },
       Root: {
         screens: {
           TabOne: {
