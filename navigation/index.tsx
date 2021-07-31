@@ -12,6 +12,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 import { ColorSchemeName } from 'react-native';
 import HomeScreen from '../screens/HomeScreen';
+import JobsScreen from '../screens/JobsScreen';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
 import { RootStackParamList } from '../types';
@@ -47,6 +48,7 @@ function RootNavigator() {
     >
       <Stack.Screen name='Auth' component={AuthNavigator} />
       <Stack.Screen name='Home' component={HomeScreen} />
+      <Stack.Screen name='Jobs' component={JobsScreen} />
       <Stack.Screen
         name='NotFound'
         component={NotFoundScreen}

@@ -14,13 +14,11 @@ import { Button, Icon, Input, Image } from 'react-native-elements';
 import { Divider } from 'react-native-elements/dist/divider/Divider';
 import Logo from '../components/shared/Logo';
 
-import { AuthStackParamList } from '../types';
+import { RootStackParamList } from '../types';
 
 export default function HomeScreen({
   navigation,
-}: StackScreenProps<AuthStackParamList, 'Login'>) {
-  const [userName, setUserName] = useState('');
-  const [password, setPassword] = useState('');
+}: StackScreenProps<RootStackParamList, 'Home'>) {
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor='#ffb900' />
@@ -77,6 +75,7 @@ export default function HomeScreen({
               </Text>
             </View>
           }
+          onPress={() => navigation.navigate('Jobs')}
         />
       </View>
     </View>

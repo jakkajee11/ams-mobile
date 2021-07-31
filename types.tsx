@@ -11,6 +11,7 @@ export type AuthStackParamList = {
 export type RootStackParamList = {
   Auth: undefined;
   Home: undefined;
+  Jobs: undefined;
   NotFound: undefined;
 };
 
