@@ -14,18 +14,23 @@ export default {
         screens: {
           Login: {
             screens: {
-              LoginScreen: 'Login'
-            }
+              LoginScreen: 'Login',
+            },
           },
           ForgotPassword: {
             screens: {
-              ForgotPasswordScreen: 'Forgot Password'
-            }
-          }
-        }
+              ForgotPasswordScreen: 'Forgot Password',
+            },
+          },
+        },
       },
       Root: {
         screens: {
+          Home: {
+            screens: {
+              HomeScreen: 'Home',
+            },
+          },
           TabOne: {
             screens: {
               TabOneScreen: 'one',

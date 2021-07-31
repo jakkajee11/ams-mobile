@@ -3,14 +3,14 @@
  * https://reactnavigation.org/docs/typescript/
  */
 
- export type AuthStackParamList = {
+export type AuthStackParamList = {
   Login: undefined;
   ForgotPassword: undefined;
 };
 
 export type RootStackParamList = {
   Auth: undefined;
-  Root: undefined;
+  Home: undefined;
   NotFound: undefined;
 };
 

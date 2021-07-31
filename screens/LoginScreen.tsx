@@ -1,31 +1,67 @@
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { StackScreenProps } from '@react-navigation/stack';
+import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { Button, Icon, Input, Image } from 'react-native-elements';
+import { Divider } from 'react-native-elements/dist/divider/Divider';
+import Logo from '../components/shared/Logo';
 
-import { AuthStackParamList } from '../types';
+import { AuthStackParamList, RootStackParamList } from '../types';
 
 export default function LoginScreen({
   navigation,
-}: StackScreenProps<AuthStackParamList, 'Login'>) {
+}: StackScreenProps<AuthStackParamList & RootStackParamList, 'Login'>) {
+  const [userName, setUserName] = useState('');
+  const [password, setPassword] = useState('');
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login Screen</Text>      
-      <TouchableOpacity
-        style={styles.button}
-        activeOpacity={0.7}
-        // onPress={() => {
-        //   setCount(count + 1)
-        // }}
+      <StatusBar backgroundColor='#ffb900' />
+      <Logo />
+      <View
+        style={{
+          padding: 5,
+          margin: 5,
+          marginTop: 20,
+          height: '80%',
+          //backgroundColor: 'white',
+          flex: 1,
+          justifyContent: 'flex-start',
+        }}
       >
-        <Text style={styles.linkText}>Login</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        //style={styles.button}
-        activeOpacity={0.7}
-        onPress={() => navigation.navigate('ForgotPassword')}
-      >
-        <Text style={styles.linkText}>Forgot Password</Text>
-      </TouchableOpacity>
+        <Input
+          placeholder='Username/Email'
+          leftIcon={{ type: 'font-awesome-5', name: 'user-alt' }}
+          //style={styles}
+          onChangeText={(username: string) => setUserName(username)}
+        />
+        <Input
+          placeholder='Password'
+          leftIcon={{ type: 'font-awesome-5', name: 'lock' }}
+          //style={styles}
+          onChangeText={(password: string) => setPassword(password)}
+        />
+        <Button
+          icon={<Icon name='login' type='Feather' size={28} color='white' />}
+          title='Login'
+          titleStyle={{ fontWeight: '600', fontSize: 18, marginLeft: 10 }}
+          onPress={() => navigation.navigate('Home')}
+        />
+        <View style={{ marginTop: 30 }}>
+          <Button
+            type='clear'
+            title='Forgot Password?'
+            onPress={() => navigation.navigate('ForgotPassword')}
+          />
+        </View>
+      </View>
     </View>
   );
 }
@@ -33,28 +69,10 @@ export default function LoginScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffb900',
     alignItems: 'stretch',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
-  },
-  linkText: {
-    fontSize: 14,
-    color: '#2e78b7',
-  },
-  button: {
-    padding: 40,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: 'green',
-    backgroundColor: 'lightgreen',
+    justifyContent: 'flex-start',
+    padding: 10,
+    opacity: 0.9,
   },
 });
