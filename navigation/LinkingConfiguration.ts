@@ -31,6 +31,16 @@ export default {
               HomeScreen: 'Home',
             },
           },
+          Jobs: {
+            screens: {
+              JobsScreen: 'Jobs',
+            },
+          },
+          JobDetails: {
+            screens: {
+              JobDetailsScreen: 'JobDetails',
+            },
+          },
           TabOne: {
             screens: {
               TabOneScreen: 'one',
