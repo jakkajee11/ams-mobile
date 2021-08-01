@@ -15,30 +15,55 @@ import {
 } from 'react-native-elements';
 import { Divider } from 'react-native-elements/dist/divider/Divider';
 import Logo from '../components/shared/Logo';
-import JobItem from '../components/jobs/JobItem';
+import Job from '../components/jobs/Job';
 
-import { AuthStackParamList } from '../types';
+import {
+  AuthStackParamList,
+  JobsParamsList,
+  RootStackParamList,
+} from '../types';
+import { JobModel } from '../types/jobs';
 
 export default function JobsScreen({
   navigation,
-}: StackScreenProps<AuthStackParamList, 'Login'>) {
+}: StackScreenProps<JobsParamsList, 'Jobs'>) {
   const [index, setIndex] = useState(0);
 
   const pendingJobs = [
     {
       id: '1',
       jobNumber: 'jhth-p01',
-      createdAt: '2021-07-01',
+      dueDate: '2021-07-01',
+      assets: [
+        {
+          id: '1',
+          assetId: 'a01',
+          assetStatusName: 'New',
+          createdAt: '2021-01-01',
+        },
+        {
+          id: '2',
+          assetId: 'a02',
+          assetStatusName: 'New',
+          createdAt: '2021-01-01',
+        },
+        {
+          id: '3',
+          assetId: 'a03',
+          assetStatusName: 'In Stock',
+          createdAt: '2021-01-01',
+        },
+      ],
     },
     {
       id: '2',
       jobNumber: 'jhth-p02',
-      createdAt: '2021-07-02',
+      dueDate: '2021-07-02',
     },
     {
       id: '3',
       jobNumber: 'jhth-p03',
-      createdAt: '2021-07-03',
+      dueDate: '2021-07-03',
     },
   ];
 
@@ -46,22 +71,22 @@ export default function JobsScreen({
     {
       id: '1',
       jobNumber: 'jhth-w01',
-      createdAt: '2021-07-01',
+      dueDate: '2021-07-01',
     },
     {
       id: '2',
       jobNumber: 'jhth-w02',
-      createdAt: '2021-07-02',
+      dueDate: '2021-07-02',
     },
     {
       id: '3',
       jobNumber: 'jhth-w03',
-      createdAt: '2021-07-03',
+      dueDate: '2021-07-03',
     },
     {
       id: '4',
       jobNumber: 'jhth-w04',
-      createdAt: '2021-07-04',
+      dueDate: '2021-07-04',
     },
   ];
 
@@ -69,27 +94,27 @@ export default function JobsScreen({
     {
       id: '1',
       jobNumber: 'jhth-c01',
-      createdAt: '2021-07-01',
+      dueDate: '2021-07-01',
     },
     {
       id: '2',
       jobNumber: 'jhth-c02',
-      createdAt: '2021-07-02',
+      dueDate: '2021-07-02',
     },
     {
       id: '3',
       jobNumber: 'jhth-c03',
-      createdAt: '2021-07-03',
+      dueDate: '2021-07-03',
     },
     {
       id: '4',
       jobNumber: 'jhth-c04',
-      createdAt: '2021-07-04',
+      dueDate: '2021-07-04',
     },
     {
       id: '5',
       jobNumber: 'jhth-c05',
-      createdAt: '2021-07-05',
+      dueDate: '2021-07-05',
     },
   ];
 
@@ -113,12 +138,17 @@ export default function JobsScreen({
     </Text>
   );
 
+  const handleJobItemPress = (job: JobModel) => {
+    console.log(['handleJobItemPress', job]);
+    navigation.navigate('JobDetails', job);
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor='#ffb900' />
-      <View style={{ backgroundColor: '#ffb900' }}>
+      {/* <View style={{ backgroundColor: '#ffb900' }}>
         <Logo />
-      </View>
+      </View> */}
       <View style={{ padding: 0, height: '100%' }}>
         <Tab value={index} onChange={setIndex} variant={'primary'}>
           <Tab.Item
@@ -142,21 +172,33 @@ export default function JobsScreen({
           <TabView.Item style={styles.tabViewItem}>
             <View>
               {pendingJobs.map((job) => (
-                <JobItem data={job} />
+                <Job
+                  key={job.id}
+                  data={job}
+                  onPress={(job: JobModel) => handleJobItemPress(job)}
+                />
               ))}
             </View>
           </TabView.Item>
           <TabView.Item style={styles.tabViewItem}>
             <View>
               {workingJobs.map((job) => (
-                <JobItem data={job} />
+                <Job
+                  key={job.id}
+                  data={job}
+                  onPress={(job: JobModel) => handleJobItemPress(job)}
+                />
               ))}
             </View>
           </TabView.Item>
           <TabView.Item style={styles.tabViewItem}>
             <View>
               {completedJobs.map((job) => (
-                <JobItem data={job} />
+                <Job
+                  key={job.id}
+                  data={job}
+                  onPress={(job: JobModel) => handleJobItemPress(job)}
+                />
               ))}
             </View>
           </TabView.Item>

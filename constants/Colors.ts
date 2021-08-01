@@ -2,7 +2,8 @@ const tintColorLight = '#2f95dc';
 const tintColorDark = '#fff';
 
 const yellow = '#ffb900';
-const black = '363b42';
+const black = '#363b42';
+const white = '#fff';
 
 export default {
   light: {
@@ -21,5 +22,11 @@ export default {
   },
   main: {
     background: black,
+  },
+  black,
+  yellow,
+  white,
+  background: {
+    black: black,
   },
 };

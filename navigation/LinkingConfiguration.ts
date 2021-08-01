@@ -36,6 +36,11 @@ export default {
               JobsScreen: 'Jobs',
             },
           },
+          JobDetails: {
+            screens: {
+              JobDetailsScreen: 'JobDetails',
+            },
+          },
           TabOne: {
             screens: {
               TabOneScreen: 'one',

@@ -30,6 +30,11 @@ export default function App() {
     //     //color: 'white',
     //   },
     // },
+    // Text: {
+    //   style: {
+    //     color: 'white',
+    //   },
+    // },
     View: {
       backgroundColor: '#ffb900',
     },

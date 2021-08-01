@@ -3,6 +3,8 @@
  * https://reactnavigation.org/docs/typescript/
  */
 
+import { JobAssetModel, JobModel } from './types/jobs';
+
 export type AuthStackParamList = {
   Login: undefined;
   ForgotPassword: undefined;
@@ -11,11 +13,17 @@ export type AuthStackParamList = {
 export type RootStackParamList = {
   Auth: undefined;
   Home: undefined;
+  ScanQRCode: undefined;
   Jobs: undefined;
+  JobDetails: JobModel;
   NotFound: undefined;
 };
 
 export type BottomTabParamList = {
+  Home: undefined;
+  MyJobs: undefined;
+  ScanQRCode: undefined;
+  Settings: undefined;
   TabOne: undefined;
   TabTwo: undefined;
 };
@@ -26,4 +34,10 @@ export type TabOneParamList = {
 
 export type TabTwoParamList = {
   TabTwoScreen: undefined;
+};
+
+export type JobsParamsList = {
+  Jobs: undefined;
+  JobDetails: JobModel;
+  JobAssetDetails: JobAssetModel;
 };
