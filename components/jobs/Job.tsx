@@ -15,9 +15,9 @@ export default function Job({ data, onPress }: JobItemProps) {
   const { id, jobNumber, dueDate } = data;
 
   return (
-    <ListItem key={id} bottomDivider>
+    <ListItem key={id} bottomDivider onPress={handleOnPress}>
       <ListItem.Content>
-        <ListItem.Title onPress={handleOnPress}>
+        <ListItem.Title>
           {jobNumber} {dueDate}
         </ListItem.Title>
       </ListItem.Content>

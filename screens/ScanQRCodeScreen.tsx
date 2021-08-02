@@ -1,55 +1,114 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { useIsFocused } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
-import { Camera } from 'expo-camera';
+import { BarCodeScanner } from 'expo-barcode-scanner';
+import {
+  BarCodeScanningResult,
+  CameraCapturedPicture,
+  Camera as ExpoCamera,
+} from 'expo-camera';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import {
+  Modal,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Overlay, Button, Icon } from 'react-native-elements';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+import Camera from '../components/shared/Camera';
 
 import { RootStackParamList } from '../types';
 
 export default function ScanQRCodeScreen({
   navigation,
 }: StackScreenProps<RootStackParamList, 'ScanQRCode'>) {
-  const [hasPermission, setHasPermission] = useState<any>(null);
-  const [type, setType] = useState(Camera.Constants.Type.back);
+  const isFocused = useIsFocused();
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
-  }, []);
+  const [scannedResult, setScannedResult] = useState('');
+  const [visible, setVisible] = useState(isFocused);
 
-  if (hasPermission === null) {
-    return <View />;
-  }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
-  }
+  const prepareCamera = () => {
+    setScannedResult('');
+    openCamera();
+  };
+
+  const openCamera = () => setVisible(true);
+  const closeCamera = () => setVisible(false);
+
+  const handleBarCodeScanned = (result: BarCodeScanningResult) => {
+    console.log(['handleBarCodeScanned', result]);
+    setScannedResult(result.data);
+    closeCamera();
+  };
+
   return (
     <View style={styles.container}>
-      <Camera style={styles.camera} type={type}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              setType(
-                type === Camera.Constants.Type.back
-                  ? Camera.Constants.Type.front
-                  : Camera.Constants.Type.back
-              );
+      <Text style={styles.text}>{scannedResult}</Text>
+
+      <Button
+        style={{ width: '100px' }}
+        title={
+          <View
+            style={{
+              padding: 3,
+              //flex: 1,
+              //flexDirection: 'row',
+              alignItems: 'center',
+              //width:
             }}
           >
-            <Text style={styles.text}> Flip </Text>
-          </TouchableOpacity>
+            <Icon
+              name='qr-code-scanner'
+              type='MaterialIcons'
+              size={60}
+              color='white'
+            />
+            <Text
+              style={{
+                marginLeft: 10,
+                fontSize: 18,
+                fontWeight: '600',
+                color: 'white',
+              }}
+            >
+              SCAN QR CODE
+            </Text>
+          </View>
+        }
+        onPress={prepareCamera}
+      />
+
+      <Modal
+        animationType='fade'
+        transparent={true}
+        visible={visible}
+        presentationStyle={'overFullScreen'}
+        onRequestClose={closeCamera}
+      >
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'column',
+            justifyContent: 'flex-start',
+            height: '100%',
+            width: '100%',
+          }}
+        >
+          {visible && (
+            <Camera
+              onClose={closeCamera}
+              onTakePicture={(photo: CameraCapturedPicture) =>
+                console.log('photo taken!')
+              }
+              onBarCodeScanned={handleBarCodeScanned}
+            />
+          )}
         </View>
-      </Camera>
+      </Modal>
     </View>
   );
 }
@@ -57,23 +116,13 @@ export default function ScanQRCodeScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  camera: {
-    flex: 1,
-  },
-  buttonContainer: {
-    flex: 1,
-    backgroundColor: 'transparent',
-    flexDirection: 'row',
-    margin: 20,
-  },
-  button: {
-    flex: 0.1,
-    alignSelf: 'flex-end',
+    flexDirection: 'column',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   text: {
     fontSize: 18,
-    color: 'white',
+    color: 'red',
+    margin: 20,
   },
 });

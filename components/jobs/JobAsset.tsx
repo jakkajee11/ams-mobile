@@ -16,9 +16,9 @@ export default function JobAsset({
     onPress && onPress();
   };
   return (
-    <ListItem key={id} bottomDivider>
+    <ListItem key={id} bottomDivider onPress={handleOnPress}>
       <ListItem.Content>
-        <ListItem.Title style={{ fontSize: 12 }} onPress={handleOnPress}>
+        <ListItem.Title style={{ fontSize: 12 }}>
           {assetId} {jobAssetStatusName} {assetId}
         </ListItem.Title>
       </ListItem.Content>
