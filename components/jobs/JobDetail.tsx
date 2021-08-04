@@ -3,6 +3,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Icon, Text, Button } from 'react-native-elements';
 import Colors from '../../constants/Colors';
+import { JOB_STATUS } from '../../constants/Status';
 import { JobModel } from '../../types/jobs';
 import Asset from '../assets/Asset';
 import JobAsset from './JobAsset';
@@ -14,7 +15,17 @@ interface JobDetailProps {
 const Label = (text: string) => <Text style={styles.text}>{text}</Text>;
 
 export default function JobDetail({
-  data: { id, jobNumber, dueDate, details, location, subLocation, assets },
+  data: {
+    id,
+    jobNumber,
+    jobStatusId,
+    dueDate,
+    details,
+    location,
+    subLocation,
+    assets,
+    createdAt,
+  },
 }: JobDetailProps) {
   const navigation = useNavigation();
   return (
@@ -29,7 +40,7 @@ export default function JobDetail({
           }}
         >
           <Text style={styles.box}>Job Number: {jobNumber}</Text>
-          <Text style={styles.box}>Due Date: {dueDate}</Text>
+          <Text style={styles.box}>Created at: {createdAt}</Text>
         </View>
         <Text style={styles.text}>Location: {location}</Text>
         <Text style={styles.text}>Sub Location: {subLocation}</Text>
@@ -46,7 +57,27 @@ export default function JobDetail({
             />
           ))}
         </View>
-        <Button title='START' />
+      </View>
+
+      <View style={{ flex: 0.5, justifyContent: 'space-around', padding: 5 }}>
+        {jobStatusId === JOB_STATUS.Pending && <Button title='START' />}
+        <View style={{ flex: 1, justifyContent: 'space-around' }}>
+          <View
+            style={{
+              flex: 0.3,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              padding: 0,
+            }}
+          >
+            <Icon name='clock' type='font-awesome-5' />
+            <Text style={{ textAlign: 'center', marginLeft: 5 }}>
+              Time used: 1 hour 30 minutes
+            </Text>
+          </View>
+          <Button title='FINISH' />
+          <Button title='SAVE' />
+        </View>
       </View>
     </View>
   );

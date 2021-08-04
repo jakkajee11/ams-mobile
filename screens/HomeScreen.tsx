@@ -45,6 +45,21 @@ export default function HomeScreen({
           }
           title='Scan asset QR Code'
           titleStyle={{ fontWeight: '600', fontSize: 18, marginLeft: 10 }}
+          onPress={() => navigation.navigate('ScanQRCodeFound')}
+        />
+
+        <Button
+          icon={
+            <Icon
+              name='qr-code-scanner'
+              type='MaterialIcons'
+              size={60}
+              color='white'
+            />
+          }
+          title='Scan asset QR Code (not found)'
+          titleStyle={{ fontWeight: '600', fontSize: 18, marginLeft: 10 }}
+          onPress={() => navigation.navigate('ScanQRCodeNotFound')}
         />
 
         <Button

@@ -3,7 +3,7 @@ import { AssetModel } from './assets';
 export type JobModel = {
   id: string;
   jobNumber: string;
-  jobStatusId?: string;
+  jobStatusId: number;
   assigneeId?: string;
   assignerId?: string;
   dueDate: string;
@@ -12,6 +12,7 @@ export type JobModel = {
   location?: string;
   subLocation?: string;
   assets?: JobAssetModel[];
+  createdAt: string;
   createdUserId?: string;
   modifiedUserId?: string;
 };

@@ -11,11 +11,14 @@ import {
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 import { ColorSchemeName } from 'react-native';
+import { Header } from 'react-native-elements';
+import Colors from '../constants/Colors';
 import HomeScreen from '../screens/HomeScreen';
 import JobDetailsScreen from '../screens/JobDetailsScreen';
 import JobsScreen from '../screens/JobsScreen';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
+import ScanQRCodeFoundScreen from '../screens/ScanQRCodeFoundScreen';
 import { RootStackParamList } from '../types';
 import AuthNavigator from './AuthNavigator';
 import BottomTabNavigator from './BottomTabNavigator';
@@ -48,7 +51,29 @@ function RootNavigator() {
       initialRouteName='Auth'
     >
       <Stack.Screen name='Auth' component={AuthNavigator} />
-      <Stack.Screen name='Home' component={HomeScreen} />
+      <Stack.Screen
+        name='Home'
+        component={HomeScreen}
+        options={{ header: undefined }}
+      />
+      <Stack.Screen name='ScanQRCodeFound' component={ScanQRCodeFoundScreen} />
+      <Stack.Screen
+        name='ScanQRCodeNotFound'
+        component={ScanQRCodeFoundScreen}
+        options={{
+          header: () => (
+            <Header
+              leftComponent={{
+                icon: 'menu',
+                color: '#fff',
+                iconStyle: { color: '#fff' },
+              }}
+              centerComponent={{ text: 'MY TITLE', style: { color: '#fff' } }}
+              rightComponent={{ icon: 'home', color: '#fff' }}
+            />
+          ),
+        }}
+      />
       <Stack.Screen name='Jobs' component={BottomTabNavigator} />
       <Stack.Screen name='JobDetails' component={JobDetailsScreen} />
       <Stack.Screen
