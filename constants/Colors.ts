@@ -4,6 +4,7 @@ const tintColorDark = '#fff';
 const yellow = '#ffb900';
 const black = '#363b42';
 const white = '#fff';
+const red = 'red';
 
 export default {
   light: {
@@ -26,6 +27,7 @@ export default {
   black,
   yellow,
   white,
+  red,
   background: {
     black: black,
   },

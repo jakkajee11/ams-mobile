@@ -18,7 +18,9 @@ import JobDetailsScreen from '../screens/JobDetailsScreen';
 import JobsScreen from '../screens/JobsScreen';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
+import ReportAssetScreen from '../screens/ReportAssetScreen';
 import ScanQRCodeFoundScreen from '../screens/ScanQRCodeFoundScreen';
+import ScanQRCodeNotFoundScreen from '../screens/ScanQRCodeNotFoundScreen';
 import { RootStackParamList } from '../types';
 import AuthNavigator from './AuthNavigator';
 import BottomTabNavigator from './BottomTabNavigator';
@@ -59,7 +61,7 @@ function RootNavigator() {
       <Stack.Screen name='ScanQRCodeFound' component={ScanQRCodeFoundScreen} />
       <Stack.Screen
         name='ScanQRCodeNotFound'
-        component={ScanQRCodeFoundScreen}
+        component={ScanQRCodeNotFoundScreen}
         options={{
           header: () => (
             <Header
@@ -74,6 +76,7 @@ function RootNavigator() {
           ),
         }}
       />
+      <Stack.Screen name='ReportAsset' component={ReportAssetScreen} />
       <Stack.Screen name='Jobs' component={BottomTabNavigator} />
       <Stack.Screen name='JobDetails' component={JobDetailsScreen} />
       <Stack.Screen
