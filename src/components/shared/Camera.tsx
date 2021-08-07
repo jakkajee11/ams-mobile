@@ -64,12 +64,16 @@ interface CameraProps {
   onClose(): void;
   onTakePicture(photo: CameraCapturedPicture | undefined): void;
   onBarCodeScanned?(result: BarCodeScanningResult): void;
+  showImagePicker?: boolean;
+  showOptions?: boolean;
 }
 
 export default function Camera({
   onClose,
   onTakePicture,
   onBarCodeScanned,
+  showImagePicker = false,
+  showOptions = false,
 }: CameraProps & ExpoCameraProps) {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
@@ -78,8 +82,8 @@ export default function Camera({
   const [newPhotos, setNewPhotos] = useState<boolean>(false);
   const [flash, toggleFlash] = useState<string>('off');
   const [whiteBalance, toggleWB] = useState<string>('auto');
-  const [showMoreOptions, toggleMoreOptions] = useState<boolean>(false);
-  const [showPickImage, setShowPickImage] = useState<boolean>(false);
+  const [showMoreOptions, toggleMoreOptions] = useState<boolean>(showOptions);
+  const [showPickImage, setShowPickImage] = useState<boolean>(showImagePicker);
   const [scannedResult, setScannedResult] = useState('');
 
   const camera = useRef<ExpoCamera>(null);

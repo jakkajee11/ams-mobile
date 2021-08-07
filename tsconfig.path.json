@@ -1,0 +1,24 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~apis/*": ["src/apis/*"],
+      "~assets/*": ["src/assets/*"],
+      "~components/*": ["src/components/*"],
+      "~constants/*": ["src/constants/*"],
+      "~hooks/*": ["src/hooks/*"],
+      "~redux/*": ["src/redux/*"],
+      "~containers/*": ["src/containers/*"],
+      "~routes": ["src/routes"],
+      "~types/*": ["src/types/*"],
+      "~utils/*": ["src/utils/*"],
+      "~styles/*": ["src/styles/*"],
+      "~stores/*": ["src/stores/*"],
+      "~services/*": ["src/services/*"],
+      "~data/*": ["src/data/*"],
+      "~root/*": ["*"]
+    },
+    "typeRoots": ["./src/types", "node_modules/@types"]
+  }
+}

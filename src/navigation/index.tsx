@@ -46,6 +46,15 @@ export default function Navigation({
 // Read more here: https://reactnavigation.org/docs/modal
 const Stack = createStackNavigator<RootStackParamList>();
 
+const isLoggedIn = false;
+
+function AppNavigator() {
+  <Stack.Navigator>
+    {Object.entries({
+      ...(isLoggedIn ? AuthNavigator : AuthNavigator),
+    }).map(() => {})}
+  </Stack.Navigator>;
+}
 function RootNavigator() {
   return (
     <Stack.Navigator

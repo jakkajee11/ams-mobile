@@ -1,10 +1,10 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View, VirtualizedList } from 'react-native';
 import { Icon, Text, Button } from 'react-native-elements';
 import Colors from '../../constants/Colors';
 import { JOB_STATUS } from '../../constants/Status';
-import { JobModel } from '../../types/jobs';
+import { JobAssetModel, JobModel } from '../../types/jobs';
 import Asset from '../assets/Asset';
 import JobAsset from './JobAsset';
 
@@ -28,11 +28,17 @@ export default function JobDetail({
   },
 }: JobDetailProps) {
   const navigation = useNavigation();
+
+  const renderItem = ({ item }: any) => <JobAsset key={item.key} data={item} />;
+  const getItem = (data: JobAssetModel, index: number) => {
+    return assets[index];
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <Text style={{ color: 'white' }}>Detail (Pending)</Text>
-      </View>
+      </View> */}
       <View style={styles.content}>
         <View
           style={{
@@ -48,18 +54,35 @@ export default function JobDetail({
           <Text style={styles.text}>Detail</Text>
         </View>
         <View style={{ marginTop: 10, marginBottom: 10 }}>
-          <Text style={styles.text}>Assets</Text>
-          {assets?.map((asset) => (
+          <FlatList
+            ListHeaderComponent={
+              <Text
+                style={{
+                  ...styles.text,
+                  textAlign: 'center',
+                  fontStyle: 'italic',
+                }}
+              >
+                Total {assets.length} assets
+              </Text>
+            }
+            data={assets}
+            renderItem={renderItem}
+            //keyExtractor={(item: any, index: number) => item.id}
+            //getItem={getItem}
+            //getItemCount={() => 4}
+          />
+          {/* {assets?.map((asset) => (
             <JobAsset
               key={asset.id}
               data={asset}
               onPress={() => navigation.navigate('JobAssetDetails', asset)}
             />
-          ))}
+          ))} */}
         </View>
       </View>
 
-      <View style={{ flex: 0.5, justifyContent: 'space-around', padding: 5 }}>
+      {/* <View style={{ flex: 0.5, justifyContent: 'space-around', padding: 5 }}>
         {jobStatusId === JOB_STATUS.Pending && <Button title='START' />}
         <View style={{ flex: 1, justifyContent: 'space-around' }}>
           <View
@@ -78,7 +101,7 @@ export default function JobDetail({
           <Button title='FINISH' />
           <Button title='SAVE' />
         </View>
-      </View>
+      </View> */}
     </View>
   );
 }

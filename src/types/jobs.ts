@@ -11,13 +11,14 @@ export type JobModel = {
   comments?: string;
   location?: string;
   subLocation?: string;
-  assets?: JobAssetModel[];
+  assets: JobAssetModel[];
   createdAt: string;
   createdUserId?: string;
   modifiedUserId?: string;
 };
 
 export type JobAssetModel = {
+  key: string;
   id: string;
   // jobAssetStatusId: number;
   jobAssetStatusName: string;

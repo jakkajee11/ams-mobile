@@ -36,18 +36,21 @@ export default function JobsScreen({
       dueDate: '2021-07-01',
       assets: [
         {
+          key: '1',
           id: '1',
           assetId: 'a01',
           assetStatusName: 'New',
           createdAt: '2021-01-01',
         },
         {
+          key: '2',
           id: '2',
           assetId: 'a02',
           assetStatusName: 'New',
           createdAt: '2021-01-01',
         },
         {
+          key: '3',
           id: '3',
           assetId: 'a03',
           assetStatusName: 'In Stock',

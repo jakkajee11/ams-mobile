@@ -9,14 +9,14 @@ interface JobAssetProps {
 }
 
 export default function JobAsset({
-  data: { id, jobAssetStatusName, assetId },
+  data: { key, id, jobAssetStatusName, assetId },
   onPress,
 }: JobAssetProps) {
   const handleOnPress = () => {
     onPress && onPress();
   };
   return (
-    <ListItem key={id} bottomDivider onPress={handleOnPress}>
+    <ListItem key={key} bottomDivider onPress={handleOnPress}>
       <ListItem.Content>
         <ListItem.Title style={{ fontSize: 12 }}>
           {assetId} {jobAssetStatusName} {assetId}

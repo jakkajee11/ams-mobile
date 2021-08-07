@@ -3,12 +3,12 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import useCachedResources from './hooks/useCachedResources';
-import useColorScheme from './hooks/useColorScheme';
-import Navigation from './navigation';
+import useCachedResources from './src/hooks/useCachedResources';
+import useColorScheme from './src/hooks/useColorScheme';
+import Navigation from './src/navigation';
 import { FullTheme } from 'react-native-elements';
 import { ThemeProvider } from 'react-native-elements';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import Colors from './src/constants/Colors';
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -36,7 +36,10 @@ export default function App() {
     //   },
     // },
     View: {
-      backgroundColor: '#ffb900',
+      backgroundColor: Colors.yellow,
+    },
+    StatusBar: {
+      backgroundColor: Colors.yellow,
     },
   };
 
