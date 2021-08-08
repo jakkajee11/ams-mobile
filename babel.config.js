@@ -6,6 +6,13 @@ module.exports = function (api) {
     presets: ['babel-preset-expo'],
     plugins: [
       'react-native-reanimated/plugin',
+      'inline-dotenv',
+      [
+        'transform-inline-environment-variables',
+        {
+          include: ['NODE_ENV'],
+        },
+      ],
       [
         'module-resolver',
         {

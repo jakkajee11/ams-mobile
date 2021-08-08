@@ -1,22 +1,28 @@
 import useApi from '~hooks/useApi';
-import { LoginModel } from '~types/auths';
+import { LoginModel, LogoutModel, RefreshTokenModel } from '~types/auths';
 
-const endpoint = 'auths';
+const endpoint = 'v1/auth';
 export default function useAssetApi() {
-  const { post } = useApi();
+  const { get, post } = useApi();
 
-  const signIn = async (login: LoginModel) => {
-    const url = `${endpoint}/signin`;
-    return await post(url, login);
+  const signIn = async (model: LoginModel) => {
+    const url = `${endpoint}/login`;
+    return await post(url, model);
   };
 
-  const signOut = async () => {
-    const url = `${endpoint}/signout`;
-    return await post(url);
+  const signOut = async (model: LogoutModel) => {
+    const url = `${endpoint}/logout`;
+    return await post(url, model);
+  };
+
+  const refreshToken = async (model: RefreshTokenModel) => {
+    const url = `${endpoint}/token/refresh`;
+    return await post(url, model);
   };
 
   return {
     signIn,
     signOut,
+    refreshToken,
   };
 }

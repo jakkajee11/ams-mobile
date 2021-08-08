@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
-//import authStore from '~stores/authStore';
 import _ from 'lodash';
 import createInstance from '~apis/createInstance';
 axios.defaults.baseURL = process.env.REACT_APP_API_ENDPOINT;

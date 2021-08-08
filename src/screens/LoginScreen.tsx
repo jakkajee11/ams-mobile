@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { useState } from 'react';
 import {
+  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -17,34 +18,50 @@ import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 
 import { AuthStackParamList, RootStackParamList } from '../types';
-
-WebBrowser.maybeCompleteAuthSession();
-
-const useProxy = true;
-
-const redirectUri = AuthSession.makeRedirectUri({
-  useProxy,
-});
+import useAuthApi from '~apis/useAuthApi';
+import Storages from '~utils/Storages';
+import { APP_CONFIG } from '~constants/Config';
+import useAuth from '~hooks/useAuth';
 
 export default function LoginScreen({
   navigation,
 }: StackScreenProps<AuthStackParamList & RootStackParamList, 'Login'>) {
+  const { signIn } = useAuthApi();
+  const { isLoggedIn } = useAuth();
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const clientId = APP_CONFIG.clientId;
 
-  const discovery = AuthSession.useAutoDiscovery('https://localhost:5100');
+  const login = async () => {
+    console.log([clientId, userName, password]);
+    setLoading(true);
+    if (userName.length === 0 || password.length === 0) {
+      Alert.alert('Error', 'Invalid UserName/Password');
+    } else {
+      // call api to signin
+      const res = await signIn({
+        clientId,
+        userName,
+        password,
+      });
 
-  // Create and load an auth request
-  const [request, result, promptAsync] = AuthSession.useAuthRequest(
-    {
-      clientId: 'ams-web',
-      redirectUri,
-      scopes: ['openid', 'profile', 'email', 'offline_access', 'api'],
-    },
-    discovery
-  );
+      await Storages.saveUserToken(JSON.stringify(res.data));
 
-  //console.log()
+      navigation.navigate('Home');
+    }
+    setLoading(false);
+  };
+
+  React.useEffect(() => {
+    (async function () {
+      const loggedIn = await isLoggedIn();
+      if (loggedIn) {
+        console.log('User already logged in :)');
+        navigation.navigate('Home');
+      }
+    })();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -71,20 +88,17 @@ export default function LoginScreen({
           placeholder='Password'
           leftIcon={{ type: 'font-awesome-5', name: 'lock' }}
           //style={styles}
+          secureTextEntry
           onChangeText={(password: string) => setPassword(password)}
         />
         <Button
           icon={<Icon name='login' type='Feather' size={28} color='white' />}
           title='Login'
           titleStyle={{ fontWeight: '600', fontSize: 18, marginLeft: 10 }}
-          onPress={() => navigation.navigate('Home')}
+          loading={loading}
+          onPress={login}
         />
-        <Button
-          icon={<Icon name='login' type='Feather' size={28} color='white' />}
-          title='OAUTH'
-          titleStyle={{ fontWeight: '600', fontSize: 18, marginLeft: 10 }}
-          onPress={() => promptAsync({ useProxy })}
-        />
+
         <View style={{ marginTop: 30 }}>
           <Button
             type='clear'

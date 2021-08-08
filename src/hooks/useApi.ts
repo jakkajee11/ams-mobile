@@ -1,73 +1,22 @@
 import { useEffect, useState } from 'react';
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 import _ from 'lodash';
-import createInstance from '../apis/createInstance';
-import { Type } from 'typescript';
-import { DataTableResult, StandardResult } from '~types/dataTable';
-import { defaultAxiosConfig } from '~constants/api';
-import Storages from '~utils/storages';
-import { SearchQuery } from '~types/searchQuery';
+import Storages from '~utils/Storages';
+import { SearchQuery } from '~types/queries';
 import buildQueryString from '~utils/buildQueryString';
+import { DEFAULT_AXIOS_CONFIG } from '~constants/Config';
+//axios.defaults.baseURL = 'https://api-dev.thjh-ams.com/api/'; //'https://49.49.241.176:5001/api/'; //process.env.REACT_APP_API_ENDPOINT;
 axios.defaults.baseURL = process.env.REACT_APP_API_ENDPOINT;
 //axios.defaults.headers.common['Authorization'] = 'Bearer ';
+
+console.log([
+  'process.env.REACT_APP_API_ENDPOINT  ',
+  process.env.REACT_APP_API_ENDPOINT,
+]);
 
 const CancelToken = axios.CancelToken;
 const source = CancelToken.source();
 const axiosCancelMessage = 'Operation canceled';
-
-const createStandardResponse = async (
-  response: AxiosResponse<any> | Promise<AxiosResponse<any>> | Promise<any>
-): Promise<StandardResult<any>> => {
-  const res = await Promise.resolve(response);
-
-  if (res.status === 200) {
-    return {
-      status: 200,
-      data: res.data,
-    };
-  }
-
-  // if (_.isArray(response)) {
-  //   return {
-  //     status: 200,
-  //     data: {
-  //       rows: response,
-  //       totalRows: response?.length,
-  //     },
-  //   };
-  // }
-
-  return res;
-};
-
-const createResponse = async (
-  response: AxiosResponse<any> | Promise<AxiosResponse<any>> | Promise<any>
-  //| any
-): Promise<DataTableResult<any>> => {
-  const res = await Promise.resolve(response);
-
-  if (res.status === 200) {
-    return {
-      status: 200,
-      data: {
-        rows: res.data,
-        totalRows: res.data?.length,
-      },
-    };
-  }
-
-  if (_.isArray(response)) {
-    return {
-      status: 200,
-      data: {
-        rows: response,
-        totalRows: response?.length,
-      },
-    };
-  }
-
-  return res;
-};
 
 axios.interceptors.response.use(
   (response): AxiosResponse<any> | Promise<AxiosResponse<any>> => {
@@ -78,45 +27,61 @@ axios.interceptors.response.use(
     console.error(['interceptors.error', error]);
     if (response && response.status === 401) {
       source.cancel(axiosCancelMessage);
-      authManager.signinRedirect({
-        state: { returnUrl: window.location.pathname },
-      });
+      // try to refresh token
+      axios
+        .post('v1/auth/token/refresh', { clientId: '', refreshToken: '' })
+        .then((res) => {
+          if (res.status === 200) {
+            Storages.saveUserToken(res.data).then((res) => {
+              console.log('userToken saved');
+              return Promise.resolve({
+                status: 200,
+                data: 'retry',
+                statusText: 'retry',
+              });
+            });
+          } else {
+            console.warn('refreshToken failed!');
+          }
+        });
     }
-    return Promise.reject(error.response);
+    return Promise.reject(response);
   }
 );
 
 export default function useApi(createNewInstance?: boolean) {
-  const access_token = Storages.getAccessToken();
-  const [token, setToken] = useState(
-    access_token || authStore?.value?.access_token
-  );
   const instance = !!createNewInstance ? axios.create() : axios;
+  const [token, setToken] = useState<string | null>(null);
 
-  const setBearer = () => {
-    const access_token = Storages.getAccessToken();
-    const authState = authStore?.value;
-    const token = access_token || authState?.access_token;
-    instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  const setBearer = async () => {
+    const access_token = await Storages.getAccessToken();
+
+    if (access_token) {
+      setToken(access_token);
+      instance.defaults.headers.common['Authorization'] = `Bearer ${
+        access_token ?? ''
+      }`;
+    }
   };
 
   const getConfig = (config?: AxiosRequestConfig) => {
+    if (!token) setBearer();
+
     if (token) {
       return {
         ...config,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        // headers: {
+        //   Authorization: `Bearer ${token}`,
+        // },
       };
     }
-
-    return { ...defaultAxiosConfig, ...config };
+    console.log(['getConfig', { ...DEFAULT_AXIOS_CONFIG, ...config }]);
+    return { ...DEFAULT_AXIOS_CONFIG, ...config };
   };
 
   useEffect(() => {
     setBearer();
-    setToken(authStore.value?.access_token);
-  }, [authStore]);
+  }, []);
 
   return {
     instance,
@@ -126,6 +91,7 @@ export default function useApi(createNewInstance?: boolean) {
       return await instance.get(url);
     },
     get: async function (url: string, config?: AxiosRequestConfig) {
+      console.log(['get', url, config]);
       return await instance.get(url, getConfig(config));
     },
     post: async function (
@@ -133,6 +99,7 @@ export default function useApi(createNewInstance?: boolean) {
       data?: any,
       config?: AxiosRequestConfig
     ) {
+      console.log(['post', instance.defaults]);
       return await instance.post(url, data, getConfig(config));
     },
     put: async function (url: string, data?: any, config?: AxiosRequestConfig) {
