@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import { Button, Icon, Input, Image } from 'react-native-elements';
 import { Divider } from 'react-native-elements/dist/divider/Divider';
+import useAuthApi from '~apis/useAuthApi';
+import Colors from '~constants/Colors';
 import Logo from '../components/shared/Logo';
 
 import { RootStackParamList } from '../types';
@@ -19,9 +21,18 @@ import { RootStackParamList } from '../types';
 export default function HomeScreen({
   navigation,
 }: StackScreenProps<RootStackParamList, 'Home'>) {
+  const { refreshToken } = useAuthApi();
+  const _refreshToken = async () => {
+    const res = await refreshToken({
+      clientId: 'ams-mobile',
+      refreshToken:
+        '801538245229E1697C6BC7B2BCB49D09E6CEA6A13000DD610A1954C0DACA1C08',
+    });
+    console.log(['res', res]);
+  };
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor='#ffb900' />
+      <StatusBar backgroundColor={Colors.yellow} />
       <Logo />
       <View
         style={{
@@ -29,7 +40,7 @@ export default function HomeScreen({
           margin: 5,
           marginTop: 20,
           height: '30%',
-          flex: 0.4,
+          flex: 0.7,
           justifyContent: 'space-around',
           //backgroundColor: 'white',
         }}
@@ -91,6 +102,37 @@ export default function HomeScreen({
             </View>
           }
           onPress={() => navigation.navigate('Jobs')}
+        />
+
+        <Button
+          title={
+            <View
+              style={{
+                padding: 3,
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <Icon
+                name='tasks'
+                type='font-awesome-5'
+                size={60}
+                color='white'
+              />
+              <Text
+                style={{
+                  marginLeft: 10,
+                  fontSize: 18,
+                  fontWeight: '600',
+                  color: 'white',
+                }}
+              >
+                Refresh Token
+              </Text>
+            </View>
+          }
+          onPress={_refreshToken}
         />
       </View>
     </View>

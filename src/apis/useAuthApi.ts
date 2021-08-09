@@ -3,7 +3,7 @@ import { LoginModel, LogoutModel, RefreshTokenModel } from '~types/auths';
 
 const endpoint = 'v1/auth';
 export default function useAssetApi() {
-  const { get, post } = useApi();
+  const { post } = useApi();
 
   const signIn = async (model: LoginModel) => {
     const url = `${endpoint}/login`;
@@ -17,7 +17,8 @@ export default function useAssetApi() {
 
   const refreshToken = async (model: RefreshTokenModel) => {
     const url = `${endpoint}/token/refresh`;
-    return await post(url, model);
+    console.log(['refreshToken', url, model]);
+    return await post(url, model, undefined, true);
   };
 
   return {

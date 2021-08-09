@@ -38,8 +38,8 @@ export default function SettingsScreen({
     const res = await signOut({ clientId: APP_CONFIG.clientId, token });
     if (res && res.status === 200) {
       await Storages.removeUserToken();
-      navigation.navigate('Home');
     }
+    navigation.navigate('Login');
     setLoading(false);
   };
 

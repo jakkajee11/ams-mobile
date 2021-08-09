@@ -31,8 +31,9 @@ export default function useCachedResources() {
             clientId: APP_CONFIG.clientId,
             refreshToken: userToken.refresh_token,
           });
+
           if (res && res.status === 200 && res.data) {
-            await Storages.saveUserToken(res.data);
+            await Storages.saveUserToken(JSON.stringify(res.data));
           }
         } else {
           console.warn('No token found, login required!!!');

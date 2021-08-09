@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
 import merge from 'lodash/merge';
 
 const DEFAULT_AXIOS_CONFIG = {
-  baseUrl: process.env.REACT_APP_API_ENDPOINT,
+  baseURL: process.env.REACT_APP_API_ENDPOINT,
 };
 
 export default function createInstance(

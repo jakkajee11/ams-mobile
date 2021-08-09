@@ -34,7 +34,6 @@ export default function LoginScreen({
   const clientId = APP_CONFIG.clientId;
 
   const login = async () => {
-    console.log([clientId, userName, password]);
     setLoading(true);
     if (userName.length === 0 || password.length === 0) {
       Alert.alert('Error', 'Invalid UserName/Password');
@@ -48,7 +47,7 @@ export default function LoginScreen({
 
       await Storages.saveUserToken(JSON.stringify(res.data));
 
-      navigation.navigate('Home');
+      navigation.navigate('Root');
     }
     setLoading(false);
   };
@@ -58,14 +57,14 @@ export default function LoginScreen({
       const loggedIn = await isLoggedIn();
       if (loggedIn) {
         console.log('User already logged in :)');
-        navigation.navigate('Home');
+        navigation.navigate('Root');
       }
     })();
   }, []);
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor='#ffb900' />
+      {/* <StatusBar backgroundColor='#ffb900' /> */}
       <Logo />
       <View
         style={{

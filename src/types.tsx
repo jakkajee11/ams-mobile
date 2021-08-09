@@ -5,9 +5,15 @@
 
 import { JobAssetModel, JobModel } from './types/jobs';
 
+export type AppStackParamList = {
+  Auth: undefined;
+  Root: undefined;
+};
+
 export type AuthStackParamList = {
   Login: undefined;
   ForgotPassword: undefined;
+  Root: undefined;
 };
 
 export type RootStackParamList = {
@@ -27,16 +33,6 @@ export type BottomTabParamList = {
   MyJobs: undefined;
   ScanQRCode: undefined;
   Settings: undefined;
-  TabOne: undefined;
-  TabTwo: undefined;
-};
-
-export type TabOneParamList = {
-  TabOneScreen: undefined;
-};
-
-export type TabTwoParamList = {
-  TabTwoScreen: undefined;
 };
 
 export type JobsParamsList = {
@@ -44,3 +40,7 @@ export type JobsParamsList = {
   JobDetails: JobModel;
   JobAssetDetails: JobAssetModel;
 };
+
+export type AllParamList = AppStackParamList &
+  AuthStackParamList &
+  RootStackParamList & {};

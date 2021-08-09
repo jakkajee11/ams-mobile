@@ -16,14 +16,8 @@ import JobDetailsScreen from '../screens/JobDetailsScreen';
 import JobsScreen from '../screens/JobsScreen';
 import ScanQRCodeScreen from '../screens/ScanQRCodeScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import TabOneScreen from '../screens/TabOneScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
-import {
-  BottomTabParamList,
-  JobsParamsList,
-  TabOneParamList,
-  TabTwoParamList,
-} from '../types';
+
+import { BottomTabParamList, JobsParamsList } from '../types';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 

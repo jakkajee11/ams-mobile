@@ -4,15 +4,12 @@ import _ from 'lodash';
 import Storages from '~utils/Storages';
 import { SearchQuery } from '~types/queries';
 import buildQueryString from '~utils/buildQueryString';
-import { DEFAULT_AXIOS_CONFIG } from '~constants/Config';
+import { APP_CONFIG, DEFAULT_AXIOS_CONFIG } from '~constants/Config';
 //axios.defaults.baseURL = 'https://api-dev.thjh-ams.com/api/'; //'https://49.49.241.176:5001/api/'; //process.env.REACT_APP_API_ENDPOINT;
-axios.defaults.baseURL = process.env.REACT_APP_API_ENDPOINT;
+//axios.defaults.baseURL = APP_CONFIG.apiEndpoint;
 //axios.defaults.headers.common['Authorization'] = 'Bearer ';
 
-console.log([
-  'process.env.REACT_APP_API_ENDPOINT  ',
-  process.env.REACT_APP_API_ENDPOINT,
-]);
+console.log(['APP_CONFIG.apiEndpoint', APP_CONFIG.apiEndpoint]);
 
 const CancelToken = axios.CancelToken;
 const source = CancelToken.source();
@@ -24,28 +21,12 @@ axios.interceptors.response.use(
   },
   (error: any) => {
     const response = error.response;
-    console.error(['interceptors.error', error]);
+    console.warn(['interceptors.error', error]);
     if (response && response.status === 401) {
       source.cancel(axiosCancelMessage);
-      // try to refresh token
-      axios
-        .post('v1/auth/token/refresh', { clientId: '', refreshToken: '' })
-        .then((res) => {
-          if (res.status === 200) {
-            Storages.saveUserToken(res.data).then((res) => {
-              console.log('userToken saved');
-              return Promise.resolve({
-                status: 200,
-                data: 'retry',
-                statusText: 'retry',
-              });
-            });
-          } else {
-            console.warn('refreshToken failed!');
-          }
-        });
+      return Promise.resolve(response);
     }
-    return Promise.reject(response);
+    return Promise.resolve({ status: 203, statusText: error });
   }
 );
 
@@ -75,7 +56,7 @@ export default function useApi(createNewInstance?: boolean) {
         // },
       };
     }
-    console.log(['getConfig', { ...DEFAULT_AXIOS_CONFIG, ...config }]);
+
     return { ...DEFAULT_AXIOS_CONFIG, ...config };
   };
 
@@ -91,7 +72,6 @@ export default function useApi(createNewInstance?: boolean) {
       return await instance.get(url);
     },
     get: async function (url: string, config?: AxiosRequestConfig) {
-      console.log(['get', url, config]);
       return await instance.get(url, getConfig(config));
     },
     post: async function (
@@ -99,7 +79,6 @@ export default function useApi(createNewInstance?: boolean) {
       data?: any,
       config?: AxiosRequestConfig
     ) {
-      console.log(['post', instance.defaults]);
       return await instance.post(url, data, getConfig(config));
     },
     put: async function (url: string, data?: any, config?: AxiosRequestConfig) {
