@@ -148,7 +148,7 @@ export default function JobsScreen({
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor='#ffb900' />
+      {/* <StatusBar backgroundColor='#ffb900' /> */}
       {/* <View style={{ backgroundColor: '#ffb900' }}>
         <Logo />
       </View> */}

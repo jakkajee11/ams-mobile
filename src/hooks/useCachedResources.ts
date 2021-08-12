@@ -8,7 +8,7 @@ import Storages from '~utils/Storages';
 
 export default function useCachedResources() {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false);
-  const { refreshToken } = useAuthApi();
+  const { signIn, refreshToken } = useAuthApi();
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
@@ -34,6 +34,31 @@ export default function useCachedResources() {
 
           if (res && res.status === 200 && res.data) {
             await Storages.saveUserToken(JSON.stringify(res.data));
+          }
+          // refresh token failed
+          // silent signin user
+          if (res && res.status === 203) {
+            const userName = await Storages.getString('@__ui$');
+            const password = await Storages.getString('@__us$');
+            if (
+              userName &&
+              userName.length > 0 &&
+              password &&
+              password.length > 0
+            ) {
+              const signInResult = await signIn({
+                clientId: APP_CONFIG.clientId,
+                userName,
+                password,
+              });
+              if (
+                signInResult &&
+                signInResult.status === 200 &&
+                signInResult.data
+              ) {
+                await Storages.saveUserToken(JSON.stringify(signInResult.data));
+              }
+            }
           }
         } else {
           console.warn('No token found, login required!!!');

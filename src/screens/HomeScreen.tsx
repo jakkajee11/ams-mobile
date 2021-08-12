@@ -11,8 +11,6 @@ import {
   View,
 } from 'react-native';
 import { Button, Icon, Input, Image } from 'react-native-elements';
-import { Divider } from 'react-native-elements/dist/divider/Divider';
-import useAuthApi from '~apis/useAuthApi';
 import Colors from '~constants/Colors';
 import Logo from '../components/shared/Logo';
 
@@ -21,15 +19,6 @@ import { RootStackParamList } from '../types';
 export default function HomeScreen({
   navigation,
 }: StackScreenProps<RootStackParamList, 'Home'>) {
-  const { refreshToken } = useAuthApi();
-  const _refreshToken = async () => {
-    const res = await refreshToken({
-      clientId: 'ams-mobile',
-      refreshToken:
-        '801538245229E1697C6BC7B2BCB49D09E6CEA6A13000DD610A1954C0DACA1C08',
-    });
-    console.log(['res', res]);
-  };
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor={Colors.yellow} />
@@ -46,31 +35,34 @@ export default function HomeScreen({
         }}
       >
         <Button
-          icon={
-            <Icon
-              name='qr-code-scanner'
-              type='MaterialIcons'
-              size={60}
-              color='white'
-            />
+          title={
+            <View
+              style={{
+                padding: 3,
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <Icon
+                name='qr-code-scanner'
+                type='MaterialIcons'
+                size={60}
+                color='white'
+              />
+              <Text
+                style={{
+                  marginLeft: 10,
+                  fontSize: 18,
+                  fontWeight: '600',
+                  color: 'white',
+                }}
+              >
+                Scan QR Code
+              </Text>
+            </View>
           }
-          title='Scan asset QR Code'
-          titleStyle={{ fontWeight: '600', fontSize: 18, marginLeft: 10 }}
-          onPress={() => navigation.navigate('ScanQRCodeFound')}
-        />
-
-        <Button
-          icon={
-            <Icon
-              name='qr-code-scanner'
-              type='MaterialIcons'
-              size={60}
-              color='white'
-            />
-          }
-          title='Scan asset QR Code (not found)'
-          titleStyle={{ fontWeight: '600', fontSize: 18, marginLeft: 10 }}
-          onPress={() => navigation.navigate('ScanQRCodeNotFound')}
+          onPress={() => navigation.navigate('ScanQRCode')}
         />
 
         <Button
@@ -115,7 +107,7 @@ export default function HomeScreen({
               }}
             >
               <Icon
-                name='tasks'
+                name='search'
                 type='font-awesome-5'
                 size={60}
                 color='white'
@@ -128,11 +120,11 @@ export default function HomeScreen({
                   color: 'white',
                 }}
               >
-                Refresh Token
+                Report Asset
               </Text>
             </View>
           }
-          onPress={_refreshToken}
+          onPress={() => navigation.navigate('ReportAsset')}
         />
       </View>
     </View>
@@ -142,9 +134,7 @@ export default function HomeScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffb900',
-    //alignItems: 'stretch',
-    //alignContent: 'flex-start',
+    backgroundColor: Colors.yellow,
     justifyContent: 'flex-start',
     padding: 10,
     opacity: 0.9,

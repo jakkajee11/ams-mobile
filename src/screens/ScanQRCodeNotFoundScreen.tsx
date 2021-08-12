@@ -18,7 +18,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Overlay, Button, Icon, Header, Image } from 'react-native-elements';
+import { Overlay, Button, Icon, Image } from 'react-native-elements';
+import Header from '~components/shared/Header';
 import Colors from '../constants/Colors';
 
 import { RootStackParamList } from '../types';
@@ -27,26 +28,28 @@ export default function ScanQRCodeFoundScreen({
   route,
   navigation,
 }: StackScreenProps<RootStackParamList, 'ScanQRCodeNotFound'>) {
-  const assetId = ''; //route.params.assetId;
+  const [assetId] = useState(route.params?.data ?? '');
 
   return (
     <>
-      <Header
+      {/* <Header
         leftComponent={{
-          icon: 'menu',
+          icon: 'angle-left',
           color: Colors.black,
           iconStyle: { color: Colors.black },
+          onPress: () => navigation.goBack()
         }}
         centerComponent={{ text: 'MY TITLE', style: { color: Colors.black } }}
-        rightComponent={{ icon: 'home', color: Colors.black }}
+        rightComponent={{ icon: 'home', type: '', color: Colors.black, onPress: () => navigation.navigate('Home') }}
         backgroundColor={Colors.yellow}
-      />
+      /> */}
+      <Header title={assetId} />
       <StatusBar backgroundColor={Colors.yellow} />
       <View style={styles.container}>
         <View style={styles.column}>
           <View>
             <Text style={{ ...styles.text, color: 'black' }}>
-              QR Code: QR-DUMMY01
+              QR Code: {assetId} / {route.params?.data}
             </Text>
             <Text style={{ ...styles.text, color: 'red' }}>NOT FOUND</Text>
             <Button

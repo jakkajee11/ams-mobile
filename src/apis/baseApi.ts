@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 import _ from 'lodash';
 import createInstance from '~apis/createInstance';
-axios.defaults.baseURL = process.env.REACT_APP_API_ENDPOINT;
+import { APP_CONFIG } from '~constants/Config';
+axios.defaults.baseURL = APP_CONFIG.apiEndpoint;
 axios.defaults.headers.common['Authorization'] = 'Bearer ';
 
 axios.interceptors.response.use(

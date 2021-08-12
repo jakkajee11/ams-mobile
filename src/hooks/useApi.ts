@@ -5,11 +5,8 @@ import Storages from '~utils/Storages';
 import { SearchQuery } from '~types/queries';
 import buildQueryString from '~utils/buildQueryString';
 import { APP_CONFIG, DEFAULT_AXIOS_CONFIG } from '~constants/Config';
+import createInstance from '~apis/createInstance';
 //axios.defaults.baseURL = 'https://api-dev.thjh-ams.com/api/'; //'https://49.49.241.176:5001/api/'; //process.env.REACT_APP_API_ENDPOINT;
-//axios.defaults.baseURL = APP_CONFIG.apiEndpoint;
-//axios.defaults.headers.common['Authorization'] = 'Bearer ';
-
-console.log(['APP_CONFIG.apiEndpoint', APP_CONFIG.apiEndpoint]);
 
 const CancelToken = axios.CancelToken;
 const source = CancelToken.source();
@@ -20,8 +17,8 @@ axios.interceptors.response.use(
     return response;
   },
   (error: any) => {
-    const response = error.response;
     console.warn(['interceptors.error', error]);
+    const response = error.response;
     if (response && response.status === 401) {
       source.cancel(axiosCancelMessage);
       return Promise.resolve(response);
@@ -30,8 +27,8 @@ axios.interceptors.response.use(
   }
 );
 
-export default function useApi(createNewInstance?: boolean) {
-  const instance = !!createNewInstance ? axios.create() : axios;
+export default function useApi() {
+  const instance = createInstance();
   const [token, setToken] = useState<string | null>(null);
 
   const setBearer = async () => {
@@ -51,9 +48,9 @@ export default function useApi(createNewInstance?: boolean) {
     if (token) {
       return {
         ...config,
-        // headers: {
-        //   Authorization: `Bearer ${token}`,
-        // },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       };
     }
 

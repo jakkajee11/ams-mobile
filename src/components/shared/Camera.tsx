@@ -205,7 +205,7 @@ export default function Camera({
           <TouchableOpacity
             onPress={takePicture}
             style={{ alignSelf: 'center' }}
-            disabled={!cameraReady}
+            //disabled={!cameraReady}
           >
             {saving && <Text style={{ color: 'white' }}>กำลังบันทึกภาพ</Text>}
             {!saving && (

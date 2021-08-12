@@ -4,3 +4,11 @@ export type AssetModel = {
   assetStatusName: string;
   createdAt: string;
 };
+
+export type ReportAssetModel = {
+  assetId: string;
+  location: string;
+  subLocation?: string;
+  details?: string;
+  attachments?: string[];
+};

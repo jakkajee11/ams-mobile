@@ -16,12 +16,16 @@ export type AuthStackParamList = {
   Root: undefined;
 };
 
+export type QRCodeScanResultModel = {
+  data: string;
+};
+
 export type RootStackParamList = {
   Auth: undefined;
   Home: undefined;
   ScanQRCode: undefined;
-  ScanQRCodeFound: undefined;
-  ScanQRCodeNotFound: undefined;
+  ScanQRCodeFound: QRCodeScanResultModel | undefined;
+  ScanQRCodeNotFound: QRCodeScanResultModel | undefined;
   ReportAsset: any;
   Jobs: undefined;
   JobDetails: JobModel;

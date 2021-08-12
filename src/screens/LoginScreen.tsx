@@ -44,10 +44,14 @@ export default function LoginScreen({
         userName,
         password,
       });
+      console.log(['login ß', res, userName, password, clientId]);
+      if (res && res.status === 200 && res.data) {
+        await Storages.saveUserToken(JSON.stringify(res.data));
+        await Storages.saveUserName(userName);
+        await Storages.saveUserSecret(password);
 
-      await Storages.saveUserToken(JSON.stringify(res.data));
-
-      navigation.navigate('Root');
+        navigation.navigate('Root');
+      }
     }
     setLoading(false);
   };
@@ -94,7 +98,7 @@ export default function LoginScreen({
           icon={<Icon name='login' type='Feather' size={28} color='white' />}
           title='Login'
           titleStyle={{ fontWeight: '600', fontSize: 18, marginLeft: 10 }}
-          loading={loading}
+          loading={false}
           onPress={login}
         />
 

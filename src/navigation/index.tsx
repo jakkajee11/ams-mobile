@@ -12,7 +12,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { ColorSchemeName } from 'react-native';
-import { Header, Text } from 'react-native-elements';
+import { Text } from 'react-native-elements';
+import Header from '~components/shared/Header';
 import useAuth from '~hooks/useAuth';
 import ForgotPasswordScreen from '~screens/ForgotPasswordScreen';
 import LoginScreen from '~screens/LoginScreen';
@@ -28,6 +29,7 @@ import ScanQRCodeNotFoundScreen from '../screens/ScanQRCodeNotFoundScreen';
 import { AppStackParamList, RootStackParamList } from '../types';
 import AuthNavigator from './AuthNavigator';
 import BottomTabNavigator from './BottomTabNavigator';
+import HomeStackNavigator from './HomeStackNavigator';
 import LinkingConfiguration from './LinkingConfiguration';
 import RootStackNavigator from './RootStackNavigator';
 
@@ -95,16 +97,19 @@ function AppNavigator() {
 
 function RootNavigator() {
   return (
-    <Stack.Navigator headerMode='screen'>
+    <Stack.Navigator headerMode='screen' screenOptions={{ headerShown: false }}>
       <Stack.Screen
         name='Home'
-        component={HomeScreen}
-        options={{ header: () => <Header backgroundColor={Colors.black} /> }}
+        component={HomeStackNavigator}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name='Jobs'
         component={BottomTabNavigator}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: false,
+          title: 'My Jobs',
+        }}
       />
       <Stack.Screen
         name='NotFound'

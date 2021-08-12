@@ -43,6 +43,9 @@ export default function BottomTabNavigator() {
         component={JobsNavigator}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name='tasks' color={color} />,
+          // tabBarBadge: 5,
+          // tabBarBadgeStyle: { marginLeft: 5, padding: 0 },
+          title: 'My Jobs',
         }}
       />
       <BottomTab.Screen
@@ -50,6 +53,7 @@ export default function BottomTabNavigator() {
         component={ScanQRCodeScreen}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name='qrcode' color={color} />,
+          title: 'Scan QRCode',
         }}
       />
 
@@ -75,38 +79,6 @@ function TabBarIcon(props: {
 
 // Each tab has its own navigation stack, you can read more about this pattern here:
 // https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
-const TabOneStack = createStackNavigator<TabOneParamList>();
-
-function TabOneNavigator() {
-  return (
-    <TabOneStack.Navigator>
-      <TabOneStack.Screen
-        name='TabOneScreen'
-        component={TabOneScreen}
-        options={{
-          headerTitle: 'Tab One Title',
-          //headerBackTitleStyle: { backgroundColor: Colors.white },
-          headerTitleStyle: { color: Colors.white },
-          headerStyle: { backgroundColor: Colors.black },
-        }}
-      />
-    </TabOneStack.Navigator>
-  );
-}
-
-const TabTwoStack = createStackNavigator<TabTwoParamList>();
-
-function TabTwoNavigator() {
-  return (
-    <TabTwoStack.Navigator>
-      <TabTwoStack.Screen
-        name='TabTwoScreen'
-        component={TabTwoScreen}
-        options={{ headerTitle: 'Tab Two Title' }}
-      />
-    </TabTwoStack.Navigator>
-  );
-}
 
 const JobsStack = createStackNavigator<JobsParamsList>();
 function JobsNavigator() {
@@ -119,7 +91,11 @@ function JobsNavigator() {
         headerTitleStyle: { color: Colors.black, textAlign: 'auto' },
       }}
     >
-      <JobsStack.Screen name='Jobs' component={JobsScreen} />
+      <JobsStack.Screen
+        name='Jobs'
+        component={JobsScreen}
+        options={{ title: 'My Jobs' }}
+      />
       <JobsStack.Screen
         name='JobDetails'
         component={JobDetailsScreen}

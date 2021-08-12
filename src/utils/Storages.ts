@@ -37,6 +37,15 @@ const Storages = {
     await AsyncStorage.setItem(userTokenKey, userToken);
   },
 
+  async saveUserName(userName: string) {
+    await AsyncStorage.setItem('@__ui$', userName);
+  },
+
+  async saveUserSecret(userSecret: string) {
+    // todo: encrypt _us
+    await AsyncStorage.setItem('@__us$', userSecret);
+  },
+
   async remove(key: string) {
     await AsyncStorage.removeItem(key);
   },
