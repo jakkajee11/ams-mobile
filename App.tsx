@@ -11,7 +11,7 @@ import { ThemeProvider } from 'react-native-elements';
 import Colors from './src/constants/Colors';
 
 export default function App() {
-  const isLoadingComplete = useCachedResources();
+  const { isLoadingComplete, isUserLoggedIn } = useCachedResources();
   const colorScheme = useColorScheme();
 
   const theme = {
@@ -49,7 +49,10 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <ThemeProvider theme={theme}>
-          <Navigation colorScheme={colorScheme} />
+          <Navigation
+            colorScheme={colorScheme}
+            isUserLoggedIn={isUserLoggedIn}
+          />
           <StatusBar />
         </ThemeProvider>
       </SafeAreaProvider>

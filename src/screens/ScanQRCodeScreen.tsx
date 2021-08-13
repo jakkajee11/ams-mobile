@@ -47,14 +47,13 @@ export default function ScanQRCodeScreen({
     data,
     cornerPoints,
   }: BarCodeScanningResult) => {
-    console.log(['handleBarCodeScanned', type, data, cornerPoints]);
     setScannedResult(data);
     closeCamera();
     // check asset in system
     setLoading(true);
     const res = await getAssetInfo(data);
     if (res && res.status === 200 && res.data) {
-      navigation.navigate('ScanQRCodeFound', { data });
+      navigation.navigate('ScanQRCodeFound', { data: res.data });
     } else {
       navigation.navigate('ScanQRCodeNotFound', { data });
     }

@@ -39,7 +39,7 @@ export default function SettingsScreen({
     if (res && res.status === 200) {
       await Storages.removeUserToken();
     }
-    navigation.navigate('Login');
+    navigation.navigate('Auth');
     setLoading(false);
   };
 

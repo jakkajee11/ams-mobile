@@ -5,9 +5,12 @@ import * as React from 'react';
 import useAuthApi from '~apis/useAuthApi';
 import { APP_CONFIG } from '~constants/Config';
 import Storages from '~utils/Storages';
+import useAuth from './useAuth';
 
 export default function useCachedResources() {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false);
+  const [isUserLoggedIn, setIsUserLoggedIn] = React.useState(false);
+
   const { signIn, refreshToken } = useAuthApi();
 
   // Load any resources or data that we need prior to rendering the app
@@ -63,6 +66,7 @@ export default function useCachedResources() {
         } else {
           console.warn('No token found, login required!!!');
         }
+        setIsUserLoggedIn(userToken && !!userToken.access_token);
         setLoadingComplete(true);
         SplashScreen.hideAsync();
       }
@@ -71,5 +75,8 @@ export default function useCachedResources() {
     loadResourcesAndDataAsync();
   }, []);
 
-  return isLoadingComplete;
+  return {
+    isLoadingComplete,
+    isUserLoggedIn,
+  };
 }

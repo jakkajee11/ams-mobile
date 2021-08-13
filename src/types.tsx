@@ -3,6 +3,7 @@
  * https://reactnavigation.org/docs/typescript/
  */
 
+import { AssetDetailModel, AssetModel } from '~types/assets';
 import { JobAssetModel, JobModel } from './types/jobs';
 
 export type AppStackParamList = {
@@ -16,7 +17,11 @@ export type AuthStackParamList = {
   Root: undefined;
 };
 
-export type QRCodeScanResultModel = {
+export type QRCodeFoundModel = {
+  data: AssetDetailModel;
+};
+
+export type QRCodeNotFoundModel = {
   data: string;
 };
 
@@ -24,8 +29,8 @@ export type RootStackParamList = {
   Auth: undefined;
   Home: undefined;
   ScanQRCode: undefined;
-  ScanQRCodeFound: QRCodeScanResultModel | undefined;
-  ScanQRCodeNotFound: QRCodeScanResultModel | undefined;
+  ScanQRCodeFound: QRCodeFoundModel | undefined;
+  ScanQRCodeNotFound: QRCodeNotFoundModel | undefined;
   ReportAsset: any;
   Jobs: undefined;
   JobDetails: JobModel;
@@ -33,6 +38,7 @@ export type RootStackParamList = {
 };
 
 export type BottomTabParamList = {
+  Auth: undefined;
   Home: undefined;
   MyJobs: undefined;
   ScanQRCode: undefined;

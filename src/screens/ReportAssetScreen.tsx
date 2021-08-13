@@ -41,6 +41,7 @@ import useUploadApi from '~apis/useUploadApi';
 import Camera from '~components/shared/Camera';
 import { ReportAssetModel } from '~types/assets';
 import { UploadFileBase64Model } from '~types/fileUploads';
+import extractFileName from '~utils/extractFileName';
 import Colors from '../constants/Colors';
 import baseStyles from '../styles/baseStyles';
 
@@ -77,16 +78,6 @@ export default function ReportAssetScreen({
     const res = await reportAssetLocation(data);
 
     if (res && res.status === 200) {
-      // upload files
-      // attachments.map((img) => {
-      //   if (img.uri && img.base64)
-      //     uploadFile({
-      //       id,
-      //       fileName: extractFileName(img.uri),
-      //       base64: `data:image/jpg;base64,${img.base64}`,
-      //     });
-      // });
-
       Alert.alert('Success', 'Asset was successfully reported');
       reset();
     } else {
@@ -141,10 +132,6 @@ export default function ReportAssetScreen({
         setUploadErrors([...uploadErrors, extractFileName(photo.uri)]);
       }
     }
-  };
-
-  const extractFileName = (uri: string) => {
-    return _.last(uri.split('/')) ?? '';
   };
 
   const reset = () => {

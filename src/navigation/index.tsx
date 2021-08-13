@@ -10,40 +10,26 @@ import {
 } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
 import { ColorSchemeName } from 'react-native';
-import { Text } from 'react-native-elements';
-import Header from '~components/shared/Header';
-import useAuth from '~hooks/useAuth';
-import ForgotPasswordScreen from '~screens/ForgotPasswordScreen';
-import LoginScreen from '~screens/LoginScreen';
-import Colors from '../constants/Colors';
-import HomeScreen from '../screens/HomeScreen';
-import JobDetailsScreen from '../screens/JobDetailsScreen';
-import JobsScreen from '../screens/JobsScreen';
-
 import NotFoundScreen from '../screens/NotFoundScreen';
-import ReportAssetScreen from '../screens/ReportAssetScreen';
-import ScanQRCodeFoundScreen from '../screens/ScanQRCodeFoundScreen';
-import ScanQRCodeNotFoundScreen from '../screens/ScanQRCodeNotFoundScreen';
-import { AppStackParamList, RootStackParamList } from '../types';
 import AuthNavigator from './AuthNavigator';
 import BottomTabNavigator from './BottomTabNavigator';
 import HomeStackNavigator from './HomeStackNavigator';
 import LinkingConfiguration from './LinkingConfiguration';
-import RootStackNavigator from './RootStackNavigator';
 
 export default function Navigation({
   colorScheme,
+  isUserLoggedIn,
 }: {
   colorScheme: ColorSchemeName;
+  isUserLoggedIn: boolean;
 }) {
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
     >
-      <AppNavigator />
+      <AppNavigator isLoggedIn={isUserLoggedIn} />
     </NavigationContainer>
   );
 }
@@ -53,44 +39,14 @@ export default function Navigation({
 //const Stack = createStackNavigator<AppStackParamList>();
 const Stack = createStackNavigator();
 
-const authScreens = {
-  Login: { screen: LoginScreen, options: {} }, //LoginScreen,
-  ForgotPassword: { screen: ForgotPasswordScreen, options: {} }, //ForgotPasswordScreen,
-};
-
-const rootScreens = {
-  // Home: { screen: HomeScreen, options: {} },
-  // Jobs: BottomTabNavigator,
-  // NotFound: NotFoundScreen,
-  Home: { screen: HomeScreen, options: {} },
-  Jobs: { screen: BottomTabNavigator, options: {} },
-  NotFound: { screen: NotFoundScreen, options: {} },
-};
-
-function AppNavigator() {
-  const { isLoggedIn } = useAuth();
-  const [userLoggedIn, setUserLoggedIn] = useState(false);
-
-  useEffect(() => {
-    (async function () {
-      const loggedIn = await isLoggedIn();
-      setUserLoggedIn(loggedIn);
-    })();
-  }, []);
-
+function AppNavigator(isLoggedIn: { isLoggedIn: boolean }) {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      screenOptions={{ headerShown: false }}
+      initialRouteName={isLoggedIn ? 'Root' : 'Auth'}
+    >
       <Stack.Screen name='Auth' component={AuthNavigator} />
       <Stack.Screen name='Root' component={RootNavigator} />
-      {/* {Object.entries({ ...(userLoggedIn ? rootScreens : authScreens) }).map(
-        ([key, component]) => (
-          <Stack.Screen
-            name={key}
-            component={component.screen}
-            options={component.options}
-          />
-        )
-      )} */}
     </Stack.Navigator>
   );
 }
@@ -119,44 +75,3 @@ function RootNavigator() {
     </Stack.Navigator>
   );
 }
-// function RootNavigator() {
-//   return (
-//     <Stack.Navigator
-//       screenOptions={{ headerShown: false }}
-//       initialRouteName='Auth'
-//     >
-//       <Stack.Screen name='Auth' component={AuthNavigator} />
-//       <Stack.Screen
-//         name='Home'
-//         component={HomeScreen}
-//         options={{ header: undefined }}
-//       />
-//       <Stack.Screen name='ScanQRCodeFound' component={ScanQRCodeFoundScreen} />
-//       <Stack.Screen
-//         name='ScanQRCodeNotFound'
-//         component={ScanQRCodeNotFoundScreen}
-//         options={{
-//           header: () => (
-//             <Header
-//               leftComponent={{
-//                 icon: 'menu',
-//                 color: '#fff',
-//                 iconStyle: { color: '#fff' },
-//               }}
-//               centerComponent={{ text: 'MY TITLE', style: { color: '#fff' } }}
-//               rightComponent={{ icon: 'home', color: '#fff' }}
-//             />
-//           ),
-//         }}
-//       />
-//       <Stack.Screen name='ReportAsset' component={ReportAssetScreen} />
-//       <Stack.Screen name='Jobs' component={BottomTabNavigator} />
-//       <Stack.Screen name='JobDetails' component={JobDetailsScreen} />
-//       <Stack.Screen
-//         name='NotFound'
-//         component={NotFoundScreen}
-//         options={{ title: 'Oops!' }}
-//       />
-//     </Stack.Navigator>
-//   );
-// }
