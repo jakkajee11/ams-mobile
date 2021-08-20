@@ -35,10 +35,13 @@ export default function SettingsScreen({
 
   const logout = async () => {
     setLoading(true);
-    const res = await signOut({ clientId: APP_CONFIG.clientId, token });
-    if (res && res.status === 200) {
-      await Storages.removeUserToken();
-    }
+    // console.log(['token', token]);
+    // const res = await signOut({ clientId: APP_CONFIG.clientId, token });
+    // console.log(['logout', res.status]);
+    // if (res && res.status === 200) {
+    //   await Storages.removeUserToken();
+    // }
+    await Storages.removeUserToken();
     navigation.navigate('Auth');
     setLoading(false);
   };

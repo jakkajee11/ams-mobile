@@ -49,8 +49,6 @@ const createResponse = async (
 
 const baseApi = {
   get: async function (url: string, config?: AxiosRequestConfig) {
-    console.log('api.get', url);
-    var r = await instance.get(url, config);
     return createResponse(await instance.get(url, config));
   },
   post: async function (url: string, data?: any, config?: AxiosRequestConfig) {

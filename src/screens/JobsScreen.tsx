@@ -2,7 +2,7 @@ import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { StackScreenProps } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import {
   Button,
@@ -13,8 +13,6 @@ import {
   TabView,
   ListItem,
 } from 'react-native-elements';
-import { Divider } from 'react-native-elements/dist/divider/Divider';
-import Logo from '../components/shared/Logo';
 import Job from '../components/jobs/Job';
 
 import {
@@ -22,136 +20,83 @@ import {
   JobsParamsList,
   RootStackParamList,
 } from '../types';
-import { JobModel } from '../types/jobs';
+import { JobModel, JobQuery } from '../types/jobs';
+import useJobApi from '~apis/useJobApi';
+import { JOB_STATUS } from '~constants/Status';
+import Loading from '~components/shared/Loading';
 
 export default function JobsScreen({
   navigation,
 }: StackScreenProps<JobsParamsList, 'Jobs'>) {
+  const { getPendingJobs, getWorkingJobs, getCompletedJobs } = useJobApi();
   const [index, setIndex] = useState(0);
-
-  const pendingJobs = [
-    {
-      id: '1',
-      jobNumber: 'jhth-p01',
-      dueDate: '2021-07-01',
-      assets: [
-        {
-          key: '1',
-          id: '1',
-          assetId: 'a01',
-          assetStatusName: 'New',
-          createdAt: '2021-01-01',
-        },
-        {
-          key: '2',
-          id: '2',
-          assetId: 'a02',
-          assetStatusName: 'New',
-          createdAt: '2021-01-01',
-        },
-        {
-          key: '3',
-          id: '3',
-          assetId: 'a03',
-          assetStatusName: 'In Stock',
-          createdAt: '2021-01-01',
-        },
-      ],
-    },
-    {
-      id: '2',
-      jobNumber: 'jhth-p02',
-      dueDate: '2021-07-02',
-    },
-    {
-      id: '3',
-      jobNumber: 'jhth-p03',
-      dueDate: '2021-07-03',
-    },
-  ];
-
-  const workingJobs = [
-    {
-      id: '1',
-      jobNumber: 'jhth-w01',
-      dueDate: '2021-07-01',
-    },
-    {
-      id: '2',
-      jobNumber: 'jhth-w02',
-      dueDate: '2021-07-02',
-    },
-    {
-      id: '3',
-      jobNumber: 'jhth-w03',
-      dueDate: '2021-07-03',
-    },
-    {
-      id: '4',
-      jobNumber: 'jhth-w04',
-      dueDate: '2021-07-04',
-    },
-  ];
-
-  const completedJobs = [
-    {
-      id: '1',
-      jobNumber: 'jhth-c01',
-      dueDate: '2021-07-01',
-    },
-    {
-      id: '2',
-      jobNumber: 'jhth-c02',
-      dueDate: '2021-07-02',
-    },
-    {
-      id: '3',
-      jobNumber: 'jhth-c03',
-      dueDate: '2021-07-03',
-    },
-    {
-      id: '4',
-      jobNumber: 'jhth-c04',
-      dueDate: '2021-07-04',
-    },
-    {
-      id: '5',
-      jobNumber: 'jhth-c05',
-      dueDate: '2021-07-05',
-    },
-  ];
+  // const [pendingJobs, setPendingJobs] = useState<JobModel[]>([]);
+  // const [workingJobs, setWorkingJobs] = useState<JobModel[]>([]);
+  // const [completedJobs, setCompletedJobs] = useState<JobModel[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [jobs, setJobs] = useState<{ [key: string]: JobModel[] }>({});
 
   const PendingTitle = (
     <Text style={styles.title}>
-      Pending{'\n'}
-      (10)
+      Pending{'\n'}({jobs[JOB_STATUS.Pending]?.length ?? 0})
     </Text>
   );
   const WorkingTitle = (
     <Text style={styles.title}>
-      Working{'\n'}
-      (20)
+      Working{'\n'}({jobs[JOB_STATUS.InProgress]?.length ?? 0})
     </Text>
   );
 
   const CompletedTitle = (
     <Text style={styles.title}>
-      Completed{'\n'}
-      (30)
+      Completed{'\n'}({jobs[JOB_STATUS.Completed]?.length ?? 0})
     </Text>
   );
 
   const handleJobItemPress = (job: JobModel) => {
-    console.log(['handleJobItemPress', job]);
     navigation.navigate('JobDetails', job);
   };
 
+  const prepareData = async () => {
+    setLoading(true);
+    const query: JobQuery = {
+      page: 0, // no pagination
+      size: 10,
+      status: 0,
+      startDate: '2021-07-01',
+      endDate: '2021-12-31',
+    };
+    const [pending, working, completed] = await Promise.all([
+      getPendingJobs({ ...query, status: JOB_STATUS.Pending }),
+      getWorkingJobs({ ...query, status: JOB_STATUS.InProgress }),
+      getCompletedJobs({ ...query, status: JOB_STATUS.Completed }),
+    ]);
+
+    let myJobs: { [key: number]: JobModel[] } = {};
+
+    if (pending && pending.status === 200 && pending.data) {
+      //setPendingJobs(pending.data);
+      myJobs[JOB_STATUS.Pending] = pending.data.records;
+    }
+    if (working && working.status === 200 && working.data) {
+      //setWorkingJobs(working.data);
+      myJobs[JOB_STATUS.InProgress] = working.data.records;
+    }
+    if (completed && completed.status === 200 && completed.data) {
+      //setCompletedJobs(completed.data);
+      myJobs[JOB_STATUS.Completed] = completed.data.records;
+    }
+
+    setJobs(myJobs);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    prepareData();
+  }, []);
+
   return (
     <View style={styles.container}>
-      {/* <StatusBar backgroundColor='#ffb900' /> */}
-      {/* <View style={{ backgroundColor: '#ffb900' }}>
-        <Logo />
-      </View> */}
       <View style={{ padding: 0, height: '100%' }}>
         <Tab value={index} onChange={setIndex} variant={'primary'}>
           <Tab.Item
@@ -174,7 +119,8 @@ export default function JobsScreen({
         <TabView value={index} onChange={setIndex}>
           <TabView.Item style={styles.tabViewItem}>
             <View>
-              {pendingJobs.map((job) => (
+              {loading && <Loading loading={loading} />}
+              {jobs[JOB_STATUS.Pending]?.map((job) => (
                 <Job
                   key={job.id}
                   data={job}
@@ -185,7 +131,7 @@ export default function JobsScreen({
           </TabView.Item>
           <TabView.Item style={styles.tabViewItem}>
             <View>
-              {workingJobs.map((job) => (
+              {jobs[JOB_STATUS.InProgress]?.map((job) => (
                 <Job
                   key={job.id}
                   data={job}
@@ -196,7 +142,7 @@ export default function JobsScreen({
           </TabView.Item>
           <TabView.Item style={styles.tabViewItem}>
             <View>
-              {completedJobs.map((job) => (
+              {jobs[JOB_STATUS.Completed]?.map((job) => (
                 <Job
                   key={job.id}
                   data={job}
@@ -213,11 +159,6 @@ export default function JobsScreen({
 
 const styles = StyleSheet.create({
   container: {
-    //flex: 1,
-    //backgroundColor: '#ffb900',
-    //alignItems: 'stretch',
-    //alignContent: 'flex-start',
-    //justifyContent: 'flex-start',
     padding: 0,
     opacity: 0.9,
   },

@@ -7,6 +7,7 @@ import { Ionicons, FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
+import AssetDetailsScreen from '~screens/AssetDetailsScreen';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
@@ -108,8 +109,8 @@ function JobsNavigator() {
         }}
       />
       <JobsStack.Screen
-        name='JobAssetDetails'
-        component={JobAssetDetailsScreen}
+        name='AssetDetails'
+        component={AssetDetailsScreen}
         options={{
           headerTitle: 'Asset Details',
           headerTitleStyle: { color: Colors.black, textAlign: 'auto' },

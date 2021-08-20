@@ -43,7 +43,7 @@ export default function ScanQRCodeFoundScreen({
         rightComponent={{ icon: 'home', type: '', color: Colors.black, onPress: () => navigation.navigate('Home') }}
         backgroundColor={Colors.yellow}
       /> */}
-      <Header title={assetId} />
+      {/* <Header title={assetId} /> */}
       <StatusBar backgroundColor={Colors.yellow} />
       <View style={styles.container}>
         <View style={styles.column}>
@@ -52,21 +52,20 @@ export default function ScanQRCodeFoundScreen({
               QR Code: {assetId} / {route.params?.data}
             </Text>
             <Text style={{ ...styles.text, color: 'red' }}>NOT FOUND</Text>
-            <Button
-              icon={
-                <Icon
-                  name='clipboard'
-                  type='font-awesome-5'
-                  size={28}
-                  color='white'
-                />
-              }
-              title=' Report this item'
-              onPress={() => navigation.navigate('ReportAsset', 'x-code')}
-            />
           </View>
         </View>
-
+        {/* <Button
+          icon={
+            <Icon
+              name='clipboard'
+              type='font-awesome-5'
+              size={28}
+              color='white'
+            />
+          }
+          title=' Report this item'
+          onPress={() => navigation.navigate('ReportAsset', 'x-code')}
+        /> */}
         <View
           style={{
             width: '100%',
@@ -75,7 +74,7 @@ export default function ScanQRCodeFoundScreen({
             flex: 0.5,
           }}
         >
-          {/* <Button
+          <Button
             icon={
               <Icon
                 name='clipboard'
@@ -85,7 +84,10 @@ export default function ScanQRCodeFoundScreen({
               />
             }
             title=' Report this item'
-          /> */}
+            onPress={() =>
+              navigation.navigate('ReportAsset', { assetId: 'DUMMY01' })
+            }
+          />
         </View>
       </View>
     </>

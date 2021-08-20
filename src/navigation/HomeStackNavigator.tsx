@@ -42,7 +42,7 @@ export default function HomeStackNavigator() {
       <Stack.Screen
         name='ScanQRCodeNotFound'
         component={ScanQRCodeNotFoundScreen}
-        options={{ headerShown: false }}
+        options={{ header: () => <Header title='NOT FOUND' /> }}
       />
     </Stack.Navigator>
   );

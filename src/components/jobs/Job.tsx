@@ -1,5 +1,6 @@
 import React from 'react';
-import { ListItem, Icon } from 'react-native-elements';
+import { ListItem, Icon, Text } from 'react-native-elements';
+import { DateTimeFormat } from '~utils/format';
 import { JobModel } from '../../types/jobs';
 
 interface JobItemProps {
@@ -18,7 +19,9 @@ export default function Job({ data, onPress }: JobItemProps) {
     <ListItem key={id} bottomDivider onPress={handleOnPress}>
       <ListItem.Content>
         <ListItem.Title>
-          {jobNumber} {dueDate}
+          <Text>
+            {jobNumber} {DateTimeFormat.toStandardDateTime(dueDate)}
+          </Text>
         </ListItem.Title>
       </ListItem.Content>
       <ListItem.Chevron name='chevron-right' type='font-awesome-5' />

@@ -29,12 +29,13 @@ export default function useCachedResources() {
         console.warn(e);
       } finally {
         const userToken = await Storages.getUserToken();
+        //console.log(['userToken', userToken]);
         if (userToken) {
           const res = await refreshToken({
             clientId: APP_CONFIG.clientId,
             refreshToken: userToken.refresh_token,
           });
-
+          //console.log(['refresh', res.status]);
           if (res && res.status === 200 && res.data) {
             await Storages.saveUserToken(JSON.stringify(res.data));
           }

@@ -7,7 +7,6 @@ export default function useAuthApi() {
 
   const signIn = async (model: LoginModel) => {
     const url = `${endpoint}/login`;
-    console.log(['signIN', url, model]);
     return await post(url, model);
   };
 

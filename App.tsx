@@ -41,6 +41,11 @@ export default function App() {
     StatusBar: {
       backgroundColor: Colors.yellow,
     },
+    Text: {
+      style: {
+        fontSize: 14,
+      },
+    },
   };
 
   if (!isLoadingComplete) {

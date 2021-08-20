@@ -1,6 +1,5 @@
 import React from 'react';
-import { ListItem, Icon } from 'react-native-elements';
-import { AssetModel } from '../../types/assets';
+import { ListItem } from 'react-native-elements';
 import { JobAssetModel } from '../../types/jobs';
 
 interface JobAssetProps {
@@ -9,7 +8,7 @@ interface JobAssetProps {
 }
 
 export default function JobAsset({
-  data: { key, id, jobAssetStatusName, assetId },
+  data: { key, location, assetTypeName, assetId },
   onPress,
 }: JobAssetProps) {
   const handleOnPress = () => {
@@ -19,7 +18,7 @@ export default function JobAsset({
     <ListItem key={key} bottomDivider onPress={handleOnPress}>
       <ListItem.Content>
         <ListItem.Title style={{ fontSize: 12 }}>
-          {assetId} {jobAssetStatusName} {assetId}
+          {assetTypeName} / {assetId} / {location}
         </ListItem.Title>
       </ListItem.Content>
       <ListItem.Chevron name='x-circle' type='feather' color='red' />

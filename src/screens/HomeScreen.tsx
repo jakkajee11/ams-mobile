@@ -62,7 +62,7 @@ export default function HomeScreen({
               </Text>
             </View>
           }
-          onPress={() => navigation.navigate('ScanQRCodeFound')}
+          onPress={() => navigation.navigate('ScanQRCodeNotFound')}
         />
 
         <Button

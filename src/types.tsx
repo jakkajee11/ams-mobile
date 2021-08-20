@@ -45,10 +45,14 @@ export type BottomTabParamList = {
   Settings: undefined;
 };
 
+type AssetDetailParams = {
+  assetId: string;
+};
 export type JobsParamsList = {
   Jobs: undefined;
   JobDetails: JobModel;
   JobAssetDetails: JobAssetModel;
+  AssetDetails: AssetDetailParams;
 };
 
 export type AllParamList = AppStackParamList &

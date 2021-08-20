@@ -52,6 +52,8 @@ const Storages = {
 
   async removeUserToken() {
     await this.remove(userTokenKey);
+    await this.remove('@__ui$');
+    await this.remove('@__us$');
   },
 };
 

@@ -1,5 +1,5 @@
 export const DEFAULT_AXIOS_CONFIG = {
-  baseUrl: process.env.API_ENDPOINT,
+  baseURL: process.env.API_ENDPOINT,
 };
 
 export const APP_CONFIG = {

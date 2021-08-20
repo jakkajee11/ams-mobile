@@ -13,6 +13,7 @@ const Stack = createStackNavigator<AuthStackParamList>();
 export default function AuthNavigator() {
   return (
     <Stack.Navigator
+      initialRouteName='Login'
       screenOptions={{
         //header: () => <Header backgroundColor={Colors.yellow} />,
         headerShown: true,

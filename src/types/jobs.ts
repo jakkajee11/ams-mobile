@@ -1,9 +1,9 @@
-import { AssetModel } from './assets';
-
 export type JobModel = {
   id: string;
   jobNumber: string;
   jobStatusId: number;
+  jobStatusName: string;
+  jobProgressId: number;
   assigneeId?: string;
   assignerId?: string;
   dueDate: string;
@@ -13,26 +13,37 @@ export type JobModel = {
   subLocation?: string;
   assets: JobAssetModel[];
   createdAt: string;
+  startedAt?: string;
+  stoppedAt?: string;
   createdUserId?: string;
   modifiedUserId?: string;
 };
 
 export type JobAssetModel = {
   key: string;
-  id: string;
-  // jobAssetStatusId: number;
+  jobAssetStatusId: number;
   jobAssetStatusName: string;
   assetId: string;
-  // assetTypeId: string;
-  // costCenterId: string;
-  // assetStatusId: string;
-  // details: string;
-  // location: string;
-  // subLocation?: string;
-  // yearOfManufacture?: number;
-  // warrantyEndAt?: string;
-  // assetClassId?: string;
-  // serialNo?: boolean;
-  // assetNo?: string;
-  // others?: string;
+  assetTypeId: string;
+  assetTypeName: string;
+  costCenterId: string;
+  assetStatusId: string;
+  details: string;
+  location: string;
+  subLocation?: string;
+  yearOfManufacture?: number;
+  warrantyEndAt?: string;
+  assetClassId?: string;
+  serialNo?: boolean;
+  assetNo?: string;
+  others?: string;
+};
+
+export type JobQuery = {
+  status: number;
+  page: number;
+  size: number;
+  startDate: string;
+  endDate: string;
+  //assigneeId: string;
 };

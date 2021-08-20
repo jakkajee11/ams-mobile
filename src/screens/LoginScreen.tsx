@@ -44,7 +44,7 @@ export default function LoginScreen({
         userName,
         password,
       });
-      console.log(['login ß', res, userName, password, clientId]);
+
       if (res && res.status === 200 && res.data) {
         await Storages.saveUserToken(JSON.stringify(res.data));
         await Storages.saveUserName(userName);

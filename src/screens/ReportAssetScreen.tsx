@@ -7,7 +7,7 @@ import {
   CameraCapturedPicture,
   Camera as ExpoCamera,
 } from 'expo-camera';
-import _, { uniqueId } from 'lodash';
+import _ from 'lodash';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import {
@@ -53,7 +53,7 @@ export default function ReportAssetScreen({
 }: StackScreenProps<RootStackParamList, 'ReportAsset'>) {
   const { getAssetInfo, reportAssetLocation } = useAssetApi();
   const { uploadFile } = useUploadApi();
-  const [assetId, setAssetId] = useState('');
+  const [assetId, setAssetId] = useState(route.params?.assetId);
   const [location, setLocation] = useState('');
   const [subLocation, setSubLocation] = useState('');
   const [details, setDetails] = useState('');
@@ -65,7 +65,7 @@ export default function ReportAssetScreen({
 
   const maximum = 5;
 
-  const confirmReportAsset = async () => {
+  const doReportAsset = async () => {
     setLoading(true);
     const data: ReportAssetModel = {
       assetId,
@@ -104,12 +104,12 @@ export default function ReportAssetScreen({
               onPress: () => setLoading(false),
               style: 'cancel',
             },
-            { text: 'OK', onPress: confirmReportAsset },
+            { text: 'OK', onPress: doReportAsset },
           ],
           { cancelable: true }
         );
       } else {
-        await confirmReportAsset();
+        await doReportAsset();
       }
     }
   };

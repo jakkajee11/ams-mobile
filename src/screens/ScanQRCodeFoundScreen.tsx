@@ -1,12 +1,5 @@
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import { useIsFocused } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
-import { BarCodeScanner } from 'expo-barcode-scanner';
-import {
-  BarCodeScanningResult,
-  CameraCapturedPicture,
-  Camera as ExpoCamera,
-} from 'expo-camera';
+import { CameraCapturedPicture } from 'expo-camera';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import {
@@ -15,26 +8,24 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TextInput,
-  TouchableOpacity,
   Image,
   View,
-  ImageBackground,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
-import { Overlay, Button, Icon, Header } from 'react-native-elements';
+import { Button, Icon } from 'react-native-elements';
 import useAssetApi from '~apis/useAssetApi';
 import useUploadApi from '~apis/useUploadApi';
 import { AssetDetailModel, ReportAssetModel } from '~types/assets';
 import { UploadFileBase64Model } from '~types/fileUploads';
 import extractFileName from '~utils/extractFileName';
-import Storages from '~utils/Storages';
 import Colors from '../constants/Colors';
 import baseStyles from '../styles/baseStyles';
 import { v4 as uuidv4 } from 'uuid';
-
 import { RootStackParamList } from '../types';
 import Camera from '~components/shared/Camera';
+import Header from '~components/shared/Header';
+import { ATTACHMENT_TYPE } from '~constants/Status';
 
 export default function ScanQRCodeFoundScreen({
   route,
@@ -43,7 +34,9 @@ export default function ScanQRCodeFoundScreen({
   //const asset = route.params?.data
   const { getAssetInfo, reportAssetLocation } = useAssetApi();
   const { uploadFile } = useUploadApi();
-  const [asset, setAsset] = useState<AssetDetailModel | undefined>(undefined);
+  const [asset, setAsset] = useState<AssetDetailModel | undefined>(
+    route.params?.data
+  );
   const [loading, setLoading] = useState(false);
   const [attachments, setAttachemnts] = useState<CameraCapturedPicture[]>([]);
   const [showCamera, setShowCamera] = useState(false);
@@ -90,41 +83,24 @@ export default function ScanQRCodeFoundScreen({
     }
   };
 
-  useEffect(() => {
-    (async function () {
-      const res = await getAssetInfo('Import-002');
-      console.log(['res', res.status, res.data]);
-      if (res && res.status === 401) {
-        const token = await Storages.getAccessToken();
-        //console.log(['token', token]);
-      } else if (res.status === 200) {
-        setAsset(res.data);
-      }
-    })();
-  }, []);
+  // useEffect(() => {
+  //   (async function () {
+  //     setLoading(true);
+  //     const res = await getAssetInfo('Import-002');
+  //     if (res && res.status === 200) {
+  //       setAsset(res.data);
+  //     }
+
+  //     setLoading(false);
+  //   })();
+  // }, []);
 
   return (
     <>
-      <Header
-        leftComponent={{
-          icon: 'arrow-left',
-          type: 'font-awesome-5',
-          color: Colors.black,
-          iconStyle: { color: Colors.black },
-        }}
-        centerComponent={{
-          text: asset?.assetId,
-          style: { color: Colors.black },
-        }}
-        rightComponent={{
-          icon: 'home',
-          type: 'font-awesome-5',
-          color: Colors.black,
-        }}
-        backgroundColor={Colors.yellow}
-      />
+      <Header title={asset?.assetId ?? 'QR CODE FOUNDED'} />
       <StatusBar backgroundColor={Colors.yellow} />
       <ScrollView style={baseStyles.scrollView}>
+        <ActivityIndicator animating={loading} size='large' />
         <View style={baseStyles.container}>
           <View style={{ padding: 5 }}>
             <View style={styles.row}>
@@ -185,7 +161,7 @@ export default function ScanQRCodeFoundScreen({
                 <Text>Attachments</Text>
                 <View style={baseStyles.attachmentContainer}>
                   {asset.attachments
-                    .filter((atm) => atm.type === 0)
+                    .filter((atm) => atm.type === ATTACHMENT_TYPE.Photo)
                     .map((atm) => (
                       <View key={atm.id}>
                         <Image

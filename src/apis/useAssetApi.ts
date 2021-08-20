@@ -1,18 +1,5 @@
 import useApi from '~hooks/useApi';
-import { AssetModel, ReportAssetModel } from '~types/assets';
-
-export interface AssetQueryProps {
-  page: number;
-  size: number;
-  search: string;
-}
-
-export interface AssetLogQueryProps {
-  id: string;
-  page: number;
-  size: number;
-  search: string;
-}
+import { ReportAssetModel } from '~types/assets';
 
 const endpoint = 'v1/assets';
 export default function useAssetApi() {

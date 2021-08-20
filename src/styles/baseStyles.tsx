@@ -12,6 +12,12 @@ const baseStyles = StyleSheet.create({
     justifyContent: 'flex-start',
     padding: 5,
   },
+  content: {
+    padding: 5,
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+  },
   attachmentContainer: {
     flex: 1,
     flexDirection: 'column',
@@ -43,6 +49,15 @@ const baseStyles = StyleSheet.create({
     fontSize: 18,
     color: Colors.red,
     textAlign: 'center',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    padding: 5,
+  },
+  col: {
+    padding: 5,
   },
 });
 
