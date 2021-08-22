@@ -1,0 +1,48 @@
+import { JOB_STATUS } from '~constants/Status';
+import useApi from '~hooks/useApi';
+import { JobQuery } from '~types/jobs';
+
+const endpoint = 'v1/jobs';
+export default function useJobApi() {
+  const { get, post, put } = useApi();
+
+  const getJobs = async (query: JobQuery) => {
+    return await post(`${endpoint}/search`, query);
+  };
+
+  const getPendingJobs = async (query: JobQuery) => {
+    return await getJobs({ ...query, status: JOB_STATUS.Pending });
+  };
+
+  const getWorkingJobs = async (query: JobQuery) => {
+    return await getJobs({ ...query, status: JOB_STATUS.InProgress });
+  };
+
+  const getCompletedJobs = async (query: JobQuery) => {
+    return await getJobs({ ...query, status: JOB_STATUS.Completed });
+  };
+
+  const getJob = async (id: string) => {
+    const url = `${endpoint}/${id}`;
+    return await get(url);
+  };
+
+  const updateJobStatus = async (id: string, status: number) => {
+    const url = `${endpoint}/${id}/status`;
+    return await put(url, { status });
+  };
+
+  const updateJobProgress = async (id: string, progress: number) => {
+    const url = `${endpoint}/${id}/progress`;
+    return await put(url, progress);
+  };
+
+  return {
+    getPendingJobs,
+    getWorkingJobs,
+    getCompletedJobs,
+    getJob,
+    updateJobStatus,
+    updateJobProgress,
+  };
+}

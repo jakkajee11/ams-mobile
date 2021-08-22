@@ -1,0 +1,77 @@
+/**
+ * If you are not familiar with React Navigation, check out the "Fundamentals" guide:
+ * https://reactnavigation.org/docs/getting-started
+ *
+ */
+import {
+  NavigationContainer,
+  DefaultTheme,
+  DarkTheme,
+} from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import * as React from 'react';
+import { ColorSchemeName } from 'react-native';
+import NotFoundScreen from '../screens/NotFoundScreen';
+import AuthNavigator from './AuthNavigator';
+import BottomTabNavigator from './BottomTabNavigator';
+import HomeStackNavigator from './HomeStackNavigator';
+import LinkingConfiguration from './LinkingConfiguration';
+
+export default function Navigation({
+  colorScheme,
+  isUserLoggedIn,
+}: {
+  colorScheme: ColorSchemeName;
+  isUserLoggedIn: boolean;
+}) {
+  return (
+    <NavigationContainer
+      linking={LinkingConfiguration}
+      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+    >
+      <AppNavigator isLoggedIn={isUserLoggedIn} />
+    </NavigationContainer>
+  );
+}
+
+// A root stack navigator is often used for displaying modals on top of all other content
+// Read more here: https://reactnavigation.org/docs/modal
+//const Stack = createStackNavigator<AppStackParamList>();
+const Stack = createStackNavigator();
+
+function AppNavigator(isLoggedIn: { isLoggedIn: boolean }) {
+  return (
+    <Stack.Navigator
+      screenOptions={{ headerShown: false }}
+      initialRouteName={isLoggedIn ? 'Root' : 'Auth'}
+    >
+      <Stack.Screen name='Auth' component={AuthNavigator} />
+      <Stack.Screen name='Root' component={RootNavigator} />
+    </Stack.Navigator>
+  );
+}
+
+function RootNavigator() {
+  return (
+    <Stack.Navigator headerMode='screen' screenOptions={{ headerShown: false }}>
+      <Stack.Screen
+        name='Home'
+        component={HomeStackNavigator}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name='Jobs'
+        component={BottomTabNavigator}
+        options={{
+          headerShown: false,
+          title: 'My Jobs',
+        }}
+      />
+      <Stack.Screen
+        name='NotFound'
+        component={NotFoundScreen}
+        options={{ title: 'Oops!' }}
+      />
+    </Stack.Navigator>
+  );
+}
