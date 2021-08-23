@@ -59,6 +59,9 @@ const baseStyles = StyleSheet.create({
   col: {
     padding: 5,
   },
+  textCenter: {
+    textAlign: 'center',
+  },
 });
 
 export default baseStyles;

@@ -1,6 +1,6 @@
 import { JOB_STATUS } from '~constants/Status';
 import useApi from '~hooks/useApi';
-import { JobQuery } from '~types/jobs';
+import { JobQuery, UpdateJobAssetStatusModel } from '~types/jobs';
 
 const endpoint = 'v1/jobs';
 export default function useJobApi() {
@@ -37,6 +37,15 @@ export default function useJobApi() {
     return await put(url, progress);
   };
 
+  const updateJobAssetStatus = async ({
+    jobId,
+    assetId,
+    status,
+  }: UpdateJobAssetStatusModel) => {
+    const url = `${endpoint}/${jobId}/jobasset/status`;
+    return await put(url, { jobId, assetId, status });
+  };
+
   return {
     getPendingJobs,
     getWorkingJobs,
@@ -44,5 +53,6 @@ export default function useJobApi() {
     getJob,
     updateJobStatus,
     updateJobProgress,
+    updateJobAssetStatus,
   };
 }

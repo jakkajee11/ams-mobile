@@ -1,16 +1,8 @@
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { StackScreenProps } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { Button, Icon, Input, Image } from 'react-native-elements';
+import { StyleSheet, Text, View } from 'react-native';
+import { Button, Icon } from 'react-native-elements';
 import Colors from '~constants/Colors';
 import Logo from '../components/shared/Logo';
 
@@ -31,7 +23,6 @@ export default function HomeScreen({
           height: '30%',
           flex: 0.7,
           justifyContent: 'space-around',
-          //backgroundColor: 'white',
         }}
       >
         <Button

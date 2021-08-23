@@ -1,11 +1,10 @@
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { StackScreenProps } from '@react-navigation/stack';
-import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Modal,
   ScrollView,
   StyleSheet,
   TextInput,
@@ -22,28 +21,27 @@ import {
   ListItem,
 } from 'react-native-elements';
 
-import {
-  AuthStackParamList,
-  JobsParamsList,
-  RootStackParamList,
-} from '../types';
+import { JobsParamsList } from '../types';
 import JobDetail from '~components/jobs/JobDetail';
 import baseStyles from '~styles/baseStyles';
-import Colors from '~constants/Colors';
 import useJobApi from '~apis/useJobApi';
 import { JobModel } from '~types/jobs';
 import Loading from '~components/shared/Loading';
 import { JOB_ASSET_STATUS, JOB_PROGRESS, JOB_STATUS } from '~constants/Status';
-import dayjs from 'dayjs';
+import { BarCodeScanningResult } from 'expo-camera';
+import ModalCamera from '~components/shared/ModalCamera';
 
 export default function JobDetailsScreen({
   route,
   navigation,
 }: StackScreenProps<JobsParamsList, 'JobDetails'>) {
   const [loading, setLoading] = useState(false);
-  const { getJob, updateJobStatus, updateJobProgress } = useJobApi();
+  const { getJob, updateJobStatus, updateJobProgress, updateJobAssetStatus } =
+    useJobApi();
   const [jobDetail, setJobDetail] = useState<JobModel>();
-  const [paused, setPaused] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
+  const [scannedResult, setScannedResult] = useState('');
+  const [totalChecked, setTotalChecked] = useState(0);
 
   const startJob = async () => {
     const res = await updateJobStatus(
@@ -80,7 +78,7 @@ export default function JobDetailsScreen({
       )?.length ?? 0;
     if (uncheckedAssets > 0) {
       Alert.alert(
-        'Warining',
+        'Warning',
         `There ${
           uncheckedAssets > 1 ? 'are' : 'is'
         } ${uncheckedAssets} not yet completed`,
@@ -117,70 +115,93 @@ export default function JobDetailsScreen({
     }
   };
 
-  const renderTimeUsed = () => {
-    const minutes = dayjs(jobDetail?.startedAt).diff(
-      dayjs(jobDetail?.stoppedAt),
-      'm'
-    );
+  const openCamera = () => setShowCamera(true);
+  const closeCamera = () => setShowCamera(false);
+
+  const loadJob = async () => {
+    setLoading(true);
+    const res = await getJob(route.params.id);
+
+    if (res && res.status === 200 && res.data) {
+      setJobDetail(res.data);
+    }
+    setLoading(false);
   };
+
+  const handleBarCodeScanned = async ({
+    type,
+    data,
+    cornerPoints,
+  }: BarCodeScanningResult) => {
+    setScannedResult(data);
+    closeCamera();
+    // check asset in system
+    setLoading(true);
+    const res = await updateJobAssetStatus({
+      jobId: jobDetail?.id ?? '',
+      assetId: data,
+      status: JOB_ASSET_STATUS.Checked,
+    });
+    if (res && res.status === 200 && res.data) {
+      await loadJob();
+    } else {
+      Alert.alert('Info', 'Asset not found');
+    }
+    setLoading(false);
+  };
+
+  const checkedItemCount = () =>
+    jobDetail?.assets.filter(
+      (ja) => ja.jobAssetStatusId === JOB_ASSET_STATUS.Checked
+    )?.length ?? 0;
+  const itemCount = () => jobDetail?.assets.length ?? 0;
+  const jobProgress = () =>
+    checkedItemCount() === 0
+      ? 0
+      : (itemCount() / checkedItemCount()).toFixed(1);
 
   useEffect(() => {
     (async function () {
-      setLoading(true);
-      const res = await getJob(route.params.id);
-
-      if (res && res.status === 200 && res.data) {
-        setJobDetail(res.data);
-      }
-      setLoading(false);
+      await loadJob();
     })();
   }, []);
 
   return (
-    <>
-      {/* <StatusBar /> */}
-
-      {/* <ScrollView style={baseStyles.scrollView}> */}
+    <ScrollView style={baseStyles.scrollView}>
       {loading && <Loading loading={loading} />}
       <View style={baseStyles.container}>
-        {/* <ActivityIndicator animating={true} size='large' /> */}
         {jobDetail && <JobDetail data={jobDetail} />}
       </View>
-      {/* </ScrollView> */}
+
       <View style={{ ...baseStyles.buttonGroupBottom, flex: 0.4 }}>
-        {/* {jobDetail?.jobStatusId === JOB_STATUS.InProgress && (
-          <View
-            style={{
-              flex: 0.3,
-              flexDirection: 'row',
-              justifyContent: 'center',
-              padding: 0,
-            }}
-          >
-            <Icon name='clock' type='font-awesome-5' />
-            <Text style={{ textAlign: 'center', marginLeft: 5 }}>
-              Time used: 1 hour {30} minutes
-            </Text>
-          </View>
-        )} */}
         {jobDetail?.jobStatusId === JOB_STATUS.Pending && (
           <Button title='START' onPress={startJob} />
         )}
         {jobDetail?.jobStatusId === JOB_STATUS.InProgress && (
-          <Button
-            title={
-              jobDetail.jobProgressId === JOB_PROGRESS.Paused
-                ? 'CONTINUE'
-                : 'SAVE'
-            }
-            onPress={updateProgress}
-          />
+          <Button title={'SCAN ASSET'} onPress={openCamera} />
         )}
-        {jobDetail?.jobStatusId === JOB_STATUS.InProgress &&
+        {jobDetail?.jobStatusId === JOB_STATUS.InProgress && (
+          <View>
+            <Text style={baseStyles.textCenter}>
+              Progress {jobProgress()}% ({checkedItemCount()}/{itemCount()}{' '}
+              checked)
+            </Text>
+            <Button title='FINISH' onPress={finishJob} />
+          </View>
+        )}
+        {/* {jobDetail?.jobStatusId === JOB_STATUS.InProgress &&
           jobDetail?.jobProgressId === JOB_PROGRESS.Started && (
             <Button title='FINISH' onPress={finishJob} />
-          )}
+          )} */}
       </View>
-    </>
+
+      <ModalCamera
+        openCamera={openCamera}
+        closeCamera={closeCamera}
+        showCamera={showCamera}
+        onBarCodeScanned={handleBarCodeScanned}
+        mode={'scan'}
+      />
+    </ScrollView>
   );
 }

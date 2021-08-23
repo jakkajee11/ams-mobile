@@ -47,3 +47,9 @@ export type JobQuery = {
   endDate: string;
   //assigneeId: string;
 };
+
+export type UpdateJobAssetStatusModel = {
+  jobId: string;
+  assetId: string;
+  status: number;
+};
