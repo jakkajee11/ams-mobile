@@ -1,13 +1,7 @@
 import * as React from 'react';
-import {
-  createStackNavigator,
-  StackHeaderProps,
-} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
 import HomeScreen from '../screens/HomeScreen';
-import JobsScreen from '../screens/JobsScreen';
-import JobDetailsScreen from '../screens/JobDetailsScreen';
-import BottomTabNavigator from './BottomTabNavigator';
 import ScanQRCodeFoundScreen from '~screens/ScanQRCodeFoundScreen';
 import ScanQRCodeNotFoundScreen from '~screens/ScanQRCodeNotFoundScreen';
 import ReportAssetScreen from '~screens/ReportAssetScreen';

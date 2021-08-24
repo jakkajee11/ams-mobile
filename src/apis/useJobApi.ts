@@ -1,6 +1,11 @@
 import { JOB_STATUS } from '~constants/Status';
 import useApi from '~hooks/useApi';
-import { JobQuery, UpdateJobAssetStatusModel } from '~types/jobs';
+import {
+  JobCountQuery,
+  JobQuery,
+  UpdateJobAssetStatusModel,
+} from '~types/jobs';
+import buildQueryString from '~utils/buildQueryString';
 
 const endpoint = 'v1/jobs';
 export default function useJobApi() {
@@ -20,6 +25,10 @@ export default function useJobApi() {
 
   const getCompletedJobs = async (query: JobQuery) => {
     return await getJobs({ ...query, status: JOB_STATUS.Completed });
+  };
+
+  const getJobsCount = async (query: JobCountQuery) => {
+    return await get(`${endpoint}/jobcount${buildQueryString(query)}`);
   };
 
   const getJob = async (id: string) => {
@@ -51,6 +60,7 @@ export default function useJobApi() {
     getWorkingJobs,
     getCompletedJobs,
     getJob,
+    getJobsCount,
     updateJobStatus,
     updateJobProgress,
     updateJobAssetStatus,

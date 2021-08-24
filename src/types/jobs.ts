@@ -48,6 +48,11 @@ export type JobQuery = {
   //assigneeId: string;
 };
 
+export type JobCountQuery = {
+  startDate?: string;
+  endDate?: string;
+};
+
 export type UpdateJobAssetStatusModel = {
   jobId: string;
   assetId: string;

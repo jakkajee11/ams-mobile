@@ -39,6 +39,7 @@ import { v4 as uuidv4 } from 'uuid';
 import useAssetApi from '~apis/useAssetApi';
 import useUploadApi from '~apis/useUploadApi';
 import Camera from '~components/shared/Camera';
+import ModalCamera from '~components/shared/ModalCamera';
 import { ReportAssetModel } from '~types/assets';
 import { UploadFileBase64Model } from '~types/fileUploads';
 import extractFileName from '~utils/extractFileName';
@@ -195,57 +196,44 @@ export default function ReportAssetScreen({
             )}
           </View>
         </KeyboardAvoidingView>
-      </ScrollView>
-      <View style={baseStyles.buttonGroupBottom}>
-        <Button
-          icon={
-            <Icon name='camera' type='font-awesome-5' size={28} color='white' />
-          }
-          title={
-            attachments.length === maximum
-              ? ` Reach maximum (${maximum})`
-              : ' Take a photo'
-          }
-          disabled={assetId.length === 0 || attachments.length === maximum}
-          onPress={openCamera}
-        />
-        <Button
-          icon={
-            <Icon name='save' type='font-awesome-5' size={28} color='white' />
-          }
-          title=' Submit'
-          disabled={assetId.length === 0 || location.length === 0}
-          loading={loading}
-          onPress={reportAsset}
-        />
-      </View>
-      <Modal
-        animationType='fade'
-        transparent={true}
-        visible={showCamera}
-        presentationStyle={'overFullScreen'}
-        onRequestClose={closeCamera}
-      >
-        <View
-          style={{
-            flex: 1,
-            flexDirection: 'column',
-            justifyContent: 'flex-start',
-            height: '100%',
-            width: '100%',
-          }}
-        >
-          {showCamera && (
-            <Camera
-              onClose={closeCamera}
-              onTakePicture={(photo: CameraCapturedPicture) =>
-                addAttachment(photo)
-              }
-              onBarCodeScanned={undefined}
-            />
-          )}
+        <View style={baseStyles.buttonGroupBottom}>
+          <Button
+            icon={
+              <Icon
+                name='camera'
+                type='font-awesome-5'
+                size={28}
+                color='white'
+              />
+            }
+            title={
+              attachments.length === maximum
+                ? ` Reach maximum (${maximum})`
+                : ' Take a photo'
+            }
+            disabled={assetId.length === 0 || attachments.length === maximum}
+            onPress={openCamera}
+          />
+          <Text></Text>
+          <Button
+            icon={
+              <Icon name='save' type='font-awesome-5' size={28} color='white' />
+            }
+            title=' Submit'
+            disabled={assetId.length === 0 || location.length === 0}
+            loading={loading}
+            onPress={reportAsset}
+          />
         </View>
-      </Modal>
+      </ScrollView>
+
+      <ModalCamera
+        showCamera={showCamera}
+        openCamera={openCamera}
+        closeCamera={closeCamera}
+        onTakePicture={addAttachment}
+        mode='photo'
+      />
     </>
   );
 }

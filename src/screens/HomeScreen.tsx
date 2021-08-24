@@ -1,9 +1,12 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Button, Icon } from 'react-native-elements';
+import useJobApi from '~apis/useJobApi';
 import Colors from '~constants/Colors';
+import { JOB_STATUS } from '~constants/Status';
 import Logo from '../components/shared/Logo';
 
 import { RootStackParamList } from '../types';
@@ -11,6 +14,23 @@ import { RootStackParamList } from '../types';
 export default function HomeScreen({
   navigation,
 }: StackScreenProps<RootStackParamList, 'Home'>) {
+  // const { getJobsCount } = useJobApi();
+  // const [loading, setLoading] = useState(false);
+  // const [jobPendingCount, setJobPendingCount] = useState(0);
+
+  // useEffect(() => {
+  //   (async function () {
+  //     setLoading(true);
+  //     const res = await getJobsCount({});
+  //     console.log(['res', res.status, res.data]);
+  //     if (res && res.status === 200 && res.data) {
+  //       if (res.data[JOB_STATUS.Pending])
+  //         setJobPendingCount(res.data[JOB_STATUS.Pending]);
+  //     }
+  //     setLoading(false);
+  //   })();
+  // }, []);
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor={Colors.yellow} />
@@ -80,11 +100,13 @@ export default function HomeScreen({
                   color: 'white',
                 }}
               >
+                {/* My Jobs {jobPendingCount > 0 ? `( ${jobPendingCount} )` : ''} */}
                 My Jobs
               </Text>
             </View>
           }
           onPress={() => navigation.navigate('Jobs')}
+          //loading={loading}
         />
 
         <Button

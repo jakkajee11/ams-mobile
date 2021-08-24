@@ -3,10 +3,8 @@ import { CameraCapturedPicture } from 'expo-camera';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import {
-  Modal,
   ScrollView,
   StatusBar,
-  StyleSheet,
   Text,
   Image,
   View,
@@ -23,9 +21,9 @@ import Colors from '../constants/Colors';
 import baseStyles from '../styles/baseStyles';
 import { v4 as uuidv4 } from 'uuid';
 import { RootStackParamList } from '../types';
-import Camera from '~components/shared/Camera';
 import Header from '~components/shared/Header';
 import { ATTACHMENT_TYPE } from '~constants/Status';
+import ModalCamera from '~components/shared/ModalCamera';
 
 export default function ScanQRCodeFoundScreen({
   route,
@@ -103,56 +101,56 @@ export default function ScanQRCodeFoundScreen({
         <ActivityIndicator animating={loading} size='large' />
         <View style={baseStyles.container}>
           <View style={{ padding: 5 }}>
-            <View style={styles.row}>
-              <Text style={styles.label}>Asset ID:</Text>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Asset ID:</Text>
               <Text>{asset?.assetId}</Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Asset Type:</Text>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Asset Type:</Text>
               <Text>{asset?.assetTypeName}</Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Serial No.:</Text>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Serial No.:</Text>
               <Text>{asset?.serialNo}</Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Asset No.:</Text>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Asset No.:</Text>
               <Text>{asset?.assetNo}</Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Cost Center:</Text>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Cost Center:</Text>
               <Text>{asset?.costCenterName}</Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Year of Mfg:</Text>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Year of Mfg:</Text>
               <Text>{asset?.yearOfManufacture}</Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Warrenty:</Text>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Warrenty:</Text>
               <Text>{asset?.warrantyEndAt}</Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Asset Class:</Text>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Asset Class:</Text>
               <Text>{asset?.assetClassName}</Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Location:</Text>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Location:</Text>
               <Text>{asset?.location}</Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Sub-Location:</Text>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Sub-Location:</Text>
               <Text>{asset?.subLocation}</Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Status:</Text>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Status:</Text>
               <Text>{asset?.assetStatusName}</Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Others:</Text>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Others:</Text>
               <Text>{asset?.others}</Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Details:</Text>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Details:</Text>
               <Text>{asset?.details}</Text>
             </View>
 
@@ -211,76 +209,14 @@ export default function ScanQRCodeFoundScreen({
           onPress={submitReport}
         />
       </View>
-      <Modal
-        animationType='fade'
-        transparent={true}
-        visible={showCamera}
-        presentationStyle={'overFullScreen'}
-        onRequestClose={closeCamera}
-      >
-        <View
-          style={{
-            flex: 1,
-            flexDirection: 'column',
-            justifyContent: 'flex-start',
-            height: '100%',
-            width: '100%',
-          }}
-        >
-          {showCamera && (
-            <Camera
-              onClose={closeCamera}
-              onTakePicture={(photo: CameraCapturedPicture) =>
-                addAttachment(photo)
-              }
-              onBarCodeScanned={undefined}
-              showOptions={false}
-              showImagePicker={false}
-            />
-          )}
-        </View>
-      </Modal>
+
+      <ModalCamera
+        showCamera={showCamera}
+        openCamera={openCamera}
+        closeCamera={closeCamera}
+        onTakePicture={addAttachment}
+        mode='photo'
+      />
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  scrollView: {
-    flex: 2,
-    padding: 5,
-    //backgroundColor: Colors.yellow,
-  },
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    padding: 5,
-  },
-  column: {
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    width: '100%',
-    padding: 5,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    padding: 5,
-  },
-  text: {
-    fontSize: 18,
-    color: 'red',
-    margin: 20,
-  },
-  label: {
-    fontStyle: 'normal',
-  },
-  buttonGroupBottom: {
-    width: '100%',
-    padding: 5,
-    justifyContent: 'space-around',
-    flex: 0.4,
-  },
-});

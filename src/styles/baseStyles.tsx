@@ -3,9 +3,10 @@ import Colors from '../constants/Colors';
 
 const baseStyles = StyleSheet.create({
   scrollView: {
-    flex: 2,
+    flex: 1,
     padding: 5,
     //backgroundColor: Colors.yellow,
+    //height: '100%',
   },
   container: {
     flex: 1,
@@ -61,6 +62,9 @@ const baseStyles = StyleSheet.create({
   },
   textCenter: {
     textAlign: 'center',
+  },
+  label: {
+    fontStyle: 'normal',
   },
 });
 

@@ -7,12 +7,12 @@ import { Ionicons, FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
+import Header from '~components/shared/Header';
 import AssetDetailsScreen from '~screens/AssetDetailsScreen';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import HomeScreen from '../screens/HomeScreen';
-import JobAssetDetailsScreen from '../screens/JobAssetDetailsScreen';
 import JobDetailsScreen from '../screens/JobDetailsScreen';
 import JobsScreen from '../screens/JobsScreen';
 import ScanQRCodeScreen from '../screens/ScanQRCodeScreen';
@@ -32,13 +32,13 @@ export default function BottomTabNavigator() {
         activeTintColor: Colors[colorScheme].tint,
       }}
     >
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name='Home'
         component={HomeScreen}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name='home' color={color} />,
         }}
-      />
+      /> */}
       <BottomTab.Screen
         name='MyJobs'
         component={JobsNavigator}
@@ -95,7 +95,8 @@ function JobsNavigator() {
       <JobsStack.Screen
         name='Jobs'
         component={JobsScreen}
-        options={{ title: 'My Jobs' }}
+        //options={{ title: 'My Jobs' }}
+        options={{ header: () => <Header title='My Jobs' /> }}
       />
       <JobsStack.Screen
         name='JobDetails'
