@@ -160,7 +160,7 @@ export default function JobDetailsScreen({
   const jobProgress = () =>
     checkedItemCount() === 0
       ? 0
-      : (itemCount() / checkedItemCount()).toFixed(1);
+      : ((checkedItemCount() / itemCount()) * 100).toFixed(1);
 
   useEffect(() => {
     (async function () {
