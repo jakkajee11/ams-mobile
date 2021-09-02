@@ -33,7 +33,7 @@ export default function HomeScreen({
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor={Colors.yellow} />
+      <StatusBar backgroundColor={Colors.white} />
       <Logo />
       <View
         style={{
@@ -139,6 +139,32 @@ export default function HomeScreen({
           }
           onPress={() => navigation.navigate('ReportAsset')}
         />
+
+        <Button
+          title={
+            <View
+              style={{
+                padding: 3,
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <Icon name='plus' type='feather' size={60} color='white' />
+              <Text
+                style={{
+                  marginLeft: 10,
+                  fontSize: 18,
+                  fontWeight: '600',
+                  color: 'white',
+                }}
+              >
+                Create Job
+              </Text>
+            </View>
+          }
+          //onPress={() => navigation.navigate('ReportAsset')}
+        />
       </View>
     </View>
   );
@@ -147,7 +173,7 @@ export default function HomeScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.yellow,
+    backgroundColor: Colors.white,
     justifyContent: 'flex-start',
     padding: 10,
     opacity: 0.9,
