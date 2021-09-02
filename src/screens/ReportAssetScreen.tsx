@@ -23,6 +23,7 @@ import {
   NativeSyntheticEvent,
   TextInputChangeEventData,
   Alert,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
@@ -63,6 +64,7 @@ export default function ReportAssetScreen({
   const [id] = useState(uuidv4());
   const [loading, setLoading] = useState(false);
   const [uploadErrors, setUploadErrors] = useState<string[]>([]);
+  const [buttonDisplay, setButtonDisplay] = useState<'flex' | 'none'>('flex');
 
   const maximum = 5;
 
@@ -144,6 +146,25 @@ export default function ReportAssetScreen({
     setLoading(false);
   };
 
+  const hideActionButton = () => {
+    setButtonDisplay('none');
+  };
+
+  const showActionButton = () => {
+    setButtonDisplay('flex');
+  };
+
+  useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', hideActionButton);
+    Keyboard.addListener('keyboardDidHide', showActionButton);
+
+    // cleanup function
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', hideActionButton);
+      Keyboard.removeListener('keyboardDidHide', showActionButton);
+    };
+  }, []);
+
   return (
     <>
       <ScrollView style={baseStyles.scrollView}>
@@ -196,37 +217,37 @@ export default function ReportAssetScreen({
             )}
           </View>
         </KeyboardAvoidingView>
-        <View style={baseStyles.buttonGroupBottom}>
-          <Button
-            icon={
-              <Icon
-                name='camera'
-                type='font-awesome-5'
-                size={28}
-                color='white'
-              />
-            }
-            title={
-              attachments.length === maximum
-                ? ` Reach maximum (${maximum})`
-                : ' Take a photo'
-            }
-            disabled={assetId.length === 0 || attachments.length === maximum}
-            onPress={openCamera}
-          />
-          <Text></Text>
-          <Button
-            icon={
-              <Icon name='save' type='font-awesome-5' size={28} color='white' />
-            }
-            title=' Submit'
-            disabled={assetId.length === 0 || location.length === 0}
-            loading={loading}
-            onPress={reportAsset}
-          />
-        </View>
       </ScrollView>
-
+      <View
+        style={{
+          ...baseStyles.buttonGroupBottom,
+          flex: 0.2,
+          display: buttonDisplay,
+        }}
+      >
+        <Button
+          icon={
+            <Icon name='camera' type='font-awesome-5' size={28} color='white' />
+          }
+          title={
+            attachments.length === maximum
+              ? ` Reach maximum (${maximum})`
+              : ' Take a photo'
+          }
+          disabled={assetId.length === 0 || attachments.length === maximum}
+          onPress={openCamera}
+        />
+        <Text></Text>
+        <Button
+          icon={
+            <Icon name='save' type='font-awesome-5' size={28} color='white' />
+          }
+          title=' Submit'
+          disabled={assetId.length === 0 || location.length === 0}
+          loading={loading}
+          onPress={reportAsset}
+        />
+      </View>
       <ModalCamera
         showCamera={showCamera}
         openCamera={openCamera}

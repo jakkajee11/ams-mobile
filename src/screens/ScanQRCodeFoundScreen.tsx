@@ -41,24 +41,32 @@ export default function ScanQRCodeFoundScreen({
   const [id] = useState(uuidv4());
   const [uploadErrors, setUploadErrors] = useState<string[]>([]);
 
-  const submitReport = async () => {
+  const submitReport = async (photo: CameraCapturedPicture) => {
     setLoading(true);
-    const data: ReportAssetModel = {
-      assetId: asset?.assetId ?? '',
-      location: asset?.location ?? '',
-      subLocation: asset?.subLocation,
-      details: asset?.details,
-      attachments: [],
-    };
 
-    const res = await reportAssetLocation(data);
+    const uploadSuccess = await addAttachment(photo);
 
-    if (res && res.status === 200) {
-      Alert.alert('Success', 'Asset was successfully reported');
+    if (uploadSuccess) {
+      const data: ReportAssetModel = {
+        assetId: asset?.assetId ?? '',
+        location: asset?.location ?? '',
+        subLocation: asset?.subLocation,
+        details: asset?.details,
+        attachments: [],
+      };
+
+      const res = await reportAssetLocation(data);
+
+      if (res && res.status === 200) {
+        Alert.alert('Success', 'Asset was successfully reported');
+      } else {
+        Alert.alert('Error', 'Report asset failed');
+      }
     } else {
       Alert.alert('Error', 'Report asset failed');
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
   const openCamera = () => setShowCamera(true);
@@ -77,8 +85,13 @@ export default function ScanQRCodeFoundScreen({
       const res = await uploadFile(data);
       if (res && res.status !== 200) {
         setUploadErrors([...uploadErrors, extractFileName(photo.uri)]);
+        return false;
       }
+
+      return true;
     }
+
+    return false;
   };
 
   // useEffect(() => {
@@ -175,7 +188,7 @@ export default function ScanQRCodeFoundScreen({
           </View>
         </View>
       </ScrollView>
-      <View style={{ ...baseStyles.buttonGroupBottom, flex: 0.4 }}>
+      <View style={{ ...baseStyles.buttonGroupBottom, flex: 0.2 }}>
         <Button
           icon={
             <Icon
@@ -186,27 +199,25 @@ export default function ScanQRCodeFoundScreen({
             />
           }
           title='  Report this item'
+          onPress={() =>
+            navigation.navigate('ReportAsset', { assetId: asset?.assetId })
+          }
         />
-        <Button
+        {/* <Button
           icon={
             <Icon name='camera' type='font-awesome-5' size={28} color='white' />
           }
           title='  Take a photo'
           loading={loading}
           onPress={openCamera}
-        />
+        /> */}
         <Button
           icon={
-            <Icon
-              name='check-circle'
-              type='font-awesome-5'
-              size={28}
-              color='white'
-            />
+            <Icon name='camera' type='font-awesome-5' size={28} color='white' />
           }
-          title='  CONFIRM'
+          title='  Take a Photo & Confirm'
           loading={loading}
-          onPress={submitReport}
+          onPress={openCamera}
         />
       </View>
 
@@ -214,7 +225,7 @@ export default function ScanQRCodeFoundScreen({
         showCamera={showCamera}
         openCamera={openCamera}
         closeCamera={closeCamera}
-        onTakePicture={addAttachment}
+        onTakePicture={submitReport}
         mode='photo'
       />
     </>

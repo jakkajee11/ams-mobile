@@ -1,5 +1,7 @@
 import React from 'react';
 import { ListItem } from 'react-native-elements';
+import Colors from '~constants/Colors';
+import { JOB_ASSET_STATUS } from '~constants/Status';
 import { JobAssetModel } from '../../types/jobs';
 
 interface JobAssetProps {
@@ -8,7 +10,7 @@ interface JobAssetProps {
 }
 
 export default function JobAsset({
-  data: { key, location, assetTypeName, assetId },
+  data: { key, location, assetTypeName, assetId, jobAssetStatusId },
   onPress,
 }: JobAssetProps) {
   const handleOnPress = () => {
@@ -21,7 +23,17 @@ export default function JobAsset({
           {assetTypeName} / {assetId} / {location}
         </ListItem.Title>
       </ListItem.Content>
-      <ListItem.Chevron name='x-circle' type='feather' color='red' />
+      {/* <ListItem.Chevron name={jobAssetStatusId === JOB_ASSET_STATUS.Checked ? '' : ''} type='feather' color='red' /> */}
+      {jobAssetStatusId === JOB_ASSET_STATUS.NotCheck && (
+        <ListItem.Chevron name='x-circle' type='feather' color={Colors.red} />
+      )}
+      {jobAssetStatusId === JOB_ASSET_STATUS.Checked && (
+        <ListItem.Chevron
+          name='check-circle'
+          type='AntDesign'
+          color={Colors.green}
+        />
+      )}
     </ListItem>
   );
 }

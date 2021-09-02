@@ -81,7 +81,7 @@ export default function JobDetailsScreen({
         'Warning',
         `There ${
           uncheckedAssets > 1 ? 'are' : 'is'
-        } ${uncheckedAssets} not yet completed`,
+        } ${uncheckedAssets} not yet completed, Are you sure to finish?`,
         [
           {
             text: 'Cancel',
@@ -154,7 +154,9 @@ export default function JobDetailsScreen({
     jobDetail?.assets.filter(
       (ja) => ja.jobAssetStatusId === JOB_ASSET_STATUS.Checked
     )?.length ?? 0;
+
   const itemCount = () => jobDetail?.assets.length ?? 0;
+
   const jobProgress = () =>
     checkedItemCount() === 0
       ? 0
