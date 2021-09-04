@@ -53,7 +53,7 @@ export default function ReportAssetScreen({
 }: StackScreenProps<RootStackParamList, 'ReportAsset'>) {
   const { getAssetInfo, reportAssetLocation } = useAssetApi();
   const { uploadFile } = useUploadApi();
-  const [assetId, setAssetId] = useState(route.params?.assetId);
+  const [assetId, setAssetId] = useState(route.params?.assetId ?? '');
   const [location, setLocation] = useState('');
   const [subLocation, setSubLocation] = useState('');
   const [details, setDetails] = useState('');

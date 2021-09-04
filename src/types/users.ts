@@ -31,3 +31,7 @@ export type ProfileModel = {
   active: boolean;
   isAdmin: boolean;
 };
+
+export type UpdateUserPushTokenModel = {
+  token: string;
+};

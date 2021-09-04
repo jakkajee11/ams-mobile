@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import * as Notifications from 'expo-notifications';
 import { Button, Icon, Input, Image } from 'react-native-elements';
 import { Divider } from 'react-native-elements/dist/divider/Divider';
 import Logo from '../components/shared/Logo';
@@ -22,11 +23,13 @@ import useAuthApi from '~apis/useAuthApi';
 import Storages from '~utils/Storages';
 import { APP_CONFIG } from '~constants/Config';
 import useAuth from '~hooks/useAuth';
+import useUserApi from '~apis/useUserApi';
 
 export default function LoginScreen({
   navigation,
 }: StackScreenProps<AuthStackParamList & RootStackParamList, 'Login'>) {
   const { signIn } = useAuthApi();
+  const { updateUserNotificationToken } = useUserApi();
   const { isLoggedIn } = useAuth();
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
@@ -49,6 +52,12 @@ export default function LoginScreen({
         await Storages.saveUserToken(JSON.stringify(res.data));
         await Storages.saveUserName(userName);
         await Storages.saveUserSecret(password);
+
+        // update notification Token
+        const token = (await Notifications.getExpoPushTokenAsync()).data;
+        await updateUserNotificationToken({
+          token,
+        });
 
         navigation.navigate('Root');
       }

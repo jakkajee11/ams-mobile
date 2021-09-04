@@ -59,6 +59,14 @@ export default function useApi() {
       //console.log(['axiosConfig', axiosConfig]);
       return await instance.get(url, cfg);
     },
+    patch: async function (
+      url: string,
+      data?: any,
+      config?: AxiosRequestConfig
+    ) {
+      const cfg = await getConfig(config);
+      return await instance.patch(url, data, cfg);
+    },
     post: async function (
       url: string,
       data?: any,
