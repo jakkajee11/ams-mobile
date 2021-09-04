@@ -1,52 +1,27 @@
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import { useIsFocused } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
-import { BarCodeScanner } from 'expo-barcode-scanner';
-import {
-  BarCodeScanningResult,
-  CameraCapturedPicture,
-  Camera as ExpoCamera,
-} from 'expo-camera';
+import { CameraCapturedPicture } from 'expo-camera';
 import _ from 'lodash';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import {
-  Modal,
-  StatusBar,
-  StyleSheet,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
-  SafeAreaView,
   ScrollView,
-  NativeSyntheticEvent,
-  TextInputChangeEventData,
   Alert,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import {
-  Overlay,
-  Button,
-  Icon,
-  Header,
-  Image,
-  Input,
-} from 'react-native-elements';
+import { Button, Icon, Image, Input } from 'react-native-elements';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import useAssetApi from '~apis/useAssetApi';
 import useUploadApi from '~apis/useUploadApi';
-import Camera from '~components/shared/Camera';
 import ModalCamera from '~components/shared/ModalCamera';
 import { ReportAssetModel } from '~types/assets';
 import { UploadFileBase64Model } from '~types/fileUploads';
 import extractFileName from '~utils/extractFileName';
-import Colors from '../constants/Colors';
 import baseStyles from '../styles/baseStyles';
-
 import { RootStackParamList } from '../types';
 
 export default function ReportAssetScreen({

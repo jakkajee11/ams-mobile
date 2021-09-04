@@ -1,10 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { Text } from 'react-native-elements';
 import baseStyles from '~styles/baseStyles';
 import { DateTimeFormat } from '~utils/format';
-import Colors from '../../constants/Colors';
 import { JobModel } from '../../types/jobs';
 import JobAsset from './JobAsset';
 

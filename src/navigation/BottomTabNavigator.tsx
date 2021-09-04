@@ -3,21 +3,18 @@
  * https://reactnavigation.org/docs/bottom-tab-navigator
  */
 
-import { Ionicons, FontAwesome, FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 import Header from '~components/shared/Header';
 import AssetDetailsScreen from '~screens/AssetDetailsScreen';
-
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
-import HomeScreen from '../screens/HomeScreen';
 import JobDetailsScreen from '../screens/JobDetailsScreen';
 import JobsScreen from '../screens/JobsScreen';
 import ScanQRCodeScreen from '../screens/ScanQRCodeScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-
 import { BottomTabParamList, JobsParamsList } from '../types';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
