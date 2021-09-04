@@ -1,35 +1,10 @@
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { StackScreenProps } from '@react-navigation/stack';
-import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {
-  Button,
-  Icon,
-  Input,
-  Text,
-  Tab,
-  TabView,
-  ListItem,
-  Image,
-} from 'react-native-elements';
-import Logo from '../components/shared/Logo';
+import { ScrollView, View } from 'react-native';
+import { Text, Image } from 'react-native-elements';
 
-import {
-  AuthStackParamList,
-  JobsParamsList,
-  RootStackParamList,
-} from '../types';
-import JobDetail from '../components/jobs/JobDetail';
-import JobAsset from '../components/jobs/JobAsset';
-import JobAssetDetail from '../components/jobs/JobAssetDetail';
+import { JobsParamsList } from '../types';
 import Loading from '~components/shared/Loading';
 import useAssetApi from '~apis/useAssetApi';
 import { AssetDetailModel } from '~types/assets';
@@ -118,12 +93,12 @@ export default function AssetDetailsScreen({
 
           <View style={baseStyles.col}>
             <Text>Detail:</Text>
-            <Text>{data?.details} </Text>
+            <Text style={baseStyles.longText}>{data?.details} </Text>
           </View>
 
           <View style={baseStyles.col}>
             <Text>Other:</Text>
-            <Text>{data?.others} </Text>
+            <Text style={baseStyles.longText}>{data?.others} </Text>
           </View>
 
           <View>
@@ -152,22 +127,3 @@ export default function AssetDetailsScreen({
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 0,
-    opacity: 0.9,
-  },
-  button: {
-    padding: 10,
-    height: 150,
-  },
-  title: {
-    fontSize: 12,
-    color: 'white',
-    textAlign: 'center',
-  },
-  tabViewItem: {
-    width: '100%',
-  },
-});

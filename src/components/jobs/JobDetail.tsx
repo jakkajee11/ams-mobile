@@ -65,9 +65,9 @@ export default function JobDetail({
           <Text>Sub Location: </Text>
           <Text>{subLocation}</Text>
         </View>
-        <View style={{ padding: 5 }}>
+        <View style={baseStyles.col}>
           <Text>Detail:</Text>
-          <Text>{details}</Text>
+          <Text style={baseStyles.longText}>{details}</Text>
         </View>
 
         <View style={{ marginTop: 10, marginBottom: 10 }}>

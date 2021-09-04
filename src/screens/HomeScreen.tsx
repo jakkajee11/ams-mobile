@@ -33,7 +33,7 @@ export default function HomeScreen({
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor={Colors.white} />
+      <StatusBar backgroundColor={Colors.yellow} />
       <Logo />
       <View
         style={{

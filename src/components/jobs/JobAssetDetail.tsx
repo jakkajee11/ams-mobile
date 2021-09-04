@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Icon, Text, Button } from 'react-native-elements';
+import baseStyles from '~styles/baseStyles';
 import Colors from '../../constants/Colors';
 import { JobAssetModel, JobModel } from '../../types/jobs';
 import Asset from '../assets/Asset';
@@ -32,7 +33,7 @@ export default function JobAssetDetail({
         {/* <Text style={styles.text}>Location: {location}</Text>
         <Text style={styles.text}>Sub Location: {subLocation}</Text> */}
         <View>
-          <Text style={styles.text}>Detail</Text>
+          <Text style={baseStyles.longText}>Detail</Text>
         </View>
       </View>
     </View>

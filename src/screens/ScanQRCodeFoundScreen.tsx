@@ -111,7 +111,7 @@ export default function ScanQRCodeFoundScreen({
       <Header title={asset?.assetId ?? 'QR CODE FOUNDED'} />
       <StatusBar backgroundColor={Colors.yellow} />
       <ScrollView style={baseStyles.scrollView}>
-        <ActivityIndicator animating={loading} size='large' />
+        {loading && <ActivityIndicator animating={loading} size='large' />}
         <View style={baseStyles.container}>
           <View style={{ padding: 5 }}>
             <View style={baseStyles.row}>
@@ -164,12 +164,15 @@ export default function ScanQRCodeFoundScreen({
             </View>
             <View style={baseStyles.row}>
               <Text style={baseStyles.label}>Details:</Text>
-              <Text>{asset?.details}</Text>
+              <Text style={baseStyles.longText}>{asset?.details}</Text>
             </View>
-
+            <Text>Attachments</Text>
+            {!asset?.attachments ||
+              (asset?.attachments.length === 0 && (
+                <Text>[ No Attachment ]</Text>
+              ))}
             {asset?.attachments && asset?.attachments.length > 0 && (
               <>
-                <Text>Attachments</Text>
                 <View style={baseStyles.attachmentContainer}>
                   {asset.attachments
                     .filter((atm) => atm.type === ATTACHMENT_TYPE.Photo)
@@ -184,6 +187,23 @@ export default function ScanQRCodeFoundScreen({
                     ))}
                 </View>
               </>
+            )}
+
+            {attachments && (
+              <View style={{ marginTop: 20 }}>
+                <Text style={baseStyles.textCenter}>Taken Photo</Text>
+                {attachments.map((atm) => (
+                  <View key={atm.uri}>
+                    <Image
+                      source={{
+                        uri: atm.uri,
+                      }}
+                      style={baseStyles.image}
+                    />
+                    <Text>{extractFileName(atm.uri)}</Text>
+                  </View>
+                ))}
+              </View>
             )}
           </View>
         </View>
