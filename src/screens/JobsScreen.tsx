@@ -3,7 +3,14 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {
   Button,
   Icon,
@@ -24,6 +31,8 @@ import { JobModel, JobQuery } from '../types/jobs';
 import useJobApi from '~apis/useJobApi';
 import { JOB_STATUS } from '~constants/Status';
 import Loading from '~components/shared/Loading';
+import { useIsFocused } from '@react-navigation/native';
+import Colors from '~constants/Colors';
 
 export default function JobsScreen({
   navigation,
@@ -35,6 +44,7 @@ export default function JobsScreen({
   // const [completedJobs, setCompletedJobs] = useState<JobModel[]>([]);
   const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState<{ [key: string]: JobModel[] }>({});
+  const isFocused = useIsFocused();
 
   const PendingTitle = (
     <Text style={styles.title}>
@@ -92,8 +102,9 @@ export default function JobsScreen({
   };
 
   useEffect(() => {
-    prepareData();
-  }, []);
+    console.log(['isFocus', isFocused]);
+    if (isFocused) prepareData();
+  }, [isFocused]);
 
   return (
     <View style={styles.container}>
@@ -115,43 +126,73 @@ export default function JobsScreen({
             titleStyle={{ color: 'white', fontSize: 8 }}
           />
         </Tab>
-
-        <TabView value={index} onChange={setIndex}>
-          <TabView.Item style={styles.tabViewItem}>
-            <View>
-              {loading && <Loading loading={loading} />}
-              {jobs[JOB_STATUS.Pending]?.map((job) => (
-                <Job
-                  key={job.id}
-                  data={job}
-                  onPress={(job: JobModel) => handleJobItemPress(job)}
+        <ScrollView
+          //contentContainerStyle={styles.container}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={prepareData}
+              colors={[Colors.yellow]}
+            />
+          }
+        >
+          <TabView value={index} onChange={setIndex}>
+            <TabView.Item style={styles.tabViewItem}>
+              <View>
+                {/* {loading && <Loading loading={loading} />} */}
+                {jobs[JOB_STATUS.Pending]?.map((job) => (
+                  <Job
+                    key={job.id}
+                    data={job}
+                    onPress={(job: JobModel) => handleJobItemPress(job)}
+                  />
+                ))}
+              </View>
+              {/* <ScrollView
+              contentContainerStyle={styles.container}
+              refreshControl={
+                <RefreshControl
+                  refreshing={loading}
+                  onRefresh={prepareData}
+                  colors={[Colors.yellow]}
                 />
-              ))}
-            </View>
-          </TabView.Item>
-          <TabView.Item style={styles.tabViewItem}>
-            <View>
-              {jobs[JOB_STATUS.InProgress]?.map((job) => (
-                <Job
-                  key={job.id}
-                  data={job}
-                  onPress={(job: JobModel) => handleJobItemPress(job)}
-                />
-              ))}
-            </View>
-          </TabView.Item>
-          <TabView.Item style={styles.tabViewItem}>
-            <View>
-              {jobs[JOB_STATUS.Completed]?.map((job) => (
-                <Job
-                  key={job.id}
-                  data={job}
-                  onPress={(job: JobModel) => handleJobItemPress(job)}
-                />
-              ))}
-            </View>
-          </TabView.Item>
-        </TabView>
+              }
+            >
+              <View>                
+                {jobs[JOB_STATUS.Pending]?.map((job) => (
+                  <Job
+                    key={job.id}
+                    data={job}
+                    onPress={(job: JobModel) => handleJobItemPress(job)}
+                  />
+                ))}
+              </View>
+            </ScrollView> */}
+            </TabView.Item>
+            <TabView.Item style={styles.tabViewItem}>
+              <View>
+                {jobs[JOB_STATUS.InProgress]?.map((job) => (
+                  <Job
+                    key={job.id}
+                    data={job}
+                    onPress={(job: JobModel) => handleJobItemPress(job)}
+                  />
+                ))}
+              </View>
+            </TabView.Item>
+            <TabView.Item style={styles.tabViewItem}>
+              <View>
+                {jobs[JOB_STATUS.Completed]?.map((job) => (
+                  <Job
+                    key={job.id}
+                    data={job}
+                    onPress={(job: JobModel) => handleJobItemPress(job)}
+                  />
+                ))}
+              </View>
+            </TabView.Item>
+          </TabView>
+        </ScrollView>
       </View>
     </View>
   );
