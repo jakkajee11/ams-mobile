@@ -55,6 +55,10 @@ export default function useJobApi() {
     return await put(url, { jobId, assetId, status });
   };
 
+  const createShipJob = async (payload: any) => {
+    return await post(`${endpoint}/ship`, payload);
+  };
+
   return {
     getPendingJobs,
     getWorkingJobs,
@@ -64,5 +68,6 @@ export default function useJobApi() {
     updateJobStatus,
     updateJobProgress,
     updateJobAssetStatus,
+    createShipJob,
   };
 }

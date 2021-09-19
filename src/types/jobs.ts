@@ -58,3 +58,7 @@ export type UpdateJobAssetStatusModel = {
   assetId: string;
   status: number;
 };
+
+export type CreateShipJobModel = {
+  addressId: string;
+};

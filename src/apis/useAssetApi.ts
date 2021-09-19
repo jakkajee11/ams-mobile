@@ -15,6 +15,11 @@ export default function useAssetApi() {
     return await get(url);
   };
 
+  const getAssetByAddressId = async (id: string) => {
+    const url = `${endpoint}/shipaddress/${id}`;
+    return await get(url);
+  };
+
   const checkAsset = async (assetId: string) => {
     const url = `${endpoint}/checkasset/${assetId}`;
     return await get(url);
@@ -27,6 +32,7 @@ export default function useAssetApi() {
   return {
     getAsset,
     getAssetInfo,
+    getAssetByAddressId,
     checkAsset,
     reportAssetLocation,
   };
