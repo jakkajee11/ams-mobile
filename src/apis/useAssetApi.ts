@@ -16,7 +16,7 @@ export default function useAssetApi() {
   };
 
   const getAssetByAddressId = async (id: string) => {
-    const url = `${endpoint}/shipaddress/${id}`;
+    const url = `${endpoint}/shipto/${id}`;
     return await get(url);
   };
 

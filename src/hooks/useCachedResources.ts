@@ -4,6 +4,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import useAuthApi from '~apis/useAuthApi';
 import { APP_CONFIG } from '~constants/Config';
+import { silentSignIn } from '~utils/auth';
+//import {silentSignIn, silentRefreshToken} from '~utils/auth';
 import Storages from '~utils/Storages';
 import useAuth from './useAuth';
 
@@ -42,27 +44,30 @@ export default function useCachedResources() {
           // refresh token failed
           // silent signin user
           if (res && res.status === 203) {
-            const userName = await Storages.getString('@__ui$');
-            const password = await Storages.getString('@__us$');
-            if (
-              userName &&
-              userName.length > 0 &&
-              password &&
-              password.length > 0
-            ) {
-              const signInResult = await signIn({
-                clientId: APP_CONFIG.clientId,
-                userName,
-                password,
-              });
-              if (
-                signInResult &&
-                signInResult.status === 200 &&
-                signInResult.data
-              ) {
-                await Storages.saveUserToken(JSON.stringify(signInResult.data));
-              }
-            }
+            //silentSignIn().signIn();
+            // const userName = await Storages.getString('@__ui$');
+            // const password = await Storages.getString('@__us$');
+            // if (
+            //   userName &&
+            //   userName.length > 0 &&
+            //   password &&
+            //   password.length > 0
+            // ) {
+            //   const signInResult = await signIn({
+            //     clientId: APP_CONFIG.clientId,
+            //     userName,
+            //     password,
+            //   });
+            //   if (
+            //     signInResult &&
+            //     signInResult.status === 200 &&
+            //     signInResult.data
+            //   ) {
+            //     await Storages.saveUserToken(JSON.stringify(signInResult.data));
+            //   }
+            // }
+            //silentSignIn();
+            silentSignIn();
           }
         } else {
           console.warn('No token found, login required!!!');

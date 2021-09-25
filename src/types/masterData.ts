@@ -51,7 +51,27 @@ export type AssetStatusModel = {
   modifiedAt?: string;
 };
 
-export type ShipAddressModel = {
+export type LocationModel = {
+  id: string;
+  name: string;
+  createdUserId: string;
+  createdUserName: string;
+  createdAt: string;
+  modifiedUserId?: string;
+  modifiedAt?: string;
+};
+
+export type ShipToModel = {
+  id: string;
+  name: string;
+  createdUserId: string;
+  createdUserName: string;
+  createdAt: string;
+  modifiedUserId?: string;
+  modifiedAt?: string;
+};
+
+export type SoldToModel = {
   id: string;
   name: string;
   createdUserId: string;

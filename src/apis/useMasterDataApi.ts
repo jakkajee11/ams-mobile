@@ -5,7 +5,9 @@ import {
   AssetTypeDetailModel,
   AssetTypeModel,
   CostCenterModel,
-  ShipAddressModel,
+  LocationModel,
+  ShipToModel,
+  SoldToModel,
 } from '~types/masterData';
 import { SearchQuery } from '~types/queries';
 
@@ -143,30 +145,81 @@ export default function useMasterDataApi() {
     return await exportFile(url, { ...query, page: 0 });
   };
 
-  const getShipAddresses = async (query: SearchQuery) => {
-    var url = `${endpoint}/shipaddresses`;
-    console.log(['shipaddress', url]);
+  const getLocations = async (query: SearchQuery) => {
+    var url = `${endpoint}/locations`;
     return await find(url, query);
   };
 
-  const getShipAddress = async (id: string) => {
-    return await get(`${endpoint}/shipaddresses/${id}`);
+  const getLocation = async (id: string) => {
+    return await get(`${endpoint}/locations/${id}`);
   };
 
-  const createShipAddress = async (payload: ShipAddressModel) => {
-    return await post(`${endpoint}/shipaddresses`, payload);
+  const createLocation = async (payload: LocationModel) => {
+    return await post(`${endpoint}/locations`, payload);
   };
 
-  const updateShipAddress = async (payload: ShipAddressModel) => {
-    return await put(`${endpoint}/shipaddresses`, payload);
+  const updateLocation = async (payload: LocationModel) => {
+    return await put(`${endpoint}/locations`, payload);
   };
 
-  const deleteShipAddress = async (id: string) => {
-    return await remove(`${endpoint}/shipaddresses/${id}`);
+  const deleteLocation = async (id: string) => {
+    return await remove(`${endpoint}/locations/${id}`);
   };
 
-  const exportShipAddresses = async (query: SearchQuery) => {
-    const url = `${endpoint}/shipaddresses/export`;
+  const exportLocations = async (query: SearchQuery) => {
+    const url = `${endpoint}/locations/export`;
+    return await exportFile(url, { ...query, page: 0 });
+  };
+
+  const getShipTos = async (query: SearchQuery) => {
+    var url = `${endpoint}/shiptos`;
+    return await find(url, query);
+  };
+
+  const getShipTo = async (id: string) => {
+    return await get(`${endpoint}/shiptos/${id}`);
+  };
+
+  const createShipTo = async (payload: ShipToModel) => {
+    return await post(`${endpoint}/shiptos`, payload);
+  };
+
+  const updateShipTo = async (payload: ShipToModel) => {
+    return await put(`${endpoint}/shiptos`, payload);
+  };
+
+  const deleteShipTo = async (id: string) => {
+    return await remove(`${endpoint}/shiptos/${id}`);
+  };
+
+  const exportShipTos = async (query: SearchQuery) => {
+    const url = `${endpoint}/shiptos/export`;
+    return await exportFile(url, { ...query, page: 0 });
+  };
+
+  const getSoldTos = async (query: SearchQuery) => {
+    var url = `${endpoint}/soldtos`;
+    return await find(url, query);
+  };
+
+  const getSoldTo = async (id: string) => {
+    return await get(`${endpoint}/soldtos/${id}`);
+  };
+
+  const createSoldTo = async (payload: SoldToModel) => {
+    return await post(`${endpoint}/soldtos`, payload);
+  };
+
+  const updateSoldTo = async (payload: SoldToModel) => {
+    return await put(`${endpoint}/soldtos`, payload);
+  };
+
+  const deleteSoldTo = async (id: string) => {
+    return await remove(`${endpoint}/soldtos/${id}`);
+  };
+
+  const exportSoldTos = async (query: SearchQuery) => {
+    const url = `${endpoint}/soldtos/export`;
     return await exportFile(url, { ...query, page: 0 });
   };
 
@@ -206,11 +259,25 @@ export default function useMasterDataApi() {
     deleteCostCenter,
     exportCostCenters,
 
-    getShipAddresses,
-    getShipAddress,
-    createShipAddress,
-    updateShipAddress,
-    deleteShipAddress,
-    exportShipAddresses,
+    getLocations,
+    getLocation,
+    createLocation,
+    updateLocation,
+    deleteLocation,
+    exportLocations,
+
+    getShipTos,
+    getShipTo,
+    createShipTo,
+    updateShipTo,
+    deleteShipTo,
+    exportShipTos,
+
+    getSoldTos,
+    getSoldTo,
+    createSoldTo,
+    updateSoldTo,
+    deleteSoldTo,
+    exportSoldTos,
   };
 }
