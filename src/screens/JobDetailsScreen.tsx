@@ -49,8 +49,9 @@ export default function JobDetailsScreen({
       JOB_STATUS.InProgress
     );
     if (res && res.status === 200) {
-      Alert.alert('Success', 'Job is started');
-      navigation.navigate('Jobs');
+      //Alert.alert('Success', 'Job is started');
+      //navigation.navigate('Jobs');
+      await loadJob();
     } else {
       Alert.alert('Failed', 'Start job failed');
     }

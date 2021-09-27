@@ -55,9 +55,11 @@ export default function LoginScreen({
 
         // update notification Token
         const token = (await Notifications.getExpoPushTokenAsync()).data;
-        const tokenRes = await updateUserNotificationToken({
-          token,
-        });
+        if (token) {
+          const tokenRes = await updateUserNotificationToken({
+            token,
+          });
+        }
 
         navigation.navigate('Root');
       }
