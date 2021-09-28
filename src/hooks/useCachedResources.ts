@@ -71,6 +71,7 @@ export default function useCachedResources() {
           }
         } else {
           console.warn('No token found, login required!!!');
+          Storages.removeUserToken();
         }
         setIsUserLoggedIn(userToken && !!userToken.access_token);
         setLoadingComplete(true);
