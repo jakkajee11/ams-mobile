@@ -52,7 +52,7 @@ export default function ReportAssetFromAddressScreen({
 
   const reportAsset = async () => {
     const payload: CreateShipJobModel = {
-      addressId,
+      shipAddressId: addressId,
     };
 
     const res = await createShipJob(payload);

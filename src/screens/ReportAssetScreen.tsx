@@ -166,15 +166,17 @@ export default function ReportAssetScreen({
                 onChangeText={(text) => setLocation(text)}
                 value={location}
               />
-              <Input
+              {/* <Input
                 label='Sub Location'
                 onChangeText={(text) => setSubLocation(text)}
                 value={subLocation}
-              />
+              /> */}
               <Input
                 label='Detail'
                 multiline
                 numberOfLines={4}
+                renderErrorMessage={true}
+                errorMessage={details.length > 0 ? undefined : '* Required'}
                 onChangeText={(text) => setDetails(text)}
                 value={details}
               />
