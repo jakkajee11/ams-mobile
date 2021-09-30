@@ -23,6 +23,10 @@ export default function useJobApi() {
     return await getJobs({ ...query, status: JOB_STATUS.InProgress });
   };
 
+  const getFinishedJobs = async (query: JobQuery) => {
+    return await getJobs({ ...query, status: JOB_STATUS.Finished });
+  };
+
   const getCompletedJobs = async (query: JobQuery) => {
     return await getJobs({ ...query, status: JOB_STATUS.Completed });
   };
@@ -62,6 +66,7 @@ export default function useJobApi() {
   return {
     getPendingJobs,
     getWorkingJobs,
+    getFinishedJobs,
     getCompletedJobs,
     getJob,
     getJobsCount,

@@ -37,7 +37,8 @@ import Colors from '~constants/Colors';
 export default function JobsScreen({
   navigation,
 }: StackScreenProps<JobsParamsList, 'Jobs'>) {
-  const { getPendingJobs, getWorkingJobs, getCompletedJobs } = useJobApi();
+  const { getPendingJobs, getWorkingJobs, getFinishedJobs, getCompletedJobs } =
+    useJobApi();
   const [index, setIndex] = useState(0);
   // const [pendingJobs, setPendingJobs] = useState<JobModel[]>([]);
   // const [workingJobs, setWorkingJobs] = useState<JobModel[]>([]);
@@ -59,7 +60,7 @@ export default function JobsScreen({
 
   const CompletedTitle = (
     <Text style={styles.title}>
-      Completed{'\n'}({jobs[JOB_STATUS.Completed]?.length ?? 0})
+      Finished{'\n'}({jobs[JOB_STATUS.Completed]?.length ?? 0})
     </Text>
   );
 
@@ -76,13 +77,16 @@ export default function JobsScreen({
       startDate: '2021-07-01',
       endDate: '2021-12-31',
     };
-    const [pending, working, completed] = await Promise.all([
+    const [pending, working, finished, completed] = await Promise.all([
       getPendingJobs({ ...query, status: JOB_STATUS.Pending }),
       getWorkingJobs({ ...query, status: JOB_STATUS.InProgress }),
+      getFinishedJobs({ ...query, status: JOB_STATUS.Finished }),
       getCompletedJobs({ ...query, status: JOB_STATUS.Completed }),
     ]);
 
-    let myJobs: { [key: number]: JobModel[] } = {};
+    let myJobs: { [key: number]: JobModel[] } = {
+      [JOB_STATUS.Completed]: [],
+    };
 
     if (pending && pending.status === 200 && pending.data) {
       //setPendingJobs(pending.data);
@@ -92,9 +96,26 @@ export default function JobsScreen({
       //setWorkingJobs(working.data);
       myJobs[JOB_STATUS.InProgress] = working.data.records;
     }
+    if (finished && finished.status === 200 && finished.data) {
+      // //setCompletedJobs(completed.data);
+      // if (!myJobs[JOB_STATUS.Completed])
+      //   myJobs[JOB_STATUS.Completed] = [];
+
+      myJobs[JOB_STATUS.Completed] = [
+        ...myJobs[JOB_STATUS.Completed],
+        ...finished.data.records,
+      ];
+    }
     if (completed && completed.status === 200 && completed.data) {
-      //setCompletedJobs(completed.data);
-      myJobs[JOB_STATUS.Completed] = completed.data.records;
+      // //setCompletedJobs(completed.data);
+      // if (!myJobs[JOB_STATUS.Completed])
+      //   myJobs[JOB_STATUS.Completed] = [];
+
+      myJobs[JOB_STATUS.Completed] = [
+        ...myJobs[JOB_STATUS.Completed],
+        ...completed.data.records,
+      ];
+      //myJobs[JOB_STATUS.Completed] = completed.data.records;
     }
 
     setJobs(myJobs);
