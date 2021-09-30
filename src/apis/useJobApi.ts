@@ -23,6 +23,10 @@ export default function useJobApi() {
     return await getJobs({ ...query, status: JOB_STATUS.InProgress });
   };
 
+  const getFinishedJobs = async (query: JobQuery) => {
+    return await getJobs({ ...query, status: JOB_STATUS.Finished });
+  };
+
   const getCompletedJobs = async (query: JobQuery) => {
     return await getJobs({ ...query, status: JOB_STATUS.Completed });
   };
@@ -55,14 +59,20 @@ export default function useJobApi() {
     return await put(url, { jobId, assetId, status });
   };
 
+  const createShipJob = async (payload: any) => {
+    return await post(`${endpoint}/ship`, payload);
+  };
+
   return {
     getPendingJobs,
     getWorkingJobs,
+    getFinishedJobs,
     getCompletedJobs,
     getJob,
     getJobsCount,
     updateJobStatus,
     updateJobProgress,
     updateJobAssetStatus,
+    createShipJob,
   };
 }

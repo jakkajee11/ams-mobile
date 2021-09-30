@@ -55,9 +55,15 @@ export default function LoginScreen({
 
         // update notification Token
         const token = (await Notifications.getExpoPushTokenAsync()).data;
-        await updateUserNotificationToken({
-          token,
-        });
+        if (token) {
+          try {
+            const tokenRes = await updateUserNotificationToken({
+              token,
+            });
+          } catch {
+            console.log('error: updateUserNotificationToken');
+          }
+        }
 
         navigation.navigate('Root');
       }
@@ -107,7 +113,7 @@ export default function LoginScreen({
           icon={<Icon name='login' type='Feather' size={28} color='white' />}
           title='Login'
           titleStyle={{ fontWeight: '600', fontSize: 18, marginLeft: 10 }}
-          loading={false}
+          loading={loading}
           onPress={login}
         />
 

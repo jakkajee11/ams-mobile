@@ -163,7 +163,7 @@ export default function HomeScreen({
               </Text>
             </View>
           }
-          //onPress={() => navigation.navigate('ReportAsset')}
+          onPress={() => navigation.navigate('ReportAssetFromAddress')}
         />
       </View>
     </View>

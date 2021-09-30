@@ -51,8 +51,8 @@ export default function useApi() {
     instance,
     find: async function (route: string, query: SearchQuery) {
       const url = `${route}${buildQueryString(query)}`;
-
-      return await instance.get(url);
+      const cfg = await getConfig();
+      return await instance.get(url, cfg);
     },
     get: async function (url: string, config?: AxiosRequestConfig) {
       const cfg = await getConfig(config);
