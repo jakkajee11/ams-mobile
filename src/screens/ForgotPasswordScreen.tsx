@@ -2,8 +2,10 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Button, Icon, Input, Image } from 'react-native-elements';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Button, Icon, Input, Text } from 'react-native-elements';
+import useUserApi from '~apis/useUserApi';
+import Colors from '~constants/Colors';
 import Logo from '../components/shared/Logo';
 
 import { AuthStackParamList } from '../types';
@@ -11,12 +13,50 @@ import { AuthStackParamList } from '../types';
 export default function ForgotPasswordScreen({
   navigation,
 }: StackScreenProps<AuthStackParamList, 'ForgotPassword'>) {
-  const [userName, setUserName] = useState('');
+  const { resetPassword } = useUserApi();
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const isEmail = () => {
+    const regex = new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g);
+    return regex.test(email);
+    // console.log(['res', res, email]);
+    // return res;
+  };
+  const passwordReset = async () => {
+    setLoading(true);
+    if (email.length === 0) {
+      alert('Please input email');
+    } else {
+      // call api to signin
+      const res = await resetPassword(email);
+      if (res) {
+        alert(`New password has been sent to ${email}`);
+      } else {
+        alert('Reset password failed');
+      }
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor='#ffb900' />
-      <Logo />
+      {/* <StatusBar backgroundColor='#ffb900' /> */}
+      {/* <View
+        style={{
+          flex: 2,
+          justifyContent: 'flex-end',
+          alignSelf: 'center',
+          width: '70%',
+        }}
+      >
+        <Logo />
+        <Text h4 style={{ textAlign: 'center', color: Colors.darkGrey }}>
+          AMS
+        </Text>
+        <Text style={{ textAlign: 'center', color: Colors.darkGrey }}>
+          Asset Management System
+        </Text>
+      </View> */}
       <View
         style={{
           padding: 5,
@@ -24,22 +64,75 @@ export default function ForgotPasswordScreen({
           marginTop: 20,
           height: '80%',
           //backgroundColor: 'white',
-          flex: 1,
-          justifyContent: 'flex-start',
+          flex: 3,
+          justifyContent: 'center',
         }}
       >
-        <Input
-          placeholder='Username/Email'
-          leftIcon={{ type: 'font-awesome-5', name: 'user' }}
-          //style={styles}
-          onChangeText={(username: string) => setUserName(username)}
-        />
+        <View
+          style={{
+            //flex: 2,
+            justifyContent: 'flex-end',
+            alignSelf: 'center',
+            width: '80%',
+          }}
+        >
+          <Logo />
+          <Text
+            style={{
+              textAlign: 'center',
+              fontSize: 16,
+              fontWeight: 'bold',
+              marginBottom: 10,
+              color: Colors.darkGrey,
+            }}
+          >
+            Forgot your password?
+          </Text>
+        </View>
 
-        <Button
-          icon={<Icon name='send' type='Feather' size={28} color='white' />}
-          title='SUBMIT'
-          titleStyle={{ fontWeight: '600', fontSize: 18, marginLeft: 10 }}
-        />
+        <View
+          style={{ borderColor: Colors.lightGrey, borderWidth: 1, padding: 10 }}
+        >
+          <Text style={{ marginBottom: 10, fontSize: 12 }}>
+            Enter your e-mail address and we'll send you a link to reset your
+            password
+          </Text>
+          <Input
+            placeholder='E-mail Address'
+            leftIcon={{ type: 'feather', name: 'mail' }}
+            //style={styles}
+            textContentType='emailAddress'
+            onChangeText={(email: string) => setEmail(email)}
+          />
+
+          <Button
+            //icon={<Icon name='send' type='Feather' size={28} color='white' />}
+            title='Reset Password'
+            titleStyle={{
+              fontWeight: '600',
+              fontSize: 18,
+              color: Colors.black,
+              //marginLeft: 10,
+            }}
+            buttonStyle={{ backgroundColor: Colors.yellow }}
+            onPress={resetPassword}
+            disabled={!isEmail()}
+          />
+          <Button
+            type='clear'
+            title='Back to login'
+            onPress={() => navigation.navigate('Login')}
+          />
+        </View>
+      </View>
+      <View
+        style={{
+          flex: 0.3,
+          justifyContent: 'center',
+          alignSelf: 'center',
+        }}
+      >
+        <Text>Jungheinrich Thailand</Text>
       </View>
     </View>
   );
@@ -48,10 +141,10 @@ export default function ForgotPasswordScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffb900',
+    backgroundColor: Colors.white,
     alignItems: 'stretch',
     justifyContent: 'flex-start',
-    padding: 10,
+    padding: 5,
     opacity: 0.9,
   },
 });

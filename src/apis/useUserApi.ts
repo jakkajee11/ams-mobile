@@ -12,7 +12,13 @@ export default function useUserApi() {
     return await patch(url, model);
   };
 
+  const resetPassword = async (email: string) => {
+    const url = `${endpoint}/password/reset`;
+    return await patch(url, { email });
+  };
+
   return {
     updateUserNotificationToken,
+    resetPassword,
   };
 }
