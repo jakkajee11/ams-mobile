@@ -6,13 +6,12 @@ import { useState } from 'react';
 import {
   Alert,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import * as Notifications from 'expo-notifications';
-import { Button, Icon, Input, Image } from 'react-native-elements';
+import { Button, Icon, Input, Image, Text } from 'react-native-elements';
 import { Divider } from 'react-native-elements/dist/divider/Divider';
 import Logo from '../components/shared/Logo';
 import * as AuthSession from 'expo-auth-session';
@@ -24,6 +23,7 @@ import Storages from '~utils/Storages';
 import { APP_CONFIG } from '~constants/Config';
 import useAuth from '~hooks/useAuth';
 import useUserApi from '~apis/useUserApi';
+import Colors from '~constants/Colors';
 
 export default function LoginScreen({
   navigation,
@@ -84,37 +84,50 @@ export default function LoginScreen({
   return (
     <View style={styles.container}>
       {/* <StatusBar backgroundColor='#ffb900' /> */}
-      <Logo />
+      <View
+        style={{
+          flex: 1.8,
+          justifyContent: 'flex-end',
+          alignSelf: 'center',
+          width: '70%',
+        }}
+      >
+        <Logo />
+        <Text h4 style={{ textAlign: 'center', color: Colors.darkGrey }}>
+          AMS
+        </Text>
+        <Text style={{ textAlign: 'center', color: Colors.darkGrey }}>
+          Asset Management System
+        </Text>
+      </View>
       <View
         style={{
           padding: 5,
           margin: 5,
           marginTop: 20,
           height: '80%',
-          //backgroundColor: 'white',
-          flex: 1,
+          flex: 3,
           justifyContent: 'flex-start',
         }}
       >
         <Input
-          placeholder='Username/Email'
+          placeholder='Username'
           leftIcon={{ type: 'font-awesome-5', name: 'user-alt' }}
-          //style={styles}
           onChangeText={(username: string) => setUserName(username)}
         />
         <Input
           placeholder='Password'
           leftIcon={{ type: 'font-awesome-5', name: 'lock' }}
-          //style={styles}
           secureTextEntry
           onChangeText={(password: string) => setPassword(password)}
         />
         <Button
           icon={<Icon name='login' type='Feather' size={28} color='white' />}
-          title='Login'
+          title='Sign in'
           titleStyle={{ fontWeight: '600', fontSize: 18, marginLeft: 10 }}
           loading={loading}
           onPress={login}
+          buttonStyle={{ backgroundColor: Colors.yellow }}
         />
 
         <View style={{ marginTop: 30 }}>
@@ -125,6 +138,15 @@ export default function LoginScreen({
           />
         </View>
       </View>
+      <View
+        style={{
+          flex: 0.3,
+          justifyContent: 'center',
+          alignSelf: 'center',
+        }}
+      >
+        <Text>Jungheinrich Thailand</Text>
+      </View>
     </View>
   );
 }
@@ -132,7 +154,7 @@ export default function LoginScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffb900',
+    backgroundColor: Colors.white,
     alignItems: 'stretch',
     justifyContent: 'flex-start',
     padding: 10,
