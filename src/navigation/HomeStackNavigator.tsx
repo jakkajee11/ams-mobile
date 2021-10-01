@@ -7,6 +7,8 @@ import ScanQRCodeNotFoundScreen from '~screens/ScanQRCodeNotFoundScreen';
 import ReportAssetScreen from '~screens/ReportAssetScreen';
 import Header from '~components/shared/Header';
 import ScanQRCodeScreen from '~screens/ScanQRCodeScreen';
+import ReportAssetFromAddressScreen from '~screens/ReportAssetFromAddressScreen';
+import AssetDetailsScreen from '~screens/AssetDetailsScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -22,6 +24,16 @@ export default function HomeStackNavigator() {
         name='ReportAsset'
         component={ReportAssetScreen}
         options={{ header: () => <Header title='Report Asset' /> }}
+      />
+      <Stack.Screen
+        name='ReportAssetFromAddress'
+        component={ReportAssetFromAddressScreen}
+        options={{ header: () => <Header title='Create Job' /> }}
+      />
+      <Stack.Screen
+        name='AssetDetails'
+        component={AssetDetailsScreen}
+        options={{ header: () => <Header title='Asset Detail' /> }}
       />
       <Stack.Screen
         name='ScanQRCode'

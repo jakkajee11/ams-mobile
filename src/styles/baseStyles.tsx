@@ -60,11 +60,22 @@ const baseStyles = StyleSheet.create({
   col: {
     padding: 5,
   },
+  column: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    padding: 5,
+  },
   textCenter: {
     textAlign: 'center',
   },
   label: {
     fontStyle: 'normal',
+  },
+  longText: {
+    flex: 1,
   },
 });
 

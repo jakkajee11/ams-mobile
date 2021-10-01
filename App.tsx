@@ -3,17 +3,12 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useRef, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Notifications from 'expo-notifications';
-
 import useCachedResources from './src/hooks/useCachedResources';
 import useColorScheme from './src/hooks/useColorScheme';
 import Navigation from './src/navigation';
-import { FullTheme } from 'react-native-elements';
 import { ThemeProvider } from 'react-native-elements';
 import Colors from './src/constants/Colors';
-import { Platform } from 'react-native';
-import Constants from 'expo-constants';
 import registerForPushNotificationsAsync from './src/utils/registerForPushNotificationsAsync';
-import { useNavigation } from '@react-navigation/native';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({

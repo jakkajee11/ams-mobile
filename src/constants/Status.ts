@@ -1,6 +1,7 @@
 export const JOB_STATUS = {
   Pending: 0,
   InProgress: 2,
+  Finished: 3,
   Completed: 4,
   InCompleted: 8,
   Cancelled: 16,
@@ -10,7 +11,7 @@ export const JOB_PROGRESS = {
   Pending: 0,
   Started: 1,
   Paused: 3,
-  Completed: 5,
+  Finished: 5,
 };
 
 export const JOB_ASSET_STATUS = {

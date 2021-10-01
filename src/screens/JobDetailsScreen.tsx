@@ -49,8 +49,9 @@ export default function JobDetailsScreen({
       JOB_STATUS.InProgress
     );
     if (res && res.status === 200) {
-      Alert.alert('Success', 'Job is started');
-      navigation.navigate('Jobs');
+      //Alert.alert('Success', 'Job is started');
+      //navigation.navigate('Jobs');
+      await loadJob();
     } else {
       Alert.alert('Failed', 'Start job failed');
     }
@@ -81,7 +82,7 @@ export default function JobDetailsScreen({
         'Warning',
         `There ${
           uncheckedAssets > 1 ? 'are' : 'is'
-        } ${uncheckedAssets} not yet completed`,
+        } ${uncheckedAssets} asset not yet checked, Are you sure to finish?`,
         [
           {
             text: 'Cancel',
@@ -99,12 +100,13 @@ export default function JobDetailsScreen({
 
   const doFinishJob = async () => {
     setLoading(true);
-    const res = await updateJobProgress(
-      jobDetail?.id ?? '',
-      jobDetail?.jobProgressId === JOB_PROGRESS.Paused
-        ? JOB_PROGRESS.Started
-        : JOB_PROGRESS.Paused
-    );
+    // const res = await updateJobProgress(
+    //   jobDetail?.id ?? '',
+    //   jobDetail?.jobProgressId === JOB_PROGRESS.Paused
+    //     ? JOB_PROGRESS.Started
+    //     : JOB_PROGRESS.Paused
+    // );
+    const res = await updateJobStatus(jobDetail?.id ?? '', JOB_STATUS.Finished);
     if (res && res.status === 200) {
       Alert.alert('Success', 'Job is saved');
       setLoading(false);
@@ -154,11 +156,13 @@ export default function JobDetailsScreen({
     jobDetail?.assets.filter(
       (ja) => ja.jobAssetStatusId === JOB_ASSET_STATUS.Checked
     )?.length ?? 0;
+
   const itemCount = () => jobDetail?.assets.length ?? 0;
+
   const jobProgress = () =>
     checkedItemCount() === 0
       ? 0
-      : (itemCount() / checkedItemCount()).toFixed(1);
+      : ((checkedItemCount() / itemCount()) * 100).toFixed(1);
 
   useEffect(() => {
     (async function () {

@@ -1,51 +1,27 @@
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import { useIsFocused } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
-import { BarCodeScanner } from 'expo-barcode-scanner';
-import {
-  BarCodeScanningResult,
-  CameraCapturedPicture,
-  Camera as ExpoCamera,
-} from 'expo-camera';
+import { CameraCapturedPicture } from 'expo-camera';
 import _ from 'lodash';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import {
-  Modal,
-  StatusBar,
-  StyleSheet,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
-  SafeAreaView,
   ScrollView,
-  NativeSyntheticEvent,
-  TextInputChangeEventData,
   Alert,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import {
-  Overlay,
-  Button,
-  Icon,
-  Header,
-  Image,
-  Input,
-} from 'react-native-elements';
+import { Button, Icon, Image, Input } from 'react-native-elements';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import useAssetApi from '~apis/useAssetApi';
 import useUploadApi from '~apis/useUploadApi';
-import Camera from '~components/shared/Camera';
 import ModalCamera from '~components/shared/ModalCamera';
 import { ReportAssetModel } from '~types/assets';
 import { UploadFileBase64Model } from '~types/fileUploads';
 import extractFileName from '~utils/extractFileName';
-import Colors from '../constants/Colors';
 import baseStyles from '../styles/baseStyles';
-
 import { RootStackParamList } from '../types';
 
 export default function ReportAssetScreen({
@@ -63,6 +39,7 @@ export default function ReportAssetScreen({
   const [id] = useState(uuidv4());
   const [loading, setLoading] = useState(false);
   const [uploadErrors, setUploadErrors] = useState<string[]>([]);
+  const [buttonDisplay, setButtonDisplay] = useState<'flex' | 'none'>('flex');
 
   const maximum = 5;
 
@@ -144,6 +121,25 @@ export default function ReportAssetScreen({
     setLoading(false);
   };
 
+  const hideActionButton = () => {
+    setButtonDisplay('none');
+  };
+
+  const showActionButton = () => {
+    setButtonDisplay('flex');
+  };
+
+  useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', hideActionButton);
+    Keyboard.addListener('keyboardDidHide', showActionButton);
+
+    // cleanup function
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', hideActionButton);
+      Keyboard.removeListener('keyboardDidHide', showActionButton);
+    };
+  }, []);
+
   return (
     <>
       <ScrollView style={baseStyles.scrollView}>
@@ -170,15 +166,17 @@ export default function ReportAssetScreen({
                 onChangeText={(text) => setLocation(text)}
                 value={location}
               />
-              <Input
+              {/* <Input
                 label='Sub Location'
                 onChangeText={(text) => setSubLocation(text)}
                 value={subLocation}
-              />
+              /> */}
               <Input
                 label='Detail'
                 multiline
                 numberOfLines={4}
+                renderErrorMessage={true}
+                errorMessage={details.length > 0 ? undefined : '* Required'}
                 onChangeText={(text) => setDetails(text)}
                 value={details}
               />
@@ -196,37 +194,37 @@ export default function ReportAssetScreen({
             )}
           </View>
         </KeyboardAvoidingView>
-        <View style={baseStyles.buttonGroupBottom}>
-          <Button
-            icon={
-              <Icon
-                name='camera'
-                type='font-awesome-5'
-                size={28}
-                color='white'
-              />
-            }
-            title={
-              attachments.length === maximum
-                ? ` Reach maximum (${maximum})`
-                : ' Take a photo'
-            }
-            disabled={assetId.length === 0 || attachments.length === maximum}
-            onPress={openCamera}
-          />
-          <Text></Text>
-          <Button
-            icon={
-              <Icon name='save' type='font-awesome-5' size={28} color='white' />
-            }
-            title=' Submit'
-            disabled={assetId.length === 0 || location.length === 0}
-            loading={loading}
-            onPress={reportAsset}
-          />
-        </View>
       </ScrollView>
-
+      <View
+        style={{
+          ...baseStyles.buttonGroupBottom,
+          flex: 0.2,
+          display: buttonDisplay,
+        }}
+      >
+        <Button
+          icon={
+            <Icon name='camera' type='font-awesome-5' size={28} color='white' />
+          }
+          title={
+            attachments.length === maximum
+              ? ` Reach maximum (${maximum})`
+              : ' Take a photo'
+          }
+          disabled={assetId.length === 0 || attachments.length === maximum}
+          onPress={openCamera}
+        />
+        <Text></Text>
+        <Button
+          icon={
+            <Icon name='save' type='font-awesome-5' size={28} color='white' />
+          }
+          title=' Submit'
+          disabled={assetId.length === 0 || location.length === 0}
+          loading={loading}
+          onPress={reportAsset}
+        />
+      </View>
       <ModalCamera
         showCamera={showCamera}
         openCamera={openCamera}
