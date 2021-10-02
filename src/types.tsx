@@ -33,9 +33,11 @@ export type RootStackParamList = {
   ScanQRCodeNotFound: QRCodeNotFoundModel | undefined;
   ReportAsset: any;
   ReportAssetFromAddress: any;
+  SearchSerialNo: any;
   AssetDetails: AssetDetailParams;
   Jobs: undefined;
   JobDetails: JobModel;
+  MyProfile: any;
   NotFound: undefined;
 };
 
