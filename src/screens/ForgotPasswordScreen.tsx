@@ -1,8 +1,8 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Keyboard, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Button, Icon, Input, Text } from 'react-native-elements';
 import useUserApi from '~apis/useUserApi';
 import Colors from '~constants/Colors';
@@ -16,6 +16,7 @@ export default function ForgotPasswordScreen({
   const { resetPassword } = useUserApi();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [buttonDisplay, setButtonDisplay] = useState<'flex' | 'none'>('flex');
 
   const isEmail = () => {
     const regex = new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g);
@@ -37,6 +38,25 @@ export default function ForgotPasswordScreen({
       }
     }
   };
+
+  const hideActionButton = () => {
+    setButtonDisplay('none');
+  };
+
+  const showActionButton = () => {
+    setButtonDisplay('flex');
+  };
+
+  useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', hideActionButton);
+    Keyboard.addListener('keyboardDidHide', showActionButton);
+
+    // cleanup function
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', hideActionButton);
+      Keyboard.removeListener('keyboardDidHide', showActionButton);
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -115,7 +135,7 @@ export default function ForgotPasswordScreen({
               //marginLeft: 10,
             }}
             buttonStyle={{ backgroundColor: Colors.yellow }}
-            onPress={resetPassword}
+            onPress={passwordReset}
             disabled={!isEmail()}
           />
           <Button
@@ -130,6 +150,7 @@ export default function ForgotPasswordScreen({
           flex: 0.3,
           justifyContent: 'center',
           alignSelf: 'center',
+          display: buttonDisplay,
         }}
       >
         <Text>Jungheinrich Thailand</Text>

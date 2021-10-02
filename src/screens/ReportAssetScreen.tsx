@@ -12,10 +12,11 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { Button, Icon, Image, Input } from 'react-native-elements';
+import { Button, CheckBox, Icon, Image, Input } from 'react-native-elements';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import useAssetApi from '~apis/useAssetApi';
+import useAssetNotificationApi from '~apis/useAssetNotificationApi';
 import useUploadApi from '~apis/useUploadApi';
 import ModalCamera from '~components/shared/ModalCamera';
 import { ReportAssetModel } from '~types/assets';
@@ -28,11 +29,16 @@ export default function ReportAssetScreen({
   route,
   navigation,
 }: StackScreenProps<RootStackParamList, 'ReportAsset'>) {
-  const { getAssetInfo, reportAssetLocation } = useAssetApi();
+  const { getAssetInfo } = useAssetApi();
+  const { reportAssetLocation } = useAssetNotificationApi();
   const { uploadFile } = useUploadApi();
-  const [assetId, setAssetId] = useState(route.params?.assetId ?? '');
+  //const [assetId, setAssetId] = useState(route.params?.assetId ?? '');
+  //const [serialNo, setSerialNo] = useState(route.params?.serialNo ?? '');
+  const [searchText, setSearchText] = useState(
+    route.params?.assetId ?? route.params?.serialNo ?? ''
+  );
   const [location, setLocation] = useState('');
-  const [subLocation, setSubLocation] = useState('');
+  //const [subLocation, setSubLocation] = useState('');
   const [details, setDetails] = useState('');
   const [attachments, setAttachemnts] = useState<CameraCapturedPicture[]>([]);
   const [showCamera, setShowCamera] = useState(false);
@@ -46,9 +52,10 @@ export default function ReportAssetScreen({
   const doReportAsset = async () => {
     setLoading(true);
     const data: ReportAssetModel = {
-      assetId,
+      assetId: route.params?.assetId ? searchText : '',
+      serialNo: route.params?.serialNo ? searchText : '',
       location,
-      subLocation,
+      //subLocation,
       details,
       attachments: [],
     };
@@ -65,17 +72,23 @@ export default function ReportAssetScreen({
   };
 
   const reportAsset = async () => {
-    if (assetId.length === 0 || location.length === 0) {
-      Alert.alert('Code and Location must not be empty!');
+    if (
+      searchText.length === 0 ||
+      location.length === 0 ||
+      details.length === 0
+    ) {
+      Alert.alert(
+        'Serial No./Asset ID, Location and details must not be empty!'
+      );
     } else {
       setLoading(true);
 
-      const res = await getAssetInfo(assetId);
+      const res = await getAssetInfo(searchText);
 
       if (res && res.status === 204) {
         Alert.alert(
           'Warning!',
-          `Asset ID "${assetId}" not exist in system. Are you sure to submit a report?`,
+          `Serial No./Asset ID "${searchText}" not exist in system. Are you sure to submit a report?`,
           [
             {
               text: 'Cancel',
@@ -103,7 +116,7 @@ export default function ReportAssetScreen({
         id,
         fileName: extractFileName(photo.uri),
         base64: photo.base64,
-        refCode: assetId,
+        refCode: searchText,
       };
       const res = await uploadFile(data);
       if (res && res.status !== 200) {
@@ -113,9 +126,10 @@ export default function ReportAssetScreen({
   };
 
   const reset = () => {
-    setAssetId('');
+    //setAssetId('');
+    setSearchText('');
     setLocation('');
-    setSubLocation('');
+    //setSubLocation('');
     setDetails('');
     setAttachemnts([]);
     setLoading(false);
@@ -149,14 +163,29 @@ export default function ReportAssetScreen({
         >
           <View style={baseStyles.container}>
             <View>
+              {/* <CheckBox
+                center
+                title='Serial No'
+                checkedIcon='dot-circle-o'
+                uncheckedIcon='circle-o'
+                //checked={this.state.checked}
+              />
+              <CheckBox
+                center
+                title='Asset ID'
+                checkedIcon='dot-circle-o'
+                uncheckedIcon='circle-o'
+                //checked={this.state.checked}
+              /> */}
+
               <Input
                 //placeholder='Code (Required)'
                 maxLength={255}
-                label='Asset ID'
-                renderErrorMessage={assetId === ''}
-                errorMessage={assetId.length > 0 ? undefined : '* Required'}
-                onChangeText={(text) => setAssetId(text)}
-                value={assetId}
+                label='Serial No./Asset ID'
+                renderErrorMessage={searchText === ''}
+                errorMessage={searchText.length > 0 ? undefined : '* Required'}
+                onChangeText={(text) => setSearchText(text)}
+                value={searchText}
               />
               <Input
                 //placeholder='Location (Required)'
@@ -211,7 +240,12 @@ export default function ReportAssetScreen({
               ? ` Reach maximum (${maximum})`
               : ' Take a photo'
           }
-          disabled={assetId.length === 0 || attachments.length === maximum}
+          disabled={
+            searchText.length === 0 ||
+            location.length === 0 ||
+            details.length === 0 ||
+            attachments.length === maximum
+          }
           onPress={openCamera}
         />
         <Text></Text>
@@ -220,7 +254,11 @@ export default function ReportAssetScreen({
             <Icon name='save' type='font-awesome-5' size={28} color='white' />
           }
           title=' Submit'
-          disabled={assetId.length === 0 || location.length === 0}
+          disabled={
+            searchText.length === 0 ||
+            location.length === 0 ||
+            details.length === 0
+          }
           loading={loading}
           onPress={reportAsset}
         />

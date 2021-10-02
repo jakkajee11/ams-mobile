@@ -33,15 +33,25 @@ export default function HomeScreen({
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor={Colors.yellow} />
-      <Logo />
+      <View
+        style={{
+          flex: 0.4,
+          width: '78%',
+          justifyContent: 'center',
+          alignSelf: 'center',
+        }}
+      >
+        {/* <StatusBar backgroundColor={Colors.yellow} /> */}
+        <Logo />
+      </View>
+      <View style={{ backgroundColor: Colors.yellow, height: 10 }}></View>
       <View
         style={{
           padding: 5,
           margin: 5,
           marginTop: 20,
           height: '30%',
-          flex: 0.7,
+          flex: 1.5,
           justifyContent: 'space-around',
         }}
       >
@@ -58,7 +68,7 @@ export default function HomeScreen({
               <Icon
                 name='qr-code-scanner'
                 type='MaterialIcons'
-                size={60}
+                size={55}
                 color='white'
               />
               <Text
@@ -87,9 +97,40 @@ export default function HomeScreen({
               }}
             >
               <Icon
+                name='search-location'
+                type='font-awesome-5'
+                size={55}
+                color='white'
+              />
+              <Text
+                style={{
+                  marginLeft: 10,
+                  fontSize: 18,
+                  fontWeight: '600',
+                  color: 'white',
+                }}
+              >
+                Search Serial No.
+              </Text>
+            </View>
+          }
+          onPress={() => navigation.navigate('SearchSerialNo')}
+        />
+
+        <Button
+          title={
+            <View
+              style={{
+                padding: 3,
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <Icon
                 name='tasks'
                 type='font-awesome-5'
-                size={60}
+                size={55}
                 color='white'
               />
               <Text
@@ -122,7 +163,7 @@ export default function HomeScreen({
               <Icon
                 name='search'
                 type='font-awesome-5'
-                size={60}
+                size={55}
                 color='white'
               />
               <Text
@@ -150,7 +191,7 @@ export default function HomeScreen({
                 alignItems: 'center',
               }}
             >
-              <Icon name='plus' type='feather' size={60} color='white' />
+              <Icon name='plus' type='feather' size={55} color='white' />
               <Text
                 style={{
                   marginLeft: 10,
@@ -165,6 +206,31 @@ export default function HomeScreen({
           }
           onPress={() => navigation.navigate('ReportAssetFromAddress')}
         />
+      </View>
+      <View style={{ flex: 0.2, justifyContent: 'flex-end' }}>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+          }}
+        >
+          {/* <Button
+            icon={
+              <Icon name='home' type='font-awesome-5' size={28} color='white' />
+            }
+            //title='Forgot Password?'
+            //onPress={() => navigation.navigate('ForgotPassword')}
+          /> */}
+          <Button
+            //type='clear'
+            icon={
+              <Icon name='user' type='font-awesome-5' size={28} color='white' />
+            }
+            //title='Forgot Password?'
+            onPress={() => navigation.navigate('MyProfile')}
+          />
+        </View>
       </View>
     </View>
   );

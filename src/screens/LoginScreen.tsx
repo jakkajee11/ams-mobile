@@ -5,6 +5,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import {
   Alert,
+  Keyboard,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -34,6 +35,8 @@ export default function LoginScreen({
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [buttonDisplay, setButtonDisplay] = useState<'flex' | 'none'>('flex');
+
   const clientId = APP_CONFIG.clientId;
 
   const login = async () => {
@@ -49,6 +52,7 @@ export default function LoginScreen({
       });
 
       if (res && res.status === 200 && res.data) {
+        console.log(['login', res.data]);
         await Storages.saveUserToken(JSON.stringify(res.data));
         await Storages.saveUserName(userName);
         await Storages.saveUserSecret(password);
@@ -71,7 +75,18 @@ export default function LoginScreen({
     setLoading(false);
   };
 
+  const hideActionButton = () => {
+    setButtonDisplay('none');
+  };
+
+  const showActionButton = () => {
+    setButtonDisplay('flex');
+  };
+
   React.useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', hideActionButton);
+    Keyboard.addListener('keyboardDidHide', showActionButton);
+
     (async function () {
       const loggedIn = await isLoggedIn();
       if (loggedIn) {
@@ -79,6 +94,12 @@ export default function LoginScreen({
         navigation.navigate('Root');
       }
     })();
+
+    // cleanup function
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', hideActionButton);
+      Keyboard.removeListener('keyboardDidHide', showActionButton);
+    };
   }, []);
 
   return (
@@ -143,6 +164,7 @@ export default function LoginScreen({
           flex: 0.3,
           justifyContent: 'center',
           alignSelf: 'center',
+          display: buttonDisplay,
         }}
       >
         <Text>Jungheinrich Thailand</Text>

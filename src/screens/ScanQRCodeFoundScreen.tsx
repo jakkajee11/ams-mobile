@@ -24,13 +24,14 @@ import { RootStackParamList } from '../types';
 import Header from '~components/shared/Header';
 import { ATTACHMENT_TYPE } from '~constants/Status';
 import ModalCamera from '~components/shared/ModalCamera';
+import useAssetNotificationApi from '~apis/useAssetNotificationApi';
 
 export default function ScanQRCodeFoundScreen({
   route,
   navigation,
 }: StackScreenProps<RootStackParamList, 'ScanQRCodeFound'>) {
   //const asset = route.params?.data
-  const { getAssetInfo, reportAssetLocation } = useAssetApi();
+  const { reportAssetLocation } = useAssetNotificationApi();
   const { uploadFile } = useUploadApi();
   const [asset, setAsset] = useState<AssetDetailModel | undefined>(
     route.params?.data
@@ -49,8 +50,9 @@ export default function ScanQRCodeFoundScreen({
     if (uploadSuccess) {
       const data: ReportAssetModel = {
         assetId: asset?.assetId ?? '',
+        serialNo: '',
         location: asset?.location ?? '',
-        subLocation: asset?.subLocation,
+        //subLocation: asset?.subLocation,
         details: asset?.details,
         attachments: [],
       };
