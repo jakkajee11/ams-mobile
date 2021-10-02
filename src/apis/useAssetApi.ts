@@ -25,15 +25,15 @@ export default function useAssetApi() {
     return await get(url);
   };
 
-  const reportAssetLocation = async (model: ReportAssetModel) => {
-    return await post(`${endpoint}/notify`, model);
-  };
+  // const reportAssetLocation = async (model: ReportAssetModel) => {
+  //   return await post(`${endpoint}/notify`, model);
+  // };
 
   return {
     getAsset,
     getAssetInfo,
     getAssetByAddressId,
     checkAsset,
-    reportAssetLocation,
+    // reportAssetLocation,
   };
 }

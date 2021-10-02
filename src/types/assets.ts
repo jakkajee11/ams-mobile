@@ -40,8 +40,9 @@ export type AssetDetailModel = AssetModel & {
 
 export type ReportAssetModel = {
   assetId: string;
+  serialNo: string;
   location: string;
-  subLocation?: string;
+  //subLocation?: string;
   details?: string;
   attachments?: string[];
 };
