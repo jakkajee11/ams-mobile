@@ -136,7 +136,7 @@ export default function JobDetailsScreen({
 
   const loadJob = async () => {
     setLoading(true);
-    const res = await getJob(route.params.id);
+    const res = await getJob(route.params?.id);
     if (res && res.status === 200 && res.data) {
       setJobDetail(res.data);
     }
