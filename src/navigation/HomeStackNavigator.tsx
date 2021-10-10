@@ -11,6 +11,7 @@ import ReportAssetFromAddressScreen from '~screens/ReportAssetFromAddressScreen'
 import AssetDetailsScreen from '~screens/AssetDetailsScreen';
 import ProfileScreen from '~screens/ProfileScreen';
 import SearchSerialNoScreen from '~screens/SearchSerialNoScreen';
+import JobDetailsScreen from '~screens/JobDetailsScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -61,6 +62,11 @@ export default function HomeStackNavigator() {
         name='MyProfile'
         component={ProfileScreen}
         options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name='JobDetails'
+        component={JobDetailsScreen}
+        options={{ header: () => <Header title='Details' /> }}
       />
     </Stack.Navigator>
   );
