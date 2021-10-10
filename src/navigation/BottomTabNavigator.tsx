@@ -55,13 +55,13 @@ export default function BottomTabNavigator() {
         }}
       />
 
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name='Settings'
         component={SettingsScreen}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name='cog' color={color} />,
         }}
-      />
+      /> */}
     </BottomTab.Navigator>
   );
 }
