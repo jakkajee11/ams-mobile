@@ -9,6 +9,7 @@ import Navigation from './src/navigation';
 import { ThemeProvider } from 'react-native-elements';
 import Colors from './src/constants/Colors';
 import registerForPushNotificationsAsync from './src/utils/registerForPushNotificationsAsync';
+import { RootSiblingParent } from 'react-native-root-siblings';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -101,11 +102,13 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <ThemeProvider theme={theme}>
-          <Navigation
-            colorScheme={colorScheme}
-            isUserLoggedIn={isUserLoggedIn}
-          />
-          <StatusBar />
+          <RootSiblingParent>
+            <Navigation
+              colorScheme={colorScheme}
+              isUserLoggedIn={isUserLoggedIn}
+            />
+            <StatusBar />
+          </RootSiblingParent>
         </ThemeProvider>
       </SafeAreaProvider>
     );

@@ -33,6 +33,7 @@ import { CreateShipJobModel } from '~types/jobs';
 import useJobApi from '~apis/useJobApi';
 import Colors from '~constants/Colors';
 import { refreshAuth, silentRefreshToken } from '~utils/auth';
+import Toast from 'react-native-root-toast';
 
 export default function ReportAssetFromAddressScreen({
   route,
@@ -57,9 +58,20 @@ export default function ReportAssetFromAddressScreen({
 
     const res = await createShipJob(payload);
     if (res.status === 200) {
-      alert('Job created successfully');
+      //alert('Job created successfully');
+      Toast.show(`Job was created successfully`, {
+        //position: Toast.positions.CENTER,
+        //textColor: Colors.red,
+        //backgroundColor: Colors.yellow,
+      });
+      navigation.navigate('JobDetails', { id: res.data });
     } else {
-      alert('Create job failed');
+      //alert('Create job failed');
+      Toast.show(`Create job failed`, {
+        //position: Toast.positions.CENTER,
+        textColor: Colors.red,
+        backgroundColor: Colors.yellow,
+      });
     }
   };
 

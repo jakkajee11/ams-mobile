@@ -25,6 +25,7 @@ import { APP_CONFIG } from '~constants/Config';
 import useAuth from '~hooks/useAuth';
 import useUserApi from '~apis/useUserApi';
 import Colors from '~constants/Colors';
+import Toast from 'react-native-root-toast';
 
 export default function LoginScreen({
   navigation,
@@ -42,7 +43,12 @@ export default function LoginScreen({
   const login = async () => {
     setLoading(true);
     if (userName.length === 0 || password.length === 0) {
-      Alert.alert('Error', 'Invalid UserName/Password');
+      //Alert.alert('Error', 'Invalid UserName/Password');
+      Toast.show('Invalid UserName/Password', {
+        //position: Toast.positions.CENTER,
+        textColor: Colors.red,
+        backgroundColor: Colors.yellow,
+      });
     } else {
       // call api to signin
       const res = await signIn({
@@ -52,22 +58,38 @@ export default function LoginScreen({
       });
 
       if (res && res.status === 200 && res.data) {
-        console.log(['login', res.data]);
+        //console.log(['login', res.data]);
         await Storages.saveUserToken(JSON.stringify(res.data));
         await Storages.saveUserName(userName);
         await Storages.saveUserSecret(password);
 
         // update notification Token
         const token = (await Notifications.getExpoPushTokenAsync()).data;
+        //console.log(['pushtoken', token]);
         if (token) {
           try {
             const tokenRes = await updateUserNotificationToken({
               token,
             });
+            //console.log(['tokenRes', tokenRes]);
           } catch {
-            console.log('error: updateUserNotificationToken');
+            //console.log('error: updateUserNotificationToken');
+            //alert(`pushToken: ${token} failed`);
+            Toast.show(`pushToken: ${token} failed`, {
+              //position: Toast.positions.CENTER,
+              textColor: Colors.red,
+              backgroundColor: Colors.yellow,
+            });
           }
+        } else {
+          alert(`token not founded`);
+          Toast.show(`token not found`, {
+            //position: Toast.positions.CENTER,
+            textColor: Colors.red,
+            backgroundColor: Colors.yellow,
+          });
         }
+        setLoading(false);
 
         navigation.navigate('Root');
       }

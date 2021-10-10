@@ -30,9 +30,9 @@ import {
 import { JobModel, JobQuery } from '../types/jobs';
 import useJobApi from '~apis/useJobApi';
 import { JOB_STATUS } from '~constants/Status';
-import Loading from '~components/shared/Loading';
 import { useIsFocused } from '@react-navigation/native';
 import Colors from '~constants/Colors';
+import Toast from 'react-native-root-toast';
 
 export default function JobsScreen({
   navigation,
@@ -64,7 +64,7 @@ export default function JobsScreen({
     </Text>
   );
 
-  const handleJobItemPress = (job: JobModel) => {
+  const showJobDetails = (job: JobModel) => {
     navigation.navigate('JobDetails', job);
   };
 
@@ -74,14 +74,19 @@ export default function JobsScreen({
       page: 0, // no pagination
       size: 10,
       status: 0,
-      startDate: '2021-07-01',
-      endDate: '2021-12-31',
+      //startDate: '2021-07-01',
+      //endDate: '2021-12-31',
     };
-    const [pending, working, finished, completed] = await Promise.all([
+    // const [pending, working, finished, completed] = await Promise.all([
+    //   getPendingJobs({ ...query, status: JOB_STATUS.Pending }),
+    //   getWorkingJobs({ ...query, status: JOB_STATUS.InProgress }),
+    //   getFinishedJobs({ ...query, status: JOB_STATUS.Finished }),
+    //   getCompletedJobs({ ...query, status: JOB_STATUS.Completed }),
+    // ]);
+    const [pending, working, finished] = await Promise.all([
       getPendingJobs({ ...query, status: JOB_STATUS.Pending }),
       getWorkingJobs({ ...query, status: JOB_STATUS.InProgress }),
       getFinishedJobs({ ...query, status: JOB_STATUS.Finished }),
-      getCompletedJobs({ ...query, status: JOB_STATUS.Completed }),
     ]);
 
     let myJobs: { [key: number]: JobModel[] } = {
@@ -89,41 +94,35 @@ export default function JobsScreen({
     };
 
     if (pending && pending.status === 200 && pending.data) {
-      //setPendingJobs(pending.data);
       myJobs[JOB_STATUS.Pending] = pending.data.records;
+    } else {
+      Toast.show("You don't have permission, please contact administrator", {
+        position: Toast.positions.CENTER,
+        textColor: Colors.red,
+        backgroundColor: Colors.yellow,
+      });
     }
     if (working && working.status === 200 && working.data) {
-      //setWorkingJobs(working.data);
       myJobs[JOB_STATUS.InProgress] = working.data.records;
     }
     if (finished && finished.status === 200 && finished.data) {
-      // //setCompletedJobs(completed.data);
-      // if (!myJobs[JOB_STATUS.Completed])
-      //   myJobs[JOB_STATUS.Completed] = [];
-
       myJobs[JOB_STATUS.Completed] = [
         ...myJobs[JOB_STATUS.Completed],
         ...finished.data.records,
       ];
     }
-    if (completed && completed.status === 200 && completed.data) {
-      // //setCompletedJobs(completed.data);
-      // if (!myJobs[JOB_STATUS.Completed])
-      //   myJobs[JOB_STATUS.Completed] = [];
-
-      myJobs[JOB_STATUS.Completed] = [
-        ...myJobs[JOB_STATUS.Completed],
-        ...completed.data.records,
-      ];
-      //myJobs[JOB_STATUS.Completed] = completed.data.records;
-    }
+    // if (completed && completed.status === 200 && completed.data) {
+    //   myJobs[JOB_STATUS.Completed] = [
+    //     ...myJobs[JOB_STATUS.Completed],
+    //     ...completed.data.records,
+    //   ];
+    // }
 
     setJobs(myJobs);
     setLoading(false);
   };
 
   useEffect(() => {
-    console.log(['isFocus', isFocused]);
     if (isFocused) prepareData();
   }, [isFocused]);
 
@@ -165,7 +164,7 @@ export default function JobsScreen({
                   <Job
                     key={job.id}
                     data={job}
-                    onPress={(job: JobModel) => handleJobItemPress(job)}
+                    onPress={(job: JobModel) => showJobDetails(job)}
                   />
                 ))}
               </View>
@@ -184,7 +183,7 @@ export default function JobsScreen({
                   <Job
                     key={job.id}
                     data={job}
-                    onPress={(job: JobModel) => handleJobItemPress(job)}
+                    onPress={(job: JobModel) => showJobDetails(job)}
                   />
                 ))}
               </View>
@@ -196,7 +195,7 @@ export default function JobsScreen({
                   <Job
                     key={job.id}
                     data={job}
-                    onPress={(job: JobModel) => handleJobItemPress(job)}
+                    onPress={(job: JobModel) => showJobDetails(job)}
                   />
                 ))}
               </View>
@@ -207,7 +206,7 @@ export default function JobsScreen({
                   <Job
                     key={job.id}
                     data={job}
-                    onPress={(job: JobModel) => handleJobItemPress(job)}
+                    onPress={(job: JobModel) => showJobDetails(job)}
                   />
                 ))}
               </View>

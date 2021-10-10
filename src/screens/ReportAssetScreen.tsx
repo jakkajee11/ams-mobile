@@ -14,11 +14,13 @@ import {
 } from 'react-native';
 import { Button, CheckBox, Icon, Image, Input } from 'react-native-elements';
 import 'react-native-get-random-values';
+import Toast from 'react-native-root-toast';
 import { v4 as uuidv4 } from 'uuid';
 import useAssetApi from '~apis/useAssetApi';
 import useAssetNotificationApi from '~apis/useAssetNotificationApi';
 import useUploadApi from '~apis/useUploadApi';
 import ModalCamera from '~components/shared/ModalCamera';
+import Colors from '~constants/Colors';
 import { ReportAssetModel } from '~types/assets';
 import { UploadFileBase64Model } from '~types/fileUploads';
 import extractFileName from '~utils/extractFileName';
@@ -63,10 +65,20 @@ export default function ReportAssetScreen({
     const res = await reportAssetLocation(data);
 
     if (res && res.status === 200) {
-      Alert.alert('Success', 'Asset was successfully reported');
+      //Alert.alert('Success', 'Asset was successfully reported');
+      Toast.show(`Asset was reported successfully`, {
+        //position: Toast.positions.CENTER,
+        //textColor: Colors.red,
+        //backgroundColor: Colors.yellow,
+      });
       reset();
     } else {
-      Alert.alert('Error', 'Report asset failed');
+      //Alert.alert('Error', 'Report asset failed');
+      Toast.show(`Error: Report asset failed`, {
+        //position: Toast.positions.CENTER,
+        textColor: Colors.red,
+        backgroundColor: Colors.yellow,
+      });
       setLoading(false);
     }
   };
@@ -77,8 +89,16 @@ export default function ReportAssetScreen({
       location.length === 0 ||
       details.length === 0
     ) {
-      Alert.alert(
-        'Serial No./Asset ID, Location and details must not be empty!'
+      // Alert.alert(
+      //   'Serial No./Asset ID, Location and details must not be empty!'
+      // );
+      Toast.show(
+        `Serial No./Asset ID, Location and details must not be empty!`,
+        {
+          //position: Toast.positions.CENTER,
+          textColor: Colors.red,
+          backgroundColor: Colors.yellow,
+        }
       );
     } else {
       setLoading(true);

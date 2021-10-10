@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Keyboard, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Button, Icon, Input, Text } from 'react-native-elements';
+import Toast from 'react-native-root-toast';
 import useUserApi from '~apis/useUserApi';
 import Colors from '~constants/Colors';
 import Logo from '../components/shared/Logo';
@@ -27,14 +28,24 @@ export default function ForgotPasswordScreen({
   const passwordReset = async () => {
     setLoading(true);
     if (email.length === 0) {
-      alert('Please input email');
+      //alert('Please input email');
+      Toast.show('Email is required');
     } else {
       // call api to signin
       const res = await resetPassword(email);
-      if (res) {
-        alert(`New password has been sent to ${email}`);
+
+      if (res && res.status === 200) {
+        //alert(`New password has been sent to ${email}`);
+        Toast.show(`New password has been sent to ${email}`);
       } else {
-        alert('Reset password failed');
+        //alert('Reset password failed');
+        Toast.show(
+          'Reset password failed, please ensure you put the correct email address',
+          {
+            textColor: Colors.red,
+            backgroundColor: Colors.yellow,
+          }
+        );
       }
     }
   };

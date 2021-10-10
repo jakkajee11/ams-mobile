@@ -25,6 +25,7 @@ import Header from '~components/shared/Header';
 import { ATTACHMENT_TYPE } from '~constants/Status';
 import ModalCamera from '~components/shared/ModalCamera';
 import useAssetNotificationApi from '~apis/useAssetNotificationApi';
+import Toast from 'react-native-root-toast';
 
 export default function ScanQRCodeFoundScreen({
   route,
@@ -60,12 +61,27 @@ export default function ScanQRCodeFoundScreen({
       const res = await reportAssetLocation(data);
 
       if (res && res.status === 200) {
-        Alert.alert('Success', 'Asset was successfully reported');
+        //Alert.alert('Success', 'Asset was successfully reported');
+        Toast.show(`Asset was reported successfully`, {
+          //position: Toast.positions.CENTER,
+          //textColor: Colors.red,
+          //backgroundColor: Colors.yellow,
+        });
       } else {
-        Alert.alert('Error', 'Report asset failed');
+        //Alert.alert('Error', 'Report asset failed');
+        Toast.show(`Error: Report asset failed`, {
+          //position: Toast.positions.CENTER,
+          textColor: Colors.red,
+          backgroundColor: Colors.yellow,
+        });
       }
     } else {
-      Alert.alert('Error', 'Report asset failed');
+      //Alert.alert('Error', 'Report asset failed');
+      Toast.show(`Error: Report asset failed`, {
+        //position: Toast.positions.CENTER,
+        textColor: Colors.red,
+        backgroundColor: Colors.yellow,
+      });
     }
 
     setLoading(false);

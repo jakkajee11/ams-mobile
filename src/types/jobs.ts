@@ -43,8 +43,8 @@ export type JobQuery = {
   status: number;
   page: number;
   size: number;
-  startDate: string;
-  endDate: string;
+  startDate?: string;
+  endDate?: string;
   //assigneeId: string;
 };
 
