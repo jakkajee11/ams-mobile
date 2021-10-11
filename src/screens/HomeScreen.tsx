@@ -160,12 +160,7 @@ export default function HomeScreen({
                 alignItems: 'center',
               }}
             >
-              <Icon
-                name='search'
-                type='font-awesome-5'
-                size={55}
-                color='white'
-              />
+              <Icon name='send' type='font-awesome' size={55} color='white' />
               <Text
                 style={{
                   marginLeft: 10,

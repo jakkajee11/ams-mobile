@@ -58,22 +58,19 @@ export default function LoginScreen({
       });
 
       if (res && res.status === 200 && res.data) {
-        //console.log(['login', res.data]);
         await Storages.saveUserToken(JSON.stringify(res.data));
         await Storages.saveUserName(userName);
         await Storages.saveUserSecret(password);
 
         // update notification Token
-        const token = (await Notifications.getExpoPushTokenAsync()).data;
-        //console.log(['pushtoken', token]);
+        const token = (await Notifications.getDevicePushTokenAsync()).data;
+
         if (token) {
           try {
             const tokenRes = await updateUserNotificationToken({
               token,
             });
-            //console.log(['tokenRes', tokenRes]);
           } catch {
-            //console.log('error: updateUserNotificationToken');
             //alert(`pushToken: ${token} failed`);
             Toast.show(`pushToken: ${token} failed`, {
               //position: Toast.positions.CENTER,
@@ -82,7 +79,7 @@ export default function LoginScreen({
             });
           }
         } else {
-          alert(`token not founded`);
+          //alert(`token not founded`);
           Toast.show(`token not found`, {
             //position: Toast.positions.CENTER,
             textColor: Colors.red,
