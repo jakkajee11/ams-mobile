@@ -34,13 +34,10 @@ export default function ReportAssetScreen({
   const { getAssetInfo } = useAssetApi();
   const { reportAssetLocation } = useAssetNotificationApi();
   const { uploadFile } = useUploadApi();
-  //const [assetId, setAssetId] = useState(route.params?.assetId ?? '');
-  //const [serialNo, setSerialNo] = useState(route.params?.serialNo ?? '');
   const [searchText, setSearchText] = useState(
     route.params?.assetId ?? route.params?.serialNo ?? ''
   );
   const [location, setLocation] = useState('');
-  //const [subLocation, setSubLocation] = useState('');
   const [details, setDetails] = useState('');
   const [attachments, setAttachemnts] = useState<CameraCapturedPicture[]>([]);
   const [showCamera, setShowCamera] = useState(false);
@@ -51,31 +48,25 @@ export default function ReportAssetScreen({
 
   const maximum = 5;
 
-  const doReportAsset = async () => {
+  const submitReportAsset = async () => {
     setLoading(true);
     const data: ReportAssetModel = {
-      assetId: route.params?.assetId ? searchText : '',
-      serialNo: route.params?.serialNo ? searchText : '',
+      assetId: route.params?.assetId ? route.params?.assetId : searchText,
+      serialNo: route.params?.serialNo ? route.params?.serialNo : searchText,
       location,
-      //subLocation,
       details,
       attachments: [],
     };
 
+    console.log(['submitAsset', data]);
+
     const res = await reportAssetLocation(data);
 
     if (res && res.status === 200) {
-      //Alert.alert('Success', 'Asset was successfully reported');
-      Toast.show(`Asset was reported successfully`, {
-        //position: Toast.positions.CENTER,
-        //textColor: Colors.red,
-        //backgroundColor: Colors.yellow,
-      });
+      Toast.show(`Asset was reported successfully`, {});
       reset();
     } else {
-      //Alert.alert('Error', 'Report asset failed');
       Toast.show(`Error: Report asset failed`, {
-        //position: Toast.positions.CENTER,
         textColor: Colors.red,
         backgroundColor: Colors.yellow,
       });
@@ -89,9 +80,6 @@ export default function ReportAssetScreen({
       location.length === 0 ||
       details.length === 0
     ) {
-      // Alert.alert(
-      //   'Serial No./Asset ID, Location and details must not be empty!'
-      // );
       Toast.show(
         `Serial No./Asset ID, Location and details must not be empty!`,
         {
@@ -115,12 +103,12 @@ export default function ReportAssetScreen({
               onPress: () => setLoading(false),
               style: 'cancel',
             },
-            { text: 'OK', onPress: doReportAsset },
+            { text: 'OK', onPress: submitReportAsset },
           ],
           { cancelable: true }
         );
       } else {
-        await doReportAsset();
+        await submitReportAsset();
       }
     }
   };
@@ -146,10 +134,8 @@ export default function ReportAssetScreen({
   };
 
   const reset = () => {
-    //setAssetId('');
     setSearchText('');
     setLocation('');
-    //setSubLocation('');
     setDetails('');
     setAttachemnts([]);
     setLoading(false);
@@ -183,21 +169,6 @@ export default function ReportAssetScreen({
         >
           <View style={baseStyles.container}>
             <View>
-              {/* <CheckBox
-                center
-                title='Serial No'
-                checkedIcon='dot-circle-o'
-                uncheckedIcon='circle-o'
-                //checked={this.state.checked}
-              />
-              <CheckBox
-                center
-                title='Asset ID'
-                checkedIcon='dot-circle-o'
-                uncheckedIcon='circle-o'
-                //checked={this.state.checked}
-              /> */}
-
               <Input
                 //placeholder='Code (Required)'
                 maxLength={255}
@@ -215,11 +186,6 @@ export default function ReportAssetScreen({
                 onChangeText={(text) => setLocation(text)}
                 value={location}
               />
-              {/* <Input
-                label='Sub Location'
-                onChangeText={(text) => setSubLocation(text)}
-                value={subLocation}
-              /> */}
               <Input
                 label='Detail'
                 multiline
