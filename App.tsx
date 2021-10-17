@@ -74,9 +74,9 @@ export default function App() {
   };
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then((token) =>
-      setExpoPushToken(token)
-    );
+    registerForPushNotificationsAsync().then((token) => {
+      setExpoPushToken(token);
+    });
 
     // This listener is fired whenever a notification is received while the app is foregrounded
     notificationListener.current =

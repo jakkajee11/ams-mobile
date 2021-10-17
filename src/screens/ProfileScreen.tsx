@@ -29,6 +29,7 @@ import baseStyles from '~styles/baseStyles';
 import { ProfileModel } from '~types/users';
 import useUserApi from '~apis/useUserApi';
 import Loading from '~components/shared/Loading';
+import * as Notifications from 'expo-notifications';
 
 export default function ProfileScreen({
   route,
@@ -39,18 +40,21 @@ export default function ProfileScreen({
   const [token, setToken] = useState('');
   const [profile, setProfile] = useState<ProfileModel | null>(null);
   const [loading, setLoading] = useState(false);
+  const [pushToken, setPushToken] = useState('');
 
   const logout = async () => {
     setLoading(true);
-    // console.log(['token', token]);
-    // const res = await signOut({ clientId: APP_CONFIG.clientId, token });
-    // console.log(['logout', res.status]);
-    // if (res && res.status === 200) {
-    //   await Storages.removeUserToken();
-    // }
     await Storages.removeUserToken();
     navigation.navigate('Auth');
     setLoading(false);
+  };
+
+  const getToken = async () => {
+    const { status } = await Notifications.requestPermissionsAsync();
+    //alert(['status', status]);
+    const token = (await Notifications.getExpoPushTokenAsync()).data;
+    setPushToken(token);
+    return token;
   };
 
   useEffect(() => {
@@ -79,6 +83,8 @@ export default function ProfileScreen({
       } else {
         setProfile(profile);
       }
+      //const token = (await Notifications.getExpoPushTokenAsync()).data;
+      //setPushToken(token);
       setLoading(false);
     })();
   }, []);
@@ -144,6 +150,8 @@ export default function ProfileScreen({
         <Text style={baseStyles.textCenter}>
           Device Name: {Constants.deviceName}
         </Text>
+        <Text style={baseStyles.textCenter}>Push Token: {pushToken}</Text>
+        <Button onPress={getToken} title='Get Token' />
       </View>
       <View style={{ flex: 0.2, justifyContent: 'flex-end' }}>
         <View

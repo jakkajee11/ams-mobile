@@ -9,8 +9,8 @@ export type JobModel = {
   dueDate: string;
   details?: string;
   comments?: string;
-  location?: string;
-  subLocation?: string;
+  soldToName: string;
+  shipToName: string;
   assets: JobAssetModel[];
   createdAt: string;
   startedAt?: string;
@@ -31,6 +31,8 @@ export type JobAssetModel = {
   details: string;
   location: string;
   subLocation?: string;
+  soldToName: string;
+  shipToName: string;
   yearOfManufacture?: number;
   warrantyEndAt?: string;
   assetClassId?: string;

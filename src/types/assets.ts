@@ -33,6 +33,8 @@ export type AssetDetailModel = AssetModel & {
   costCenterName: string;
   assetStatusName: string;
   assetClassName: string;
+  soldToName: string;
+  shipToName: string;
   createdUserName: string;
   modifiedUserName: string;
   ownerRoleName: string;

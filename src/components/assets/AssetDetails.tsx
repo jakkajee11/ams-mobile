@@ -29,7 +29,7 @@ export default function AssetDetails({ data, onPress }: AssetProps) {
 
       <View style={baseStyles.row}>
         <Text>Cost Center:</Text>
-        <Text>{data?.costCenterName}</Text>
+        <Text style={baseStyles.longText}>{data?.costCenterName}</Text>
       </View>
 
       <View style={baseStyles.row}>
@@ -38,18 +38,18 @@ export default function AssetDetails({ data, onPress }: AssetProps) {
       </View>
 
       <View style={baseStyles.row}>
-        <Text>Location:</Text>
-        <Text>{data?.location}</Text>
+        <Text>Sold-To:</Text>
+        <Text style={baseStyles.longText}>{data?.shipToName}</Text>
       </View>
 
       <View style={baseStyles.row}>
-        <Text>Sub Location:</Text>
-        <Text>{data?.subLocation} </Text>
+        <Text>Ship-To:</Text>
+        <Text style={baseStyles.longText}>{data?.shipToName} </Text>
       </View>
 
       <View style={baseStyles.row}>
         <Text>Asset Class:</Text>
-        <Text>{data?.assetClassName} </Text>
+        <Text style={baseStyles.longText}>{data?.assetClassName} </Text>
       </View>
 
       <View style={baseStyles.row}>
