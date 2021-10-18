@@ -63,7 +63,7 @@ export default function LoginScreen({
         await Storages.saveUserSecret(password);
 
         // update notification Token
-        const token = (await Notifications.getDevicePushTokenAsync()).data;
+        const token = (await Notifications.getExpoPushTokenAsync()).data;
 
         if (token) {
           try {
@@ -89,6 +89,8 @@ export default function LoginScreen({
         setLoading(false);
 
         navigation.navigate('Root');
+      } else {
+        Toast.show(`Error: Invalid username or password`);
       }
     }
     setLoading(false);
