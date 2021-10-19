@@ -32,7 +32,7 @@ export default function useCachedResources() {
       } finally {
         const userToken = await Storages.getUserToken();
         //console.log(['userToken', userToken]);
-        if (userToken) {
+        if (userToken && userToken.refresh_token) {
           const res = await refreshToken({
             clientId: APP_CONFIG.clientId,
             refreshToken: userToken.refresh_token,

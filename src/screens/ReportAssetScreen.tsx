@@ -58,7 +58,7 @@ export default function ReportAssetScreen({
       attachments: [],
     };
 
-    console.log(['submitAsset', data]);
+    //console.log(['submitAsset', data]);
 
     const res = await reportAssetLocation(data);
 
