@@ -15,6 +15,11 @@ export default function useAssetApi() {
     return await get(url);
   };
 
+  const searchAssets = async (serialNo: string) => {
+    const url = `${endpoint}/search/${serialNo}`;
+    return await get(url);
+  };
+
   const getAssetByAddressId = async (id: string) => {
     const url = `${endpoint}/shipto/${id}`;
     return await get(url);
@@ -34,6 +39,7 @@ export default function useAssetApi() {
     getAssetInfo,
     getAssetByAddressId,
     checkAsset,
+    searchAssets,
     // reportAssetLocation,
   };
 }

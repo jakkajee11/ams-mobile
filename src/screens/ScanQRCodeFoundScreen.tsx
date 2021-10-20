@@ -126,12 +126,16 @@ export default function ScanQRCodeFoundScreen({
 
   return (
     <>
-      <Header title={asset?.assetId ?? 'QR CODE FOUNDED'} />
+      <Header title={asset?.serialNo ?? 'QR CODE FOUNDED'} />
       <StatusBar backgroundColor={Colors.yellow} />
       <ScrollView style={baseStyles.scrollView}>
         {loading && <ActivityIndicator animating={loading} size='large' />}
         <View style={baseStyles.container}>
           <View style={{ padding: 5 }}>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Serial No.:</Text>
+              <Text>{asset?.serialNo}</Text>
+            </View>
             <View style={baseStyles.row}>
               <Text style={baseStyles.label}>Asset ID:</Text>
               <Text>{asset?.assetId}</Text>
@@ -140,10 +144,7 @@ export default function ScanQRCodeFoundScreen({
               <Text style={baseStyles.label}>Asset Type:</Text>
               <Text>{asset?.assetTypeName}</Text>
             </View>
-            <View style={baseStyles.row}>
-              <Text style={baseStyles.label}>Serial No.:</Text>
-              <Text>{asset?.serialNo}</Text>
-            </View>
+
             <View style={baseStyles.row}>
               <Text style={baseStyles.label}>Asset No.:</Text>
               <Text>{asset?.assetNo}</Text>
@@ -238,7 +239,7 @@ export default function ScanQRCodeFoundScreen({
           }
           title='  Report this item'
           onPress={() =>
-            navigation.navigate('ReportAsset', { assetId: asset?.assetId })
+            navigation.navigate('ReportAsset', { serialNo: asset?.serialNo })
           }
         />
         {/* <Button

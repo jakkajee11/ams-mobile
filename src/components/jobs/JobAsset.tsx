@@ -10,7 +10,15 @@ interface JobAssetProps {
 }
 
 export default function JobAsset({
-  data: { key, location, assetTypeName, assetId, jobAssetStatusId },
+  data: {
+    key,
+    location,
+    assetTypeName,
+    assetId,
+    serialNo,
+    jobAssetStatusId,
+    assetStatusName,
+  },
   onPress,
 }: JobAssetProps) {
   const handleOnPress = () => {
@@ -20,7 +28,7 @@ export default function JobAsset({
     <ListItem key={key} bottomDivider onPress={handleOnPress}>
       <ListItem.Content>
         <ListItem.Title style={{ fontSize: 12 }}>
-          {assetTypeName} / {assetId} / {location}
+          {assetTypeName} / {serialNo} / {assetStatusName}
         </ListItem.Title>
       </ListItem.Content>
       {/* <ListItem.Chevron name={jobAssetStatusId === JOB_ASSET_STATUS.Checked ? '' : ''} type='feather' color='red' /> */}

@@ -11,7 +11,7 @@ export type AssetModel = {
   yearOfManufacture?: number;
   warrantyEndAt?: string;
   assetClassId?: string;
-  serialNo?: boolean;
+  serialNo: string;
   assetNo?: string;
   others?: string;
   attachments?: Attachment[];

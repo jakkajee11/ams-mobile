@@ -18,6 +18,11 @@ export default function AssetDetails({ data, onPress }: AssetProps) {
   return (
     <View style={baseStyles.container}>
       <View style={baseStyles.row}>
+        <Text>Serial No: </Text>
+        <Text>{data?.serialNo} </Text>
+      </View>
+
+      <View style={baseStyles.row}>
         <Text>Asset ID:</Text>
         <Text>{data?.assetId}</Text>
       </View>
@@ -50,11 +55,6 @@ export default function AssetDetails({ data, onPress }: AssetProps) {
       <View style={baseStyles.row}>
         <Text>Asset Class:</Text>
         <Text style={baseStyles.longText}>{data?.assetClassName} </Text>
-      </View>
-
-      <View style={baseStyles.row}>
-        <Text>Serial No: </Text>
-        <Text>{data?.serialNo} </Text>
       </View>
 
       <View style={baseStyles.row}>

@@ -28,6 +28,7 @@ export type JobAssetModel = {
   assetTypeName: string;
   costCenterId: string;
   assetStatusId: string;
+  assetStatusName: string;
   details: string;
   location: string;
   subLocation?: string;
@@ -36,7 +37,7 @@ export type JobAssetModel = {
   yearOfManufacture?: number;
   warrantyEndAt?: string;
   assetClassId?: string;
-  serialNo?: boolean;
+  serialNo: string;
   assetNo?: string;
   others?: string;
 };

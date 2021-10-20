@@ -21,15 +21,21 @@ import { RootStackParamList } from '../types';
 import Loading from '~components/shared/Loading';
 import Colors from '~constants/Colors';
 import AssetDetails from '~components/assets/AssetDetails';
+import DropDownPicker from 'react-native-dropdown-picker';
+import { SelectItemOption } from '~types/selectOptions';
 
 export default function SearchSerialNoScreen({
   route,
   navigation,
 }: StackScreenProps<RootStackParamList, 'SearchSerialNo'>) {
-  const { getAssetInfo } = useAssetApi();
+  const { getAssetInfo, searchAssets } = useAssetApi();
   const [serialNo, setSerialNo] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const [assets, setAssets] = useState<AssetDetailModel[]>([]);
   const [asset, setAsset] = useState<AssetDetailModel | undefined | null>(null);
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [assetOptions, setAssetOptions] = useState<SelectItemOption[]>([]);
 
   const searchAsset = async () => {
     if (serialNo.length > 0) {
@@ -47,9 +53,37 @@ export default function SearchSerialNoScreen({
     }
   };
 
+  const search = async () => {
+    setLoading(true);
+    const res = await searchAssets(searchText);
+
+    if (res.status === 200) {
+      const data = res.data.records as AssetDetailModel[];
+      setAssets(data);
+      setAssetOptions(
+        data.map((item) => ({ label: item.serialNo, value: item.serialNo }))
+      );
+    }
+
+    setLoading(false);
+  };
+
+  const toggleDropdown = () => setOpen(!open);
+
   useEffect(() => {
     if (serialNo.length === 0) setAsset(null);
+    else setAsset(assets.find((x) => x.serialNo === serialNo));
   }, [serialNo]);
+
+  useEffect(() => {
+    (async function () {
+      if (searchText.length === 0) {
+        setAssetOptions([]);
+      } else {
+        if (searchText.length >= 3) await search();
+      }
+    })();
+  }, [searchText]);
 
   return (
     <>
@@ -67,29 +101,46 @@ export default function SearchSerialNoScreen({
           behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
           style={baseStyles.container}
         >
-          <View style={{ ...baseStyles.container, minHeight: 200 }}>
-            <Input
-              placeholder='Serial No.'
-              rightIcon={
-                <Icon
-                  name='search'
-                  type='Feather'
-                  size={30}
-                  color={Colors.black}
-                  onPress={searchAsset}
-                />
-              }
-              onChangeText={(text) => setSerialNo(text)}
-              onBlur={searchAsset}
-              value={serialNo}
-            />
-
+          <View>
+            <View style={{ ...baseStyles.container, minHeight: 10 }}>
+              <DropDownPicker
+                placeholder='Select serial no.'
+                searchable={true}
+                loading={loading}
+                searchPlaceholder={'at least 3 letters to search...'}
+                open={open}
+                value={serialNo}
+                items={assetOptions}
+                setOpen={toggleDropdown}
+                setValue={setSerialNo}
+                //setItems={setAddressOptions}
+                onChangeSearchText={(text: string) => {
+                  console.log(['Search', text]);
+                  setSearchText(text);
+                }}
+                maxHeight={600}
+              />
+            </View>
+            {serialNo.length > 0 && asset && assets.length > 0 && (
+              <AssetDetails data={asset} />
+            )}
+          </View>
+          <View style={{ ...baseStyles.container }}>
             {loading && <Loading loading={loading} />}
 
-            {serialNo.length > 0 && asset === undefined && (
-              <View style={baseStyles.container}>
+            {searchText.length > 0 && assets.length === 0 && (
+              <View style={{ ...baseStyles.container, marginTop: 100 }}>
                 <View style={baseStyles.column}>
                   <View>
+                    <Text
+                      style={{
+                        ...baseStyles.textCenter,
+                        fontSize: 18,
+                        color: Colors.yellow,
+                      }}
+                    >
+                      {searchText}
+                    </Text>
                     <Text
                       style={{
                         ...baseStyles.textCenter,
@@ -121,13 +172,14 @@ export default function SearchSerialNoScreen({
                     }
                     title=' Report this item'
                     onPress={() =>
-                      navigation.navigate('ReportAsset', { serialNo })
+                      navigation.navigate('ReportAsset', {
+                        serialNo: searchText,
+                      })
                     }
                   />
                 </View>
               </View>
             )}
-            {serialNo.length > 0 && asset && <AssetDetails data={asset} />}
           </View>
         </KeyboardAvoidingView>
       </ScrollView>

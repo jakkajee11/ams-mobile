@@ -155,7 +155,7 @@ export default function ReportAssetFromAddressScreen({
           behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
           style={baseStyles.container}
         >
-          <View style={{ ...baseStyles.container, minHeight: 200 }}>
+          <View style={{ ...baseStyles.container, minHeight: 500 }}>
             <DropDownPicker
               placeholder='Select address'
               searchable={true}
@@ -167,6 +167,7 @@ export default function ReportAssetFromAddressScreen({
               setOpen={toggleDropdown}
               setValue={setAddressId}
               //setItems={setAddressOptions}
+              maxHeight={600}
             />
             {loading && <Loading loading={loading} />}
             {assets.length > 0 && (
