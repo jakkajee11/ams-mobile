@@ -63,5 +63,5 @@ export type UpdateJobAssetStatusModel = {
 };
 
 export type CreateShipJobModel = {
-  shipAddressId: string;
+  shipToId: string;
 };

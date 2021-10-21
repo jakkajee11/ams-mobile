@@ -127,6 +127,32 @@ export default function HomeScreen({
                 alignItems: 'center',
               }}
             >
+              <Icon name='send' type='font-awesome' size={55} color='white' />
+              <Text
+                style={{
+                  marginLeft: 10,
+                  fontSize: 18,
+                  fontWeight: '600',
+                  color: 'white',
+                }}
+              >
+                Report Asset
+              </Text>
+            </View>
+          }
+          onPress={() => navigation.navigate('ReportAsset')}
+        />
+
+        <Button
+          title={
+            <View
+              style={{
+                padding: 3,
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
               <Icon
                 name='tasks'
                 type='font-awesome-5'
@@ -148,32 +174,6 @@ export default function HomeScreen({
           }
           onPress={() => navigation.navigate('Jobs')}
           //loading={loading}
-        />
-
-        <Button
-          title={
-            <View
-              style={{
-                padding: 3,
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}
-            >
-              <Icon name='send' type='font-awesome' size={55} color='white' />
-              <Text
-                style={{
-                  marginLeft: 10,
-                  fontSize: 18,
-                  fontWeight: '600',
-                  color: 'white',
-                }}
-              >
-                Report Asset
-              </Text>
-            </View>
-          }
-          onPress={() => navigation.navigate('ReportAsset')}
         />
 
         <Button

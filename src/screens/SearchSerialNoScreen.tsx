@@ -102,9 +102,15 @@ export default function SearchSerialNoScreen({
           style={baseStyles.container}
         >
           <View>
-            <View style={{ ...baseStyles.container, minHeight: 10 }}>
+            <View
+              style={{
+                ...baseStyles.container,
+                minHeight: 500,
+                //maxHeight: 500,
+              }}
+            >
               <DropDownPicker
-                placeholder='Select serial no.'
+                placeholder='Search serial no.'
                 searchable={true}
                 loading={loading}
                 searchPlaceholder={'at least 3 letters to search...'}
@@ -119,67 +125,70 @@ export default function SearchSerialNoScreen({
                   setSearchText(text);
                 }}
                 maxHeight={600}
+                ListEmptyComponent={() => (
+                  <Text style={{ textAlign: 'center' }}>No item found</Text>
+                )}
               />
-            </View>
-            {serialNo.length > 0 && asset && assets.length > 0 && (
-              <AssetDetails data={asset} />
-            )}
-          </View>
-          <View style={{ ...baseStyles.container }}>
-            {loading && <Loading loading={loading} />}
+              {serialNo.length > 0 && asset && assets.length > 0 && (
+                <AssetDetails data={asset} />
+              )}
+              <View style={{ ...baseStyles.container }}>
+                {loading && <Loading loading={loading} />}
 
-            {searchText.length > 0 && assets.length === 0 && (
-              <View style={{ ...baseStyles.container, marginTop: 100 }}>
-                <View style={baseStyles.column}>
-                  <View>
-                    <Text
+                {searchText.length > 0 && assets.length === 0 && (
+                  <View style={{ ...baseStyles.container, marginTop: 100 }}>
+                    <View style={baseStyles.column}>
+                      <View>
+                        <Text
+                          style={{
+                            ...baseStyles.textCenter,
+                            fontSize: 18,
+                            color: Colors.yellow,
+                          }}
+                        >
+                          {searchText}
+                        </Text>
+                        <Text
+                          style={{
+                            ...baseStyles.textCenter,
+                            fontSize: 18,
+                            color: Colors.red,
+                          }}
+                        >
+                          NOT FOUND
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View
                       style={{
-                        ...baseStyles.textCenter,
-                        fontSize: 18,
-                        color: Colors.yellow,
+                        width: '100%',
+                        padding: 5,
+                        justifyContent: 'space-between',
+                        flex: 0.5,
                       }}
                     >
-                      {searchText}
-                    </Text>
-                    <Text
-                      style={{
-                        ...baseStyles.textCenter,
-                        fontSize: 18,
-                        color: Colors.red,
-                      }}
-                    >
-                      NOT FOUND
-                    </Text>
-                  </View>
-                </View>
-
-                <View
-                  style={{
-                    width: '100%',
-                    padding: 5,
-                    justifyContent: 'space-between',
-                    flex: 0.5,
-                  }}
-                >
-                  <Button
-                    icon={
-                      <Icon
-                        name='clipboard'
-                        type='font-awesome-5'
-                        size={28}
-                        color={Colors.white}
+                      <Button
+                        icon={
+                          <Icon
+                            name='clipboard'
+                            type='font-awesome-5'
+                            size={28}
+                            color={Colors.white}
+                          />
+                        }
+                        title=' Report this item'
+                        onPress={() =>
+                          navigation.navigate('ReportAsset', {
+                            serialNo: searchText,
+                          })
+                        }
                       />
-                    }
-                    title=' Report this item'
-                    onPress={() =>
-                      navigation.navigate('ReportAsset', {
-                        serialNo: searchText,
-                      })
-                    }
-                  />
-                </View>
+                    </View>
+                  </View>
+                )}
               </View>
-            )}
+            </View>
           </View>
         </KeyboardAvoidingView>
       </ScrollView>

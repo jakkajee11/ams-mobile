@@ -46,5 +46,6 @@ export type ReportAssetModel = {
   location: string;
   //subLocation?: string;
   details?: string;
+  comments?: string;
   attachments?: string[];
 };
