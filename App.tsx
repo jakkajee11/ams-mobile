@@ -7,6 +7,7 @@ import useCachedResources from './src/hooks/useCachedResources';
 import useColorScheme from './src/hooks/useColorScheme';
 import Navigation from './src/navigation';
 import { ThemeProvider } from 'react-native-elements';
+import { AppContext, NotifyContext } from './src/contexts/AppContext';
 import Colors from './src/constants/Colors';
 import registerForPushNotificationsAsync from './src/utils/registerForPushNotificationsAsync';
 import { RootSiblingParent } from 'react-native-root-siblings';
@@ -59,11 +60,14 @@ export default function App() {
   const colorScheme = useColorScheme();
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState<any>();
+  const [notiCount, setNotiCount] = useState(0);
   const notificationListener = useRef<any>();
   const responseListener = useRef<any>();
 
   const handleNotificationReceived = (response: Notifications.Notification) => {
     console.log(['handleNotificationReceived', response]);
+    //alert(`noti received: ${notiCount}`);
+    setNotiCount(notiCount + 1);
   };
   const handleNotificationResponse = (
     response: Notifications.NotificationResponse
@@ -103,10 +107,12 @@ export default function App() {
       <SafeAreaProvider>
         <ThemeProvider theme={theme}>
           <RootSiblingParent>
-            <Navigation
-              colorScheme={colorScheme}
-              isUserLoggedIn={isUserLoggedIn}
-            />
+            <AppContext.Provider value={{ notiCount }}>
+              <Navigation
+                colorScheme={colorScheme}
+                isUserLoggedIn={isUserLoggedIn}
+              />
+            </AppContext.Provider>
             <StatusBar />
           </RootSiblingParent>
         </ThemeProvider>

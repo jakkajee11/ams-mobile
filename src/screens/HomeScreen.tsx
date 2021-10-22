@@ -1,12 +1,14 @@
+import { useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Button, Icon } from 'react-native-elements';
+import { Badge, Button, Icon } from 'react-native-elements';
 import useJobApi from '~apis/useJobApi';
 import Colors from '~constants/Colors';
 import { JOB_STATUS } from '~constants/Status';
+import { AppContext } from '~contexts/AppContext';
 import Logo from '../components/shared/Logo';
 
 import { RootStackParamList } from '../types';
@@ -20,16 +22,20 @@ export default function HomeScreen({
 
   // useEffect(() => {
   //   (async function () {
-  //     setLoading(true);
-  //     const res = await getJobsCount({});
-  //     console.log(['res', res.status, res.data]);
+  //     //setLoading(true);
+  //     const res = await getJobsCount({
+  //       startDate: '2021-07-01',
+  //       endDate: new Date().toISOString(),
+  //     });
+  //     console.log(['res', res.status, res.data, res.data['Pending']]);
   //     if (res && res.status === 200 && res.data) {
-  //       if (res.data[JOB_STATUS.Pending])
-  //         setJobPendingCount(res.data[JOB_STATUS.Pending]);
+  //       if (res.data['Pending']) setJobPendingCount(res.data['Pending']);
   //     }
-  //     setLoading(false);
+  //     //setLoading(false);
   //   })();
   // }, []);
+
+  const context = useContext(AppContext);
 
   return (
     <View style={styles.container}>
@@ -167,9 +173,14 @@ export default function HomeScreen({
                   color: 'white',
                 }}
               >
-                {/* My Jobs {jobPendingCount > 0 ? `( ${jobPendingCount} )` : ''} */}
                 My Jobs
               </Text>
+              {context && context.notiCount > 0 && (
+                <Badge value={context.notiCount} status='error' />
+              )}
+              {/* {jobPendingCount > 0 && (
+                <Badge value={jobPendingCount} status='error' />
+              )} */}
             </View>
           }
           onPress={() => navigation.navigate('Jobs')}

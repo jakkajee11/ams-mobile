@@ -49,13 +49,13 @@ export default function ProfileScreen({
     setLoading(false);
   };
 
-  const getToken = async () => {
-    const { status } = await Notifications.requestPermissionsAsync();
-    //alert(['status', status]);
-    const token = (await Notifications.getExpoPushTokenAsync()).data;
-    setPushToken(token);
-    return token;
-  };
+  // const getToken = async () => {
+  //   const { status } = await Notifications.requestPermissionsAsync();
+  //   //alert(['status', status]);
+  //   const token = (await Notifications.getExpoPushTokenAsync()).data;
+  //   setPushToken(token);
+  //   return token;
+  // };
 
   useEffect(() => {
     (async function () {
@@ -150,8 +150,8 @@ export default function ProfileScreen({
         <Text style={baseStyles.textCenter}>
           Device Name: {Constants.deviceName}
         </Text>
-        <Text style={baseStyles.textCenter}>Push Token: {pushToken}</Text>
-        <Button onPress={getToken} title='Get Token' />
+        {/* <Text style={baseStyles.textCenter}>Push Token: {pushToken}</Text>
+        <Button onPress={getToken} title='Get Token' /> */}
       </View>
       <View style={{ flex: 0.2, justifyContent: 'flex-end' }}>
         <View

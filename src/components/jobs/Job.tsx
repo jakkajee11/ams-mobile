@@ -13,14 +13,15 @@ export default function Job({ data, onPress }: JobItemProps) {
     onPress && onPress(data);
   };
 
-  const { id, jobNumber, dueDate } = data;
+  const { id, jobNumber, dueDate, createdAt } = data;
 
   return (
     <ListItem key={id} bottomDivider onPress={handleOnPress}>
       <ListItem.Content>
         <ListItem.Title>
           <Text>
-            {jobNumber} {DateTimeFormat.toStandardDateTime(dueDate)}
+            {jobNumber}{' '}
+            {DateTimeFormat.toStandardDate(dueDate ? dueDate : createdAt)}
           </Text>
         </ListItem.Title>
       </ListItem.Content>

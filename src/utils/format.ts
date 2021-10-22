@@ -7,7 +7,7 @@ dayjs.extend(utc);
 
 const DateTimeFormat = {
   toStandardDate(date: string | number | Date | Dayjs) {
-    if (dayjs(date).isValid()) return dayjs(date).format('DD-MMM-YYYY HH:mm');
+    if (dayjs(date).isValid()) return dayjs(date).format('DD-MM-YYYY');
 
     return date;
   },
