@@ -48,7 +48,7 @@ export default function ScanQRCodeFoundScreen({
     if (uploadSuccess) {
       const data: ReportAssetModel = {
         assetId: asset?.assetId ?? '',
-        serialNo: '',
+        serialNo: asset?.serialNo ?? '',
         location: asset?.location ?? '',
         details: asset?.details,
         comments: 'Confirm Location',
