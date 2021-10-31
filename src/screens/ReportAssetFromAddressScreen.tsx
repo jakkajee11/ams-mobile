@@ -90,10 +90,12 @@ export default function ReportAssetFromAddressScreen({
 
   const setAssetFromAddress = async () => {
     setLoading(true);
-    const res = await getAssetByAddressId(shipToId);
+    if (shipToId.length > 0) {
+      const res = await getAssetByAddressId(shipToId);
 
-    if (res.status === 200) {
-      setAssets(res.data.records as AssetDetailModel[]);
+      if (res.status === 200) {
+        setAssets(res.data.records as AssetDetailModel[]);
+      }
     }
 
     setLoading(false);

@@ -15,7 +15,7 @@ import {
 import { Button, Icon, Input } from 'react-native-elements';
 import 'react-native-get-random-values';
 import useAssetApi from '~apis/useAssetApi';
-import { AssetDetailModel } from '~types/assets';
+import { AssetDetailModel, ReportAssetModel } from '~types/assets';
 import baseStyles from '../styles/baseStyles';
 import { RootStackParamList } from '../types';
 import Loading from '~components/shared/Loading';
@@ -23,12 +23,22 @@ import Colors from '~constants/Colors';
 import AssetDetails from '~components/assets/AssetDetails';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { SelectItemOption } from '~types/selectOptions';
+import ModalCamera from '~components/shared/ModalCamera';
+import { CameraCapturedPicture } from 'expo-camera';
+import { UploadFileBase64Model } from '~types/fileUploads';
+import { v4 as uuidv4 } from 'uuid';
+import extractFileName from '~utils/extractFileName';
+import useUploadApi from '~apis/useUploadApi';
+import Toast from 'react-native-root-toast';
+import useAssetNotificationApi from '~apis/useAssetNotificationApi';
 
 export default function SearchSerialNoScreen({
   route,
   navigation,
 }: StackScreenProps<RootStackParamList, 'SearchSerialNo'>) {
   const { getAssetInfo, searchAssets } = useAssetApi();
+  const { reportAssetLocation } = useAssetNotificationApi();
+  const { uploadFile } = useUploadApi();
   const [serialNo, setSerialNo] = useState('');
   const [searchText, setSearchText] = useState('');
   const [assets, setAssets] = useState<AssetDetailModel[]>([]);
@@ -36,21 +46,71 @@ export default function SearchSerialNoScreen({
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [assetOptions, setAssetOptions] = useState<SelectItemOption[]>([]);
+  const [attachments, setAttachemnts] = useState<CameraCapturedPicture[]>([]);
+  const [showCamera, setShowCamera] = useState(false);
+  const [id] = useState(uuidv4());
+  const [uploadErrors, setUploadErrors] = useState<string[]>([]);
 
-  const searchAsset = async () => {
-    if (serialNo.length > 0) {
-      setLoading(true);
+  const openCamera = () => setShowCamera(true);
+  const closeCamera = () => setShowCamera(false);
 
-      const res = await getAssetInfo(serialNo);
+  const submitReport = async (photo: CameraCapturedPicture) => {
+    setLoading(true);
+
+    const uploadSuccess = await addAttachment(photo);
+
+    if (uploadSuccess) {
+      const data: ReportAssetModel = {
+        assetId: asset?.assetId ?? '',
+        serialNo: asset?.serialNo ?? '',
+        location: asset?.location ?? '',
+        details: asset?.details,
+        comments: 'Confirm Location',
+        attachments: [],
+      };
+
+      const res = await reportAssetLocation(data);
 
       if (res && res.status === 200) {
-        setAsset(res.data);
+        Toast.show(`Asset was reported successfully`, {});
       } else {
-        setAsset(undefined);
+        Toast.show(`Error: Report asset failed`, {
+          //position: Toast.positions.CENTER,
+          textColor: Colors.red,
+          backgroundColor: Colors.yellow,
+        });
+      }
+    } else {
+      Toast.show(`Error: Report asset failed`, {
+        //position: Toast.positions.CENTER,
+        textColor: Colors.red,
+        backgroundColor: Colors.yellow,
+      });
+    }
+
+    setLoading(false);
+  };
+
+  const addAttachment = async (photo: CameraCapturedPicture) => {
+    // upload file
+    if (photo && photo.uri && photo.base64) {
+      setAttachemnts([...attachments, photo]);
+      const data: UploadFileBase64Model = {
+        id,
+        fileName: extractFileName(photo.uri),
+        base64: photo.base64,
+        refCode: asset?.assetId,
+      };
+      const res = await uploadFile(data);
+      if (res && res.status !== 200) {
+        setUploadErrors([...uploadErrors, extractFileName(photo.uri)]);
+        return false;
       }
 
-      setLoading(false);
+      return true;
     }
+
+    return false;
   };
 
   const search = async () => {
@@ -192,6 +252,46 @@ export default function SearchSerialNoScreen({
           </View>
         </KeyboardAvoidingView>
       </ScrollView>
+      {asset && assets.length > 0 && (
+        <View style={{ ...baseStyles.buttonGroupBottom, flex: 0.2 }}>
+          <Button
+            icon={
+              <Icon
+                name='clipboard'
+                type='font-awesome-5'
+                size={28}
+                color='white'
+              />
+            }
+            title='  Report this item'
+            onPress={() =>
+              navigation.navigate('ReportAsset', {
+                serialNo: asset?.serialNo,
+              })
+            }
+          />
+          <Button
+            icon={
+              <Icon
+                name='camera'
+                type='font-awesome-5'
+                size={28}
+                color='white'
+              />
+            }
+            title='  Take a Photo & Confirm'
+            loading={loading}
+            onPress={openCamera}
+          />
+        </View>
+      )}
+      <ModalCamera
+        showCamera={showCamera}
+        openCamera={openCamera}
+        closeCamera={closeCamera}
+        onTakePicture={submitReport}
+        mode='photo'
+      />
     </>
   );
 }

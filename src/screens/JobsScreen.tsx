@@ -1,6 +1,5 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { StackScreenProps } from '@react-navigation/stack';
-import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import {

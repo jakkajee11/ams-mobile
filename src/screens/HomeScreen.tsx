@@ -1,14 +1,13 @@
 import { useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
-import { StatusBar } from 'expo-status-bar';
+import dayjs from 'dayjs';
 import * as React from 'react';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Badge, Button, Icon } from 'react-native-elements';
 import useJobApi from '~apis/useJobApi';
+import Loading from '~components/shared/Loading';
 import Colors from '~constants/Colors';
-import { JOB_STATUS } from '~constants/Status';
-import { AppContext } from '~contexts/AppContext';
 import Logo from '../components/shared/Logo';
 
 import { RootStackParamList } from '../types';
@@ -16,26 +15,37 @@ import { RootStackParamList } from '../types';
 export default function HomeScreen({
   navigation,
 }: StackScreenProps<RootStackParamList, 'Home'>) {
-  // const { getJobsCount } = useJobApi();
-  // const [loading, setLoading] = useState(false);
-  // const [jobPendingCount, setJobPendingCount] = useState(0);
+  const { getJobsCount } = useJobApi();
+  const [loading, setLoading] = useState(false);
+  const [jobPendingCount, setJobPendingCount] = useState(0);
+  const nav = useNavigation();
 
-  // useEffect(() => {
-  //   (async function () {
-  //     //setLoading(true);
-  //     const res = await getJobsCount({
-  //       startDate: '2021-07-01',
-  //       endDate: new Date().toISOString(),
-  //     });
-  //     console.log(['res', res.status, res.data, res.data['Pending']]);
-  //     if (res && res.status === 200 && res.data) {
-  //       if (res.data['Pending']) setJobPendingCount(res.data['Pending']);
-  //     }
-  //     //setLoading(false);
-  //   })();
-  // }, []);
+  const setJobCount = async () => {
+    setLoading(true);
+    const res = await getJobsCount({
+      startDate: '2021-07-01',
+      endDate: dayjs().utc().endOf('month').toISOString(),
+    });
 
-  const context = useContext(AppContext);
+    if (res && res.status === 200 && res.data) {
+      if (res.data['Pending']) setJobPendingCount(res.data['Pending']);
+    }
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    nav.addListener('focus', setJobCount);
+
+    return () =>
+      nav.removeListener('focus', () => console.log('remove focus listener'));
+  }, []);
+
+  useEffect(() => {
+    (async function () {
+      await setJobCount();
+    })();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -47,10 +57,10 @@ export default function HomeScreen({
           alignSelf: 'center',
         }}
       >
-        {/* <StatusBar backgroundColor={Colors.yellow} /> */}
         <Logo />
       </View>
       <View style={{ backgroundColor: Colors.yellow, height: 10 }}></View>
+      {/* {loading && <Loading loading={loading} />} */}
       <View
         style={{
           padding: 5,
@@ -175,16 +185,14 @@ export default function HomeScreen({
               >
                 My Jobs
               </Text>
-              {context && context.notiCount > 0 && (
-                <Badge value={context.notiCount} status='error' />
-              )}
-              {/* {jobPendingCount > 0 && (
+
+              {jobPendingCount > 0 && (
                 <Badge value={jobPendingCount} status='error' />
-              )} */}
+              )}
             </View>
           }
           onPress={() => navigation.navigate('Jobs')}
-          //loading={loading}
+          loading={loading}
         />
 
         <Button
