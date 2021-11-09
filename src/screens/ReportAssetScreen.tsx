@@ -58,8 +58,6 @@ export default function ReportAssetScreen({
       attachments: [],
     };
 
-    //console.log(['submitAsset', data]);
-
     const res = await reportAssetLocation(data);
 
     if (res && res.status === 200) {
@@ -81,7 +79,7 @@ export default function ReportAssetScreen({
       details.length === 0
     ) {
       Toast.show(
-        `Serial No./Asset ID, Location and details must not be empty!`,
+        `Serial No./QR Code, Location and details must not be empty!`,
         {
           //position: Toast.positions.CENTER,
           textColor: Colors.red,
@@ -96,7 +94,7 @@ export default function ReportAssetScreen({
       if (res && res.status === 204) {
         Alert.alert(
           'Warning!',
-          `Serial No./Asset ID "${searchText}" not exist in system. Are you sure to submit a report?`,
+          `Serial No./QR Code "${searchText}" not exist in system. Are you sure to submit a report?`,
           [
             {
               text: 'Cancel',
@@ -172,7 +170,7 @@ export default function ReportAssetScreen({
               <Input
                 //placeholder='Code (Required)'
                 maxLength={255}
-                label='Serial No./Asset ID'
+                label='Serial No./QR Code'
                 renderErrorMessage={searchText === ''}
                 errorMessage={searchText.length > 0 ? undefined : '* Required'}
                 onChangeText={(text) => setSearchText(text)}

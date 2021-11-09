@@ -24,6 +24,7 @@ import { ATTACHMENT_TYPE } from '~constants/Status';
 import ModalCamera from '~components/shared/ModalCamera';
 import useAssetNotificationApi from '~apis/useAssetNotificationApi';
 import Toast from 'react-native-root-toast';
+import AssetDetails from '~components/assets/AssetDetails';
 
 export default function ScanQRCodeFoundScreen({
   route,
@@ -108,61 +109,78 @@ export default function ScanQRCodeFoundScreen({
       <StatusBar backgroundColor={Colors.yellow} />
       <ScrollView style={baseStyles.scrollView}>
         {loading && <ActivityIndicator animating={loading} size='large' />}
-        <View style={baseStyles.container}>
+        <AssetDetails data={asset} />
+        {/* <View style={baseStyles.container}>
           <View style={{ padding: 5 }}>
             <View style={baseStyles.row}>
               <Text style={baseStyles.label}>Serial No.:</Text>
               <Text>{asset?.serialNo}</Text>
             </View>
             <View style={baseStyles.row}>
-              <Text style={baseStyles.label}>Asset ID:</Text>
-              <Text>{asset?.assetId}</Text>
-            </View>
-            <View style={baseStyles.row}>
               <Text style={baseStyles.label}>Asset Type:</Text>
               <Text>{asset?.assetTypeName}</Text>
             </View>
-
             <View style={baseStyles.row}>
-              <Text style={baseStyles.label}>Asset No.:</Text>
-              <Text>{asset?.assetNo}</Text>
+              <Text style={baseStyles.label}>Asset Type Details:</Text>
+              <Text>{asset?.assetTypeDetailName}</Text>
+            </View>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Details:</Text>
+              <Text>{asset?.details}</Text>
             </View>
             <View style={baseStyles.row}>
               <Text style={baseStyles.label}>Cost Center:</Text>
               <Text>{asset?.costCenterName}</Text>
             </View>
             <View style={baseStyles.row}>
-              <Text style={baseStyles.label}>Year of Mfg:</Text>
-              <Text>{asset?.yearOfManufacture}</Text>
-            </View>
-            <View style={baseStyles.row}>
-              <Text style={baseStyles.label}>Warrenty:</Text>
-              <Text>{asset?.warrantyEndAt}</Text>
-            </View>
-            <View style={baseStyles.row}>
               <Text style={baseStyles.label}>Asset Class:</Text>
               <Text>{asset?.assetClassName}</Text>
             </View>
             <View style={baseStyles.row}>
-              <Text style={baseStyles.label}>Location:</Text>
-              <Text>{asset?.location}</Text>
+              <Text style={baseStyles.label}>Sold-To:</Text>
+              <Text>{asset?.soldToName}</Text>
             </View>
             <View style={baseStyles.row}>
-              <Text style={baseStyles.label}>Sub-Location:</Text>
-              <Text>{asset?.subLocation}</Text>
+              <Text style={baseStyles.label}>Ship-To:</Text>
+              <Text>{asset?.shipToName}</Text>
             </View>
             <View style={baseStyles.row}>
               <Text style={baseStyles.label}>Status:</Text>
               <Text>{asset?.assetStatusName}</Text>
             </View>
             <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Location:</Text>
+              <Text>{asset?.location}</Text>
+            </View>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Year of Mfg:</Text>
+              <Text>{asset?.yearOfManufacture}</Text>
+            </View>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Warranty:</Text>
+              <Text>{asset?.warrantyEndAt}</Text>
+            </View>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Asset QR Code:</Text>
+              <Text>{asset?.assetId}</Text>
+            </View>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Asset No.:</Text>
+              <Text>{asset?.assetNo}</Text>
+            </View>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Aging:</Text>
+              <Text>{asset?.agingEnabled}</Text>
+            </View>
+            <View style={baseStyles.row}>
               <Text style={baseStyles.label}>Others:</Text>
               <Text>{asset?.others}</Text>
             </View>
             <View style={baseStyles.row}>
-              <Text style={baseStyles.label}>Details:</Text>
-              <Text style={baseStyles.longText}>{asset?.details}</Text>
+              <Text style={baseStyles.label}>Comments:</Text>
+              <Text>{asset?.comments}</Text>
             </View>
+
             <Text>Attachments</Text>
             {!asset?.attachments ||
               (asset?.attachments.length === 0 && (
@@ -203,7 +221,7 @@ export default function ScanQRCodeFoundScreen({
               </View>
             )}
           </View>
-        </View>
+        </View> */}
       </ScrollView>
       <View style={{ ...baseStyles.buttonGroupBottom, flex: 0.2 }}>
         <Button

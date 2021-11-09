@@ -30,6 +30,7 @@ export type Attachment = {
 
 export type AssetDetailModel = AssetModel & {
   assetTypeName: string;
+  assetTypeDetailName: string;
   costCenterName: string;
   assetStatusName: string;
   assetClassName: string;
@@ -38,6 +39,8 @@ export type AssetDetailModel = AssetModel & {
   createdUserName: string;
   modifiedUserName: string;
   ownerRoleName: string;
+  comments: string;
+  agingEnabled?: boolean;
 };
 
 export type ReportAssetModel = {

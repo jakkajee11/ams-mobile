@@ -11,7 +11,7 @@ export default function useAssetApi() {
   };
 
   const getAssetInfo = async (assetId: string) => {
-    const url = `${endpoint}/assetinfo/${assetId}`;
+    const url = `${endpoint}/assetinfo?code=${encodeURIComponent(assetId)}`;
     return await get(url);
   };
 
