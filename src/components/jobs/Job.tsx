@@ -1,7 +1,7 @@
 import React from 'react';
 import { ListItem, Icon, Text } from 'react-native-elements';
 import { DateTimeFormat } from '~utils/format';
-import { JobModel } from '../../types/jobs';
+import { JobModel } from '~/types/jobs';
 
 interface JobItemProps {
   data: JobModel;
@@ -25,7 +25,12 @@ export default function Job({ data, onPress }: JobItemProps) {
           </Text>
         </ListItem.Title>
       </ListItem.Content>
-      <ListItem.Chevron name='chevron-right' type='font-awesome-5' />
+      <ListItem.Chevron
+        name='chevron-right'
+        type='font-awesome-5'
+        onPress={handleOnPress}
+        size={28}
+      />
     </ListItem>
   );
 }

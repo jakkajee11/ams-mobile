@@ -32,6 +32,7 @@ import { JOB_STATUS } from '~constants/Status';
 import { useIsFocused } from '@react-navigation/native';
 import Colors from '~constants/Colors';
 import Toast from 'react-native-root-toast';
+import JobItem from '~components/jobs/JobItem';
 
 export default function JobsScreen({
   navigation,
@@ -159,13 +160,19 @@ export default function JobsScreen({
             <TabView.Item style={styles.tabViewItem}>
               <View>
                 {/* {loading && <Loading loading={loading} />} */}
-                {jobs[JOB_STATUS.Pending]?.map((job) => (
+                {/* {jobs[JOB_STATUS.Pending]?.map((job) => (
                   <Job
                     key={job.id}
                     data={job}
                     onPress={(job: JobModel) => showJobDetails(job)}
                   />
-                ))}
+                ))} */}
+                {jobs[JOB_STATUS.Pending] && (
+                  <JobItem
+                    data={jobs[JOB_STATUS.Pending]}
+                    onPress={(job: JobModel) => showJobDetails(job)}
+                  />
+                )}
               </View>
               {/* <ScrollView
               contentContainerStyle={styles.container}
@@ -190,24 +197,36 @@ export default function JobsScreen({
             </TabView.Item>
             <TabView.Item style={styles.tabViewItem}>
               <View>
-                {jobs[JOB_STATUS.InProgress]?.map((job) => (
+                {/* {jobs[JOB_STATUS.InProgress]?.map((job) => (
                   <Job
                     key={job.id}
                     data={job}
                     onPress={(job: JobModel) => showJobDetails(job)}
                   />
-                ))}
+                ))} */}
+                {jobs[JOB_STATUS.InProgress] && (
+                  <JobItem
+                    data={jobs[JOB_STATUS.InProgress]}
+                    onPress={(job: JobModel) => showJobDetails(job)}
+                  />
+                )}
               </View>
             </TabView.Item>
             <TabView.Item style={styles.tabViewItem}>
               <View>
-                {jobs[JOB_STATUS.Completed]?.map((job) => (
+                {/* {jobs[JOB_STATUS.Completed]?.map((job) => (
                   <Job
                     key={job.id}
                     data={job}
                     onPress={(job: JobModel) => showJobDetails(job)}
                   />
-                ))}
+                ))} */}
+                {jobs[JOB_STATUS.Completed] && (
+                  <JobItem
+                    data={jobs[JOB_STATUS.Completed]}
+                    onPress={(job: JobModel) => showJobDetails(job)}
+                  />
+                )}
               </View>
             </TabView.Item>
           </TabView>
