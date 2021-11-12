@@ -46,7 +46,7 @@ export default function JobItem({ data, onPress }: JobItemProps) {
                 padding: 10,
               }}
             >
-              <Text style={{ width: 150 }}>{jobNumber}</Text>
+              <Text style={{ width: 170 }}>{jobNumber}</Text>
               <Text>
                 {DateTimeFormat.toStandardDate(dueDate ? dueDate : createdAt)}
               </Text>
