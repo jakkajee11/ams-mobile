@@ -11,7 +11,12 @@ export default function useAssetApi() {
   };
 
   const getAssetInfo = async (assetId: string) => {
-    const url = `${endpoint}/assetinfo/${assetId}`;
+    const url = `${endpoint}/assetinfo?code=${encodeURIComponent(assetId)}`;
+    return await get(url);
+  };
+
+  const searchAssets = async (serialNo: string) => {
+    const url = `${endpoint}/search/${serialNo}`;
     return await get(url);
   };
 
@@ -25,15 +30,16 @@ export default function useAssetApi() {
     return await get(url);
   };
 
-  const reportAssetLocation = async (model: ReportAssetModel) => {
-    return await post(`${endpoint}/notify`, model);
-  };
+  // const reportAssetLocation = async (model: ReportAssetModel) => {
+  //   return await post(`${endpoint}/notify`, model);
+  // };
 
   return {
     getAsset,
     getAssetInfo,
     getAssetByAddressId,
     checkAsset,
-    reportAssetLocation,
+    searchAssets,
+    // reportAssetLocation,
   };
 }

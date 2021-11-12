@@ -11,7 +11,7 @@ export type AssetModel = {
   yearOfManufacture?: number;
   warrantyEndAt?: string;
   assetClassId?: string;
-  serialNo?: boolean;
+  serialNo: string;
   assetNo?: string;
   others?: string;
   attachments?: Attachment[];
@@ -30,18 +30,25 @@ export type Attachment = {
 
 export type AssetDetailModel = AssetModel & {
   assetTypeName: string;
+  assetTypeDetailName: string;
   costCenterName: string;
   assetStatusName: string;
   assetClassName: string;
+  soldToName: string;
+  shipToName: string;
   createdUserName: string;
   modifiedUserName: string;
   ownerRoleName: string;
+  comments: string;
+  agingEnabled?: boolean;
 };
 
 export type ReportAssetModel = {
   assetId: string;
+  serialNo: string;
   location: string;
-  subLocation?: string;
+  //subLocation?: string;
   details?: string;
+  comments?: string;
   attachments?: string[];
 };

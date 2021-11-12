@@ -9,6 +9,9 @@ import Header from '~components/shared/Header';
 import ScanQRCodeScreen from '~screens/ScanQRCodeScreen';
 import ReportAssetFromAddressScreen from '~screens/ReportAssetFromAddressScreen';
 import AssetDetailsScreen from '~screens/AssetDetailsScreen';
+import ProfileScreen from '~screens/ProfileScreen';
+import SearchSerialNoScreen from '~screens/SearchSerialNoScreen';
+import JobDetailsScreen from '~screens/JobDetailsScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -41,6 +44,11 @@ export default function HomeStackNavigator() {
         options={{ header: () => <Header title='QR CODE' /> }}
       />
       <Stack.Screen
+        name='SearchSerialNo'
+        component={SearchSerialNoScreen}
+        options={{ header: () => <Header title='Search Serial No.' /> }}
+      />
+      <Stack.Screen
         name='ScanQRCodeFound'
         component={ScanQRCodeFoundScreen}
         options={{ headerShown: false }}
@@ -49,6 +57,16 @@ export default function HomeStackNavigator() {
         name='ScanQRCodeNotFound'
         component={ScanQRCodeNotFoundScreen}
         options={{ header: () => <Header title='NOT FOUND' /> }}
+      />
+      <Stack.Screen
+        name='MyProfile'
+        component={ProfileScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name='JobDetails'
+        component={JobDetailsScreen}
+        options={{ header: () => <Header title='Details' /> }}
       />
     </Stack.Navigator>
   );

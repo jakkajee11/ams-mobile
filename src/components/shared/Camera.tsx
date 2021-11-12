@@ -103,7 +103,7 @@ export default function Camera({
       }
       // Camera Permission
       const { status } = await ExpoCamera.requestPermissionsAsync();
-      console.log(['status', status]);
+      //console.log(['status', status]);
       setHasPermission(status === 'granted');
     })();
   }, []);

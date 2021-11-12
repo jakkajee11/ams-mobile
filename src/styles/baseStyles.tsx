@@ -75,7 +75,8 @@ const baseStyles = StyleSheet.create({
     fontStyle: 'normal',
   },
   longText: {
-    flex: 1,
+    flex: 0.98,
+    textAlign: 'right',
   },
 });
 

@@ -19,8 +19,8 @@ export default function JobDetail({
     jobStatusName,
     dueDate,
     details,
-    location,
-    subLocation,
+    soldToName,
+    shipToName,
     assets,
     createdAt,
   },
@@ -45,7 +45,7 @@ export default function JobDetail({
           <Text>{jobNumber}</Text>
         </View>
         <View style={baseStyles.row}>
-          <Text>Duedate:</Text>
+          <Text>Due date:</Text>
           <Text>{DateTimeFormat.toStandardDateTime(dueDate)}</Text>
         </View>
         <View style={baseStyles.row}>
@@ -57,12 +57,12 @@ export default function JobDetail({
           <Text>{jobStatusName}</Text>
         </View>
         <View style={baseStyles.row}>
-          <Text>Location:</Text>
-          <Text>{location}</Text>
+          <Text>Sold-To:</Text>
+          <Text style={baseStyles.longText}>{soldToName}</Text>
         </View>
         <View style={baseStyles.row}>
-          <Text>Sub Location: </Text>
-          <Text>{subLocation}</Text>
+          <Text>Ship-To: </Text>
+          <Text style={baseStyles.longText}>{shipToName}</Text>
         </View>
         <View style={baseStyles.col}>
           <Text>Detail:</Text>

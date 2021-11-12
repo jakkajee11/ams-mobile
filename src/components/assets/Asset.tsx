@@ -8,7 +8,7 @@ interface AssetProps {
 }
 
 export default function Asset({
-  data: { id, assetTypeName, assetId },
+  data: { id, assetTypeName, assetId, serialNo, assetStatusName },
   onPress,
 }: AssetProps) {
   const handleOnPress = () => {
@@ -19,7 +19,7 @@ export default function Asset({
     <ListItem key={id} bottomDivider onPress={handleOnPress}>
       <ListItem.Content>
         <ListItem.Title style={{ fontSize: 12 }}>
-          {assetId} {assetTypeName}
+          {serialNo} {assetStatusName} {assetTypeName}
         </ListItem.Title>
       </ListItem.Content>
       <ListItem.Chevron name='chevron-right' type='feather' />

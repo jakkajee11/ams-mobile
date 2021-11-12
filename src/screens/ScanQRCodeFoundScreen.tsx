@@ -1,18 +1,16 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import { CameraCapturedPicture } from 'expo-camera';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   ScrollView,
   StatusBar,
   Text,
   Image,
   View,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { Button, Icon } from 'react-native-elements';
-import useAssetApi from '~apis/useAssetApi';
 import useUploadApi from '~apis/useUploadApi';
 import { AssetDetailModel, ReportAssetModel } from '~types/assets';
 import { UploadFileBase64Model } from '~types/fileUploads';
@@ -24,13 +22,15 @@ import { RootStackParamList } from '../types';
 import Header from '~components/shared/Header';
 import { ATTACHMENT_TYPE } from '~constants/Status';
 import ModalCamera from '~components/shared/ModalCamera';
+import useAssetNotificationApi from '~apis/useAssetNotificationApi';
+import Toast from 'react-native-root-toast';
+import AssetDetails from '~components/assets/AssetDetails';
 
 export default function ScanQRCodeFoundScreen({
   route,
   navigation,
 }: StackScreenProps<RootStackParamList, 'ScanQRCodeFound'>) {
-  //const asset = route.params?.data
-  const { getAssetInfo, reportAssetLocation } = useAssetApi();
+  const { reportAssetLocation } = useAssetNotificationApi();
   const { uploadFile } = useUploadApi();
   const [asset, setAsset] = useState<AssetDetailModel | undefined>(
     route.params?.data
@@ -49,21 +49,30 @@ export default function ScanQRCodeFoundScreen({
     if (uploadSuccess) {
       const data: ReportAssetModel = {
         assetId: asset?.assetId ?? '',
+        serialNo: asset?.serialNo ?? '',
         location: asset?.location ?? '',
-        subLocation: asset?.subLocation,
         details: asset?.details,
+        comments: 'Confirm Location',
         attachments: [],
       };
 
       const res = await reportAssetLocation(data);
 
       if (res && res.status === 200) {
-        Alert.alert('Success', 'Asset was successfully reported');
+        Toast.show(`Asset was reported successfully`, {});
       } else {
-        Alert.alert('Error', 'Report asset failed');
+        Toast.show(`Error: Report asset failed`, {
+          //position: Toast.positions.CENTER,
+          textColor: Colors.red,
+          backgroundColor: Colors.yellow,
+        });
       }
     } else {
-      Alert.alert('Error', 'Report asset failed');
+      Toast.show(`Error: Report asset failed`, {
+        //position: Toast.positions.CENTER,
+        textColor: Colors.red,
+        backgroundColor: Colors.yellow,
+      });
     }
 
     setLoading(false);
@@ -94,78 +103,84 @@ export default function ScanQRCodeFoundScreen({
     return false;
   };
 
-  // useEffect(() => {
-  //   (async function () {
-  //     setLoading(true);
-  //     const res = await getAssetInfo('Import-002');
-  //     if (res && res.status === 200) {
-  //       setAsset(res.data);
-  //     }
-
-  //     setLoading(false);
-  //   })();
-  // }, []);
-
   return (
     <>
-      <Header title={asset?.assetId ?? 'QR CODE FOUNDED'} />
+      <Header title={asset?.serialNo ?? 'QR CODE FOUNDED'} />
       <StatusBar backgroundColor={Colors.yellow} />
       <ScrollView style={baseStyles.scrollView}>
         {loading && <ActivityIndicator animating={loading} size='large' />}
-        <View style={baseStyles.container}>
+        <AssetDetails data={asset} />
+        {/* <View style={baseStyles.container}>
           <View style={{ padding: 5 }}>
             <View style={baseStyles.row}>
-              <Text style={baseStyles.label}>Asset ID:</Text>
-              <Text>{asset?.assetId}</Text>
+              <Text style={baseStyles.label}>Serial No.:</Text>
+              <Text>{asset?.serialNo}</Text>
             </View>
             <View style={baseStyles.row}>
               <Text style={baseStyles.label}>Asset Type:</Text>
               <Text>{asset?.assetTypeName}</Text>
             </View>
             <View style={baseStyles.row}>
-              <Text style={baseStyles.label}>Serial No.:</Text>
-              <Text>{asset?.serialNo}</Text>
+              <Text style={baseStyles.label}>Asset Type Details:</Text>
+              <Text>{asset?.assetTypeDetailName}</Text>
             </View>
             <View style={baseStyles.row}>
-              <Text style={baseStyles.label}>Asset No.:</Text>
-              <Text>{asset?.assetNo}</Text>
+              <Text style={baseStyles.label}>Details:</Text>
+              <Text>{asset?.details}</Text>
             </View>
             <View style={baseStyles.row}>
               <Text style={baseStyles.label}>Cost Center:</Text>
               <Text>{asset?.costCenterName}</Text>
             </View>
             <View style={baseStyles.row}>
-              <Text style={baseStyles.label}>Year of Mfg:</Text>
-              <Text>{asset?.yearOfManufacture}</Text>
-            </View>
-            <View style={baseStyles.row}>
-              <Text style={baseStyles.label}>Warrenty:</Text>
-              <Text>{asset?.warrantyEndAt}</Text>
-            </View>
-            <View style={baseStyles.row}>
               <Text style={baseStyles.label}>Asset Class:</Text>
               <Text>{asset?.assetClassName}</Text>
             </View>
             <View style={baseStyles.row}>
-              <Text style={baseStyles.label}>Location:</Text>
-              <Text>{asset?.location}</Text>
+              <Text style={baseStyles.label}>Sold-To:</Text>
+              <Text>{asset?.soldToName}</Text>
             </View>
             <View style={baseStyles.row}>
-              <Text style={baseStyles.label}>Sub-Location:</Text>
-              <Text>{asset?.subLocation}</Text>
+              <Text style={baseStyles.label}>Ship-To:</Text>
+              <Text>{asset?.shipToName}</Text>
             </View>
             <View style={baseStyles.row}>
               <Text style={baseStyles.label}>Status:</Text>
               <Text>{asset?.assetStatusName}</Text>
             </View>
             <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Location:</Text>
+              <Text>{asset?.location}</Text>
+            </View>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Year of Mfg:</Text>
+              <Text>{asset?.yearOfManufacture}</Text>
+            </View>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Warranty:</Text>
+              <Text>{asset?.warrantyEndAt}</Text>
+            </View>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Asset QR Code:</Text>
+              <Text>{asset?.assetId}</Text>
+            </View>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Asset No.:</Text>
+              <Text>{asset?.assetNo}</Text>
+            </View>
+            <View style={baseStyles.row}>
+              <Text style={baseStyles.label}>Aging:</Text>
+              <Text>{asset?.agingEnabled}</Text>
+            </View>
+            <View style={baseStyles.row}>
               <Text style={baseStyles.label}>Others:</Text>
               <Text>{asset?.others}</Text>
             </View>
             <View style={baseStyles.row}>
-              <Text style={baseStyles.label}>Details:</Text>
-              <Text style={baseStyles.longText}>{asset?.details}</Text>
+              <Text style={baseStyles.label}>Comments:</Text>
+              <Text>{asset?.comments}</Text>
             </View>
+
             <Text>Attachments</Text>
             {!asset?.attachments ||
               (asset?.attachments.length === 0 && (
@@ -189,7 +204,7 @@ export default function ScanQRCodeFoundScreen({
               </>
             )}
 
-            {attachments && (
+            {attachments && attachments.length > 0 && (
               <View style={{ marginTop: 20 }}>
                 <Text style={baseStyles.textCenter}>Taken Photo</Text>
                 {attachments.map((atm) => (
@@ -206,7 +221,7 @@ export default function ScanQRCodeFoundScreen({
               </View>
             )}
           </View>
-        </View>
+        </View> */}
       </ScrollView>
       <View style={{ ...baseStyles.buttonGroupBottom, flex: 0.2 }}>
         <Button
@@ -220,17 +235,9 @@ export default function ScanQRCodeFoundScreen({
           }
           title='  Report this item'
           onPress={() =>
-            navigation.navigate('ReportAsset', { assetId: asset?.assetId })
+            navigation.navigate('ReportAsset', { serialNo: asset?.serialNo })
           }
         />
-        {/* <Button
-          icon={
-            <Icon name='camera' type='font-awesome-5' size={28} color='white' />
-          }
-          title='  Take a photo'
-          loading={loading}
-          onPress={openCamera}
-        /> */}
         <Button
           icon={
             <Icon name='camera' type='font-awesome-5' size={28} color='white' />

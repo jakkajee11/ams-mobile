@@ -30,6 +30,8 @@ import Loading from '~components/shared/Loading';
 import { JOB_ASSET_STATUS, JOB_PROGRESS, JOB_STATUS } from '~constants/Status';
 import { BarCodeScanningResult } from 'expo-camera';
 import ModalCamera from '~components/shared/ModalCamera';
+import Toast from 'react-native-root-toast';
+import Colors from '~constants/Colors';
 
 export default function JobDetailsScreen({
   route,
@@ -53,7 +55,11 @@ export default function JobDetailsScreen({
       //navigation.navigate('Jobs');
       await loadJob();
     } else {
-      Alert.alert('Failed', 'Start job failed');
+      //Alert.alert('Failed', 'Start job failed');
+      Toast.show('Start job failed', {
+        textColor: Colors.red,
+        backgroundColor: Colors.yellow,
+      });
     }
   };
 
@@ -108,11 +114,19 @@ export default function JobDetailsScreen({
     // );
     const res = await updateJobStatus(jobDetail?.id ?? '', JOB_STATUS.Finished);
     if (res && res.status === 200) {
-      Alert.alert('Success', 'Job is saved');
+      //Alert.alert('Success', 'Job is saved');
+      Toast.show('Job was saved', {
+        //textColor: Colors.white,
+        //backgroundColor: Colors.green,
+      });
       setLoading(false);
       navigation.navigate('Jobs');
     } else {
-      Alert.alert('Failed', 'Save job failed');
+      //Alert.alert('Failed', 'Save job failed');
+      Toast.show('Save job failed', {
+        textColor: Colors.red,
+        backgroundColor: Colors.yellow,
+      });
       setLoading(false);
     }
   };
@@ -122,8 +136,7 @@ export default function JobDetailsScreen({
 
   const loadJob = async () => {
     setLoading(true);
-    const res = await getJob(route.params.id);
-
+    const res = await getJob(route.params?.id);
     if (res && res.status === 200 && res.data) {
       setJobDetail(res.data);
     }
@@ -147,7 +160,8 @@ export default function JobDetailsScreen({
     if (res && res.status === 200 && res.data) {
       await loadJob();
     } else {
-      Alert.alert('Info', 'Asset not found');
+      //Alert.alert('Info', 'Asset not found');
+      Toast.show('Asset not found');
     }
     setLoading(false);
   };

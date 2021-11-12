@@ -12,12 +12,15 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { Button, Icon, Image, Input } from 'react-native-elements';
+import { Button, CheckBox, Icon, Image, Input } from 'react-native-elements';
 import 'react-native-get-random-values';
+import Toast from 'react-native-root-toast';
 import { v4 as uuidv4 } from 'uuid';
 import useAssetApi from '~apis/useAssetApi';
+import useAssetNotificationApi from '~apis/useAssetNotificationApi';
 import useUploadApi from '~apis/useUploadApi';
 import ModalCamera from '~components/shared/ModalCamera';
+import Colors from '~constants/Colors';
 import { ReportAssetModel } from '~types/assets';
 import { UploadFileBase64Model } from '~types/fileUploads';
 import extractFileName from '~utils/extractFileName';
@@ -28,11 +31,13 @@ export default function ReportAssetScreen({
   route,
   navigation,
 }: StackScreenProps<RootStackParamList, 'ReportAsset'>) {
-  const { getAssetInfo, reportAssetLocation } = useAssetApi();
+  const { getAssetInfo } = useAssetApi();
+  const { reportAssetLocation } = useAssetNotificationApi();
   const { uploadFile } = useUploadApi();
-  const [assetId, setAssetId] = useState(route.params?.assetId ?? '');
+  const [searchText, setSearchText] = useState(
+    route.params?.assetId ?? route.params?.serialNo ?? ''
+  );
   const [location, setLocation] = useState('');
-  const [subLocation, setSubLocation] = useState('');
   const [details, setDetails] = useState('');
   const [attachments, setAttachemnts] = useState<CameraCapturedPicture[]>([]);
   const [showCamera, setShowCamera] = useState(false);
@@ -43,12 +48,12 @@ export default function ReportAssetScreen({
 
   const maximum = 5;
 
-  const doReportAsset = async () => {
+  const submitReportAsset = async () => {
     setLoading(true);
     const data: ReportAssetModel = {
-      assetId,
+      assetId: route.params?.assetId ? route.params?.assetId : searchText,
+      serialNo: route.params?.serialNo ? route.params?.serialNo : searchText,
       location,
-      subLocation,
       details,
       attachments: [],
     };
@@ -56,38 +61,52 @@ export default function ReportAssetScreen({
     const res = await reportAssetLocation(data);
 
     if (res && res.status === 200) {
-      Alert.alert('Success', 'Asset was successfully reported');
+      Toast.show(`Asset was reported successfully`, {});
       reset();
     } else {
-      Alert.alert('Error', 'Report asset failed');
+      Toast.show(`Error: Report asset failed`, {
+        textColor: Colors.red,
+        backgroundColor: Colors.yellow,
+      });
       setLoading(false);
     }
   };
 
   const reportAsset = async () => {
-    if (assetId.length === 0 || location.length === 0) {
-      Alert.alert('Code and Location must not be empty!');
+    if (
+      searchText.length === 0 ||
+      location.length === 0 ||
+      details.length === 0
+    ) {
+      Toast.show(
+        `Serial No./QR Code, Location and details must not be empty!`,
+        {
+          //position: Toast.positions.CENTER,
+          textColor: Colors.red,
+          backgroundColor: Colors.yellow,
+        }
+      );
     } else {
       setLoading(true);
 
-      const res = await getAssetInfo(assetId);
+      const res = await getAssetInfo(searchText);
 
       if (res && res.status === 204) {
         Alert.alert(
           'Warning!',
-          `Asset ID "${assetId}" not exist in system. Are you sure to submit a report?`,
+          `Serial No./QR Code "${searchText}" not exist in system. Are you sure to submit a report?`,
           [
             {
               text: 'Cancel',
               onPress: () => setLoading(false),
               style: 'cancel',
             },
-            { text: 'OK', onPress: doReportAsset },
+            { text: 'OK', onPress: submitReportAsset },
           ],
           { cancelable: true }
         );
       } else {
-        await doReportAsset();
+        await submitReportAsset();
       }
     }
   };
@@ -103,7 +122,7 @@ export default function ReportAssetScreen({
         id,
         fileName: extractFileName(photo.uri),
         base64: photo.base64,
-        refCode: assetId,
+        refCode: searchText,
       };
       const res = await uploadFile(data);
       if (res && res.status !== 200) {
@@ -113,9 +132,8 @@ export default function ReportAssetScreen({
   };
 
   const reset = () => {
-    setAssetId('');
+    setSearchText('');
     setLocation('');
-    setSubLocation('');
     setDetails('');
     setAttachemnts([]);
     setLoading(false);
@@ -152,11 +170,11 @@ export default function ReportAssetScreen({
               <Input
                 //placeholder='Code (Required)'
                 maxLength={255}
-                label='Asset ID'
-                renderErrorMessage={assetId === ''}
-                errorMessage={assetId.length > 0 ? undefined : '* Required'}
-                onChangeText={(text) => setAssetId(text)}
-                value={assetId}
+                label='Serial No./QR Code'
+                renderErrorMessage={searchText === ''}
+                errorMessage={searchText.length > 0 ? undefined : '* Required'}
+                onChangeText={(text) => setSearchText(text)}
+                value={searchText}
               />
               <Input
                 //placeholder='Location (Required)'
@@ -166,11 +184,6 @@ export default function ReportAssetScreen({
                 onChangeText={(text) => setLocation(text)}
                 value={location}
               />
-              {/* <Input
-                label='Sub Location'
-                onChangeText={(text) => setSubLocation(text)}
-                value={subLocation}
-              /> */}
               <Input
                 label='Detail'
                 multiline
@@ -211,7 +224,12 @@ export default function ReportAssetScreen({
               ? ` Reach maximum (${maximum})`
               : ' Take a photo'
           }
-          disabled={assetId.length === 0 || attachments.length === maximum}
+          disabled={
+            searchText.length === 0 ||
+            location.length === 0 ||
+            details.length === 0 ||
+            attachments.length === maximum
+          }
           onPress={openCamera}
         />
         <Text></Text>
@@ -220,7 +238,11 @@ export default function ReportAssetScreen({
             <Icon name='save' type='font-awesome-5' size={28} color='white' />
           }
           title=' Submit'
-          disabled={assetId.length === 0 || location.length === 0}
+          disabled={
+            searchText.length === 0 ||
+            location.length === 0 ||
+            details.length === 0
+          }
           loading={loading}
           onPress={reportAsset}
         />

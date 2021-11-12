@@ -1,5 +1,4 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import { CameraCapturedPicture } from 'expo-camera';
 import _ from 'lodash';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
@@ -33,6 +32,7 @@ import { CreateShipJobModel } from '~types/jobs';
 import useJobApi from '~apis/useJobApi';
 import Colors from '~constants/Colors';
 import { refreshAuth, silentRefreshToken } from '~utils/auth';
+import Toast from 'react-native-root-toast';
 
 export default function ReportAssetFromAddressScreen({
   route,
@@ -41,7 +41,7 @@ export default function ReportAssetFromAddressScreen({
   const { getAssetByAddressId } = useAssetApi();
   const { getShipTos } = useMasterDataApi();
   const { createShipJob } = useJobApi();
-  const [addressId, setAddressId] = useState('');
+  const [shipToId, setShipToId] = useState('');
   const [assets, setAssets] = useState<AssetDetailModel[]>([]);
   const [open, setOpen] = useState(false);
   const [addressOptions, setAddressOptions] = useState<SelectItemOption[]>([]);
@@ -52,14 +52,18 @@ export default function ReportAssetFromAddressScreen({
 
   const reportAsset = async () => {
     const payload: CreateShipJobModel = {
-      shipAddressId: addressId,
+      shipToId: shipToId,
     };
-
     const res = await createShipJob(payload);
     if (res.status === 200) {
-      alert('Job created successfully');
+      Toast.show(`Job was created successfully`, {});
+      navigation.navigate('JobDetails', { id: res.data });
     } else {
-      alert('Create job failed');
+      Toast.show(`Create job failed`, {
+        //position: Toast.positions.CENTER,
+        textColor: Colors.red,
+        backgroundColor: Colors.yellow,
+      });
     }
   };
 
@@ -86,10 +90,12 @@ export default function ReportAssetFromAddressScreen({
 
   const setAssetFromAddress = async () => {
     setLoading(true);
-    const res = await getAssetByAddressId(addressId);
+    if (shipToId.length > 0) {
+      const res = await getAssetByAddressId(shipToId);
 
-    if (res.status === 200) {
-      setAssets(res.data.records as AssetDetailModel[]);
+      if (res.status === 200) {
+        setAssets(res.data.records as AssetDetailModel[]);
+      }
     }
 
     setLoading(false);
@@ -125,7 +131,7 @@ export default function ReportAssetFromAddressScreen({
     (async function () {
       await setAssetFromAddress();
     })();
-  }, [addressId]);
+  }, [shipToId]);
 
   return (
     <>
@@ -143,20 +149,29 @@ export default function ReportAssetFromAddressScreen({
           behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
           style={baseStyles.container}
         >
-          <View style={{ ...baseStyles.container, minHeight: 200 }}>
+          <View style={{ ...baseStyles.container, minHeight: 500 }}>
             <DropDownPicker
               placeholder='Select address'
               searchable={true}
               loading={loading}
               searchPlaceholder={'search...'}
               open={open}
-              value={addressId}
+              value={shipToId}
               items={addressOptions}
               setOpen={toggleDropdown}
-              setValue={setAddressId}
+              setValue={setShipToId}
               //setItems={setAddressOptions}
+              maxHeight={600}
+              ListEmptyComponent={() => (
+                <Text style={{ textAlign: 'center' }}>No item found</Text>
+              )}
             />
             {loading && <Loading loading={loading} />}
+            {shipToId.length > 0 && assets.length === 0 && (
+              <Text style={{ marginTop: 10, marginBottom: 10 }}>
+                No asset found
+              </Text>
+            )}
             {assets.length > 0 && (
               <View style={{ marginTop: 10, marginBottom: 10 }}>
                 <FlatList
@@ -193,7 +208,7 @@ export default function ReportAssetFromAddressScreen({
             <Icon name='save' type='font-awesome-5' size={28} color='white' />
           }
           title=' Create Job'
-          disabled={addressId.length === 0}
+          disabled={shipToId.length === 0 || assets.length === 0}
           loading={loading}
           onPress={reportAsset}
         />

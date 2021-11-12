@@ -1,6 +1,7 @@
 import { JOB_STATUS } from '~constants/Status';
 import useApi from '~hooks/useApi';
 import {
+  CreateShipJobModel,
   JobCountQuery,
   JobQuery,
   UpdateJobAssetStatusModel,
@@ -59,7 +60,7 @@ export default function useJobApi() {
     return await put(url, { jobId, assetId, status });
   };
 
-  const createShipJob = async (payload: any) => {
+  const createShipJob = async (payload: CreateShipJobModel) => {
     return await post(`${endpoint}/ship`, payload);
   };
 

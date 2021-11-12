@@ -33,9 +33,11 @@ export type RootStackParamList = {
   ScanQRCodeNotFound: QRCodeNotFoundModel | undefined;
   ReportAsset: any;
   ReportAssetFromAddress: any;
+  SearchSerialNo: any;
   AssetDetails: AssetDetailParams;
   Jobs: undefined;
-  JobDetails: JobModel;
+  JobDetails: any; //JobModel;
+  MyProfile: any;
   NotFound: undefined;
 };
 
@@ -52,7 +54,7 @@ type AssetDetailParams = {
 };
 export type JobsParamsList = {
   Jobs: undefined;
-  JobDetails: JobModel;
+  JobDetails: any; //JobModel;
   JobAssetDetails: JobAssetModel;
   AssetDetails: AssetDetailParams;
 };
