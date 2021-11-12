@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListItem, Icon, Text } from 'react-native-elements';
+import { ListItem, Icon, Text, Button } from 'react-native-elements';
 import { DateTimeFormat } from '~utils/format';
 import { JobModel } from '~/types/jobs';
 import { FlatList, Pressable, View } from 'react-native';
@@ -24,36 +24,48 @@ export default function JobItem({ data, onPress }: JobItemProps) {
           flex: 1,
           flexDirection: 'row',
           justifyContent: 'space-between',
-          padding: 5,
+          padding: 10,
+          borderBottomColor: Colors.darkGrey,
+          borderBottomWidth: 0.2,
         }}
       >
-        <TouchableOpacity
-          style={{ width: '100%' }}
-          onPress={() => handleOnPress(jobNumber)}
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}
         >
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              padding: 10,
-              borderBottomColor: Colors.darkGrey,
-              borderBottomWidth: 0.2,
-              width: '95%',
-            }}
+          <TouchableOpacity
+            style={{ width: '100%' }}
+            onPress={() => handleOnPress(jobNumber)}
           >
-            <Text>{jobNumber}</Text>
-            <Text>
-              {DateTimeFormat.toStandardDate(dueDate ? dueDate : createdAt)}
-            </Text>
-            <Icon
-              name='chevron-right'
-              type='feather'
-              size={30}
-              color={Colors.grey}
-            />
-          </View>
-        </TouchableOpacity>
+            <View
+              style={{
+                flexDirection: 'row',
+                padding: 10,
+              }}
+            >
+              <Text style={{ width: 150 }}>{jobNumber}</Text>
+              <Text>
+                {DateTimeFormat.toStandardDate(dueDate ? dueDate : createdAt)}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View>
+          <Button
+            icon={
+              <Icon
+                name='info-circle'
+                type='font-awesome-5'
+                size={20}
+                color='white'
+              />
+            }
+            onPress={() => handleOnPress(jobNumber)}
+          />
+        </View>
       </View>
     );
   };
