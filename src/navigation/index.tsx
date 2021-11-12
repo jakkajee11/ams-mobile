@@ -39,7 +39,11 @@ export default function Navigation({
 //const Stack = createStackNavigator<AppStackParamList>();
 const Stack = createStackNavigator();
 
-function AppNavigator(isLoggedIn: { isLoggedIn: boolean }) {
+interface AppNavigatorProps {
+  isLoggedIn: boolean;
+}
+
+function AppNavigator({ isLoggedIn }: AppNavigatorProps) {
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false }}

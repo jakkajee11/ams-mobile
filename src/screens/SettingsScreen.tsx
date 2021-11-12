@@ -17,6 +17,7 @@ import useAuthApi from '~apis/useAuthApi';
 import { APP_CONFIG } from '~constants/Config';
 import Storages from '~utils/Storages';
 import Logo from '../components/shared/Logo';
+import Constants from 'expo-constants';
 
 import {
   AuthStackParamList,
@@ -24,6 +25,7 @@ import {
   JobsParamsList,
   RootStackParamList,
 } from '../types';
+import baseStyles from '~styles/baseStyles';
 
 export default function SettingsScreen({
   route,
@@ -54,7 +56,16 @@ export default function SettingsScreen({
   }, []);
 
   return (
-    <View style={{ flex: 1, alignItems: 'center' }}>
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'stretch',
+        justifyContent: 'center',
+        alignContent: 'center',
+        //alignSelf: 'center',
+        //backgroundColor: 'red',
+      }}
+    >
       <StatusBar backgroundColor='#ffb900' />
       {/* <View style={{ backgroundColor: '#ffb900' }}>
         <Logo />
@@ -65,13 +76,21 @@ export default function SettingsScreen({
           flexDirection: 'column',
           justifyContent: 'space-around',
           //alignItems: 'center',
-          height: '100%',
+          //height: '100%',
           padding: 10,
         }}
       >
-        <Text>Version: 1.0.1</Text>
+        <Text style={baseStyles.textCenter}>
+          App Version: {Constants.manifest?.version}
+        </Text>
+        <Text style={baseStyles.textCenter}>
+          SDK Version: {Constants.manifest?.sdkVersion}
+        </Text>
+        <Text style={baseStyles.textCenter}>
+          Device Name: {Constants.deviceName}
+        </Text>
         <Button
-          title='Logout'
+          title='LOGOUT'
           type='outline'
           loading={loading}
           onPress={logout}

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "172978405490",
+    "project_id": "thjhams-mobile",
+    "storage_bucket": "thjhams-mobile.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:172978405490:android:dca0b8f07156ebc870c2eb",
+        "android_client_info": {
+          "package_name": "com.thjhams.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "172978405490-is79iqvm65ere9uhct5irrsjrvqkdcsf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2K2sYSmbBWTisUWBTKj8aDjGO4OG9new"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "172978405490-is79iqvm65ere9uhct5irrsjrvqkdcsf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

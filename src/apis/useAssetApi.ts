@@ -11,17 +11,35 @@ export default function useAssetApi() {
   };
 
   const getAssetInfo = async (assetId: string) => {
-    const url = `${endpoint}/assetinfo/${assetId}`;
+    const url = `${endpoint}/assetinfo?code=${encodeURIComponent(assetId)}`;
     return await get(url);
   };
 
-  const reportAssetLocation = async (model: ReportAssetModel) => {
-    return await post(`${endpoint}/notify`, model);
+  const searchAssets = async (serialNo: string) => {
+    const url = `${endpoint}/search/${serialNo}`;
+    return await get(url);
   };
+
+  const getAssetByAddressId = async (id: string) => {
+    const url = `${endpoint}/shipto/${id}`;
+    return await get(url);
+  };
+
+  const checkAsset = async (assetId: string) => {
+    const url = `${endpoint}/checkasset/${assetId}`;
+    return await get(url);
+  };
+
+  // const reportAssetLocation = async (model: ReportAssetModel) => {
+  //   return await post(`${endpoint}/notify`, model);
+  // };
 
   return {
     getAsset,
     getAssetInfo,
-    reportAssetLocation,
+    getAssetByAddressId,
+    checkAsset,
+    searchAssets,
+    // reportAssetLocation,
   };
 }

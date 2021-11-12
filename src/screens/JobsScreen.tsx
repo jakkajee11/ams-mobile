@@ -1,9 +1,15 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { StackScreenProps } from '@react-navigation/stack';
-import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {
   Button,
   Icon,
@@ -23,18 +29,23 @@ import {
 import { JobModel, JobQuery } from '../types/jobs';
 import useJobApi from '~apis/useJobApi';
 import { JOB_STATUS } from '~constants/Status';
-import Loading from '~components/shared/Loading';
+import { useIsFocused } from '@react-navigation/native';
+import Colors from '~constants/Colors';
+import Toast from 'react-native-root-toast';
+import JobItem from '~components/jobs/JobItem';
 
 export default function JobsScreen({
   navigation,
 }: StackScreenProps<JobsParamsList, 'Jobs'>) {
-  const { getPendingJobs, getWorkingJobs, getCompletedJobs } = useJobApi();
+  const { getPendingJobs, getWorkingJobs, getFinishedJobs, getCompletedJobs } =
+    useJobApi();
   const [index, setIndex] = useState(0);
   // const [pendingJobs, setPendingJobs] = useState<JobModel[]>([]);
   // const [workingJobs, setWorkingJobs] = useState<JobModel[]>([]);
   // const [completedJobs, setCompletedJobs] = useState<JobModel[]>([]);
   const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState<{ [key: string]: JobModel[] }>({});
+  const isFocused = useIsFocused();
 
   const PendingTitle = (
     <Text style={styles.title}>
@@ -49,11 +60,11 @@ export default function JobsScreen({
 
   const CompletedTitle = (
     <Text style={styles.title}>
-      Completed{'\n'}({jobs[JOB_STATUS.Completed]?.length ?? 0})
+      Finished{'\n'}({jobs[JOB_STATUS.Completed]?.length ?? 0})
     </Text>
   );
 
-  const handleJobItemPress = (job: JobModel) => {
+  const showJobDetails = (job: JobModel) => {
     navigation.navigate('JobDetails', job);
   };
 
@@ -63,37 +74,57 @@ export default function JobsScreen({
       page: 0, // no pagination
       size: 10,
       status: 0,
-      startDate: '2021-07-01',
-      endDate: '2021-12-31',
+      //startDate: '2021-07-01',
+      //endDate: '2021-12-31',
     };
-    const [pending, working, completed] = await Promise.all([
+    // const [pending, working, finished, completed] = await Promise.all([
+    //   getPendingJobs({ ...query, status: JOB_STATUS.Pending }),
+    //   getWorkingJobs({ ...query, status: JOB_STATUS.InProgress }),
+    //   getFinishedJobs({ ...query, status: JOB_STATUS.Finished }),
+    //   getCompletedJobs({ ...query, status: JOB_STATUS.Completed }),
+    // ]);
+    const [pending, working, finished] = await Promise.all([
       getPendingJobs({ ...query, status: JOB_STATUS.Pending }),
       getWorkingJobs({ ...query, status: JOB_STATUS.InProgress }),
-      getCompletedJobs({ ...query, status: JOB_STATUS.Completed }),
+      getFinishedJobs({ ...query, status: JOB_STATUS.Finished }),
     ]);
 
-    let myJobs: { [key: number]: JobModel[] } = {};
+    let myJobs: { [key: number]: JobModel[] } = {
+      [JOB_STATUS.Completed]: [],
+    };
 
     if (pending && pending.status === 200 && pending.data) {
-      //setPendingJobs(pending.data);
       myJobs[JOB_STATUS.Pending] = pending.data.records;
+    } else {
+      Toast.show("You don't have permission, please contact administrator", {
+        position: Toast.positions.CENTER,
+        textColor: Colors.red,
+        backgroundColor: Colors.yellow,
+      });
     }
     if (working && working.status === 200 && working.data) {
-      //setWorkingJobs(working.data);
       myJobs[JOB_STATUS.InProgress] = working.data.records;
     }
-    if (completed && completed.status === 200 && completed.data) {
-      //setCompletedJobs(completed.data);
-      myJobs[JOB_STATUS.Completed] = completed.data.records;
+    if (finished && finished.status === 200 && finished.data) {
+      myJobs[JOB_STATUS.Completed] = [
+        ...myJobs[JOB_STATUS.Completed],
+        ...finished.data.records,
+      ];
     }
+    // if (completed && completed.status === 200 && completed.data) {
+    //   myJobs[JOB_STATUS.Completed] = [
+    //     ...myJobs[JOB_STATUS.Completed],
+    //     ...completed.data.records,
+    //   ];
+    // }
 
     setJobs(myJobs);
     setLoading(false);
   };
 
   useEffect(() => {
-    prepareData();
-  }, []);
+    if (isFocused) prepareData();
+  }, [isFocused]);
 
   return (
     <View style={styles.container}>
@@ -115,43 +146,91 @@ export default function JobsScreen({
             titleStyle={{ color: 'white', fontSize: 8 }}
           />
         </Tab>
-
-        <TabView value={index} onChange={setIndex}>
-          <TabView.Item style={styles.tabViewItem}>
-            <View>
-              {loading && <Loading loading={loading} />}
-              {jobs[JOB_STATUS.Pending]?.map((job) => (
-                <Job
-                  key={job.id}
-                  data={job}
-                  onPress={(job: JobModel) => handleJobItemPress(job)}
+        <ScrollView
+          //contentContainerStyle={styles.container}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={prepareData}
+              colors={[Colors.yellow]}
+            />
+          }
+        >
+          <TabView value={index} onChange={setIndex}>
+            <TabView.Item style={styles.tabViewItem}>
+              <View>
+                {/* {loading && <Loading loading={loading} />} */}
+                {/* {jobs[JOB_STATUS.Pending]?.map((job) => (
+                  <Job
+                    key={job.id}
+                    data={job}
+                    onPress={(job: JobModel) => showJobDetails(job)}
+                  />
+                ))} */}
+                {jobs[JOB_STATUS.Pending] && (
+                  <JobItem
+                    data={jobs[JOB_STATUS.Pending]}
+                    onPress={(job: JobModel) => showJobDetails(job)}
+                  />
+                )}
+              </View>
+              {/* <ScrollView
+              contentContainerStyle={styles.container}
+              refreshControl={
+                <RefreshControl
+                  refreshing={loading}
+                  onRefresh={prepareData}
+                  colors={[Colors.yellow]}
                 />
-              ))}
-            </View>
-          </TabView.Item>
-          <TabView.Item style={styles.tabViewItem}>
-            <View>
-              {jobs[JOB_STATUS.InProgress]?.map((job) => (
-                <Job
-                  key={job.id}
-                  data={job}
-                  onPress={(job: JobModel) => handleJobItemPress(job)}
-                />
-              ))}
-            </View>
-          </TabView.Item>
-          <TabView.Item style={styles.tabViewItem}>
-            <View>
-              {jobs[JOB_STATUS.Completed]?.map((job) => (
-                <Job
-                  key={job.id}
-                  data={job}
-                  onPress={(job: JobModel) => handleJobItemPress(job)}
-                />
-              ))}
-            </View>
-          </TabView.Item>
-        </TabView>
+              }
+            >
+              <View>                
+                {jobs[JOB_STATUS.Pending]?.map((job) => (
+                  <Job
+                    key={job.id}
+                    data={job}
+                    onPress={(job: JobModel) => showJobDetails(job)}
+                  />
+                ))}
+              </View>
+            </ScrollView> */}
+            </TabView.Item>
+            <TabView.Item style={styles.tabViewItem}>
+              <View>
+                {/* {jobs[JOB_STATUS.InProgress]?.map((job) => (
+                  <Job
+                    key={job.id}
+                    data={job}
+                    onPress={(job: JobModel) => showJobDetails(job)}
+                  />
+                ))} */}
+                {jobs[JOB_STATUS.InProgress] && (
+                  <JobItem
+                    data={jobs[JOB_STATUS.InProgress]}
+                    onPress={(job: JobModel) => showJobDetails(job)}
+                  />
+                )}
+              </View>
+            </TabView.Item>
+            <TabView.Item style={styles.tabViewItem}>
+              <View>
+                {/* {jobs[JOB_STATUS.Completed]?.map((job) => (
+                  <Job
+                    key={job.id}
+                    data={job}
+                    onPress={(job: JobModel) => showJobDetails(job)}
+                  />
+                ))} */}
+                {jobs[JOB_STATUS.Completed] && (
+                  <JobItem
+                    data={jobs[JOB_STATUS.Completed]}
+                    onPress={(job: JobModel) => showJobDetails(job)}
+                  />
+                )}
+              </View>
+            </TabView.Item>
+          </TabView>
+        </ScrollView>
       </View>
     </View>
   );

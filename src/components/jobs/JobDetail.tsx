@@ -1,10 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { Text } from 'react-native-elements';
 import baseStyles from '~styles/baseStyles';
 import { DateTimeFormat } from '~utils/format';
-import Colors from '../../constants/Colors';
 import { JobModel } from '../../types/jobs';
 import JobAsset from './JobAsset';
 
@@ -20,8 +19,8 @@ export default function JobDetail({
     jobStatusName,
     dueDate,
     details,
-    location,
-    subLocation,
+    soldToName,
+    shipToName,
     assets,
     createdAt,
   },
@@ -46,7 +45,7 @@ export default function JobDetail({
           <Text>{jobNumber}</Text>
         </View>
         <View style={baseStyles.row}>
-          <Text>Duedate:</Text>
+          <Text>Due date:</Text>
           <Text>{DateTimeFormat.toStandardDateTime(dueDate)}</Text>
         </View>
         <View style={baseStyles.row}>
@@ -58,16 +57,16 @@ export default function JobDetail({
           <Text>{jobStatusName}</Text>
         </View>
         <View style={baseStyles.row}>
-          <Text>Location:</Text>
-          <Text>{location}</Text>
+          <Text>Sold-To:</Text>
+          <Text style={baseStyles.longText}>{soldToName}</Text>
         </View>
         <View style={baseStyles.row}>
-          <Text>Sub Location: </Text>
-          <Text>{subLocation}</Text>
+          <Text>Ship-To: </Text>
+          <Text style={baseStyles.longText}>{shipToName}</Text>
         </View>
-        <View style={{ padding: 5 }}>
+        <View style={baseStyles.col}>
           <Text>Detail:</Text>
-          <Text>{details}</Text>
+          <Text style={baseStyles.longText}>{details}</Text>
         </View>
 
         <View style={{ marginTop: 10, marginBottom: 10 }}>

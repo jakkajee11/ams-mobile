@@ -1,28 +1,28 @@
 import React from 'react';
-import { ListItem, Icon } from 'react-native-elements';
-import { AssetModel } from '../../types/assets';
-import { JobAssetModel } from '../../types/jobs';
+import { ListItem } from 'react-native-elements';
+import { AssetDetailModel } from '../../types/assets';
 
 interface AssetProps {
-  data: JobAssetModel;
+  data: AssetDetailModel;
   onPress?: () => void;
 }
 
 export default function Asset({
-  data: { key, jobAssetStatusName, assetId },
+  data: { id, assetTypeName, assetId, serialNo, assetStatusName },
   onPress,
 }: AssetProps) {
   const handleOnPress = () => {
     onPress && onPress();
   };
+
   return (
-    <ListItem key={key} bottomDivider onPress={handleOnPress}>
+    <ListItem key={id} bottomDivider onPress={handleOnPress}>
       <ListItem.Content>
         <ListItem.Title style={{ fontSize: 12 }}>
-          {assetId} {jobAssetStatusName} {assetId}
+          {serialNo} {assetStatusName} {assetTypeName}
         </ListItem.Title>
       </ListItem.Content>
-      <ListItem.Chevron name='x-circle' type='feather' color='red' />
+      <ListItem.Chevron name='chevron-right' type='feather' />
     </ListItem>
   );
 }

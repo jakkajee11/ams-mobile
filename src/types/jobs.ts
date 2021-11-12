@@ -9,8 +9,8 @@ export type JobModel = {
   dueDate: string;
   details?: string;
   comments?: string;
-  location?: string;
-  subLocation?: string;
+  soldToName: string;
+  shipToName: string;
   assets: JobAssetModel[];
   createdAt: string;
   startedAt?: string;
@@ -28,13 +28,16 @@ export type JobAssetModel = {
   assetTypeName: string;
   costCenterId: string;
   assetStatusId: string;
+  assetStatusName: string;
   details: string;
   location: string;
   subLocation?: string;
+  soldToName: string;
+  shipToName: string;
   yearOfManufacture?: number;
   warrantyEndAt?: string;
   assetClassId?: string;
-  serialNo?: boolean;
+  serialNo: string;
   assetNo?: string;
   others?: string;
 };
@@ -43,7 +46,22 @@ export type JobQuery = {
   status: number;
   page: number;
   size: number;
-  startDate: string;
-  endDate: string;
+  startDate?: string;
+  endDate?: string;
   //assigneeId: string;
+};
+
+export type JobCountQuery = {
+  startDate?: string;
+  endDate?: string;
+};
+
+export type UpdateJobAssetStatusModel = {
+  jobId: string;
+  assetId: string;
+  status: number;
+};
+
+export type CreateShipJobModel = {
+  shipToId: string;
 };

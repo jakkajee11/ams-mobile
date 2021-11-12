@@ -17,9 +17,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Overlay, Button, Icon } from 'react-native-elements';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { Button, Icon } from 'react-native-elements';
 import useAssetApi from '~apis/useAssetApi';
+import ModalCamera from '~components/shared/ModalCamera';
 import Camera from '../components/shared/Camera';
 
 import { RootStackParamList } from '../types';
@@ -95,34 +95,13 @@ export default function ScanQRCodeScreen({
           onPress={prepareCamera}
           loading={loading}
         />
-
-        <Modal
-          animationType='fade'
-          transparent={true}
-          visible={visible}
-          presentationStyle={'overFullScreen'}
-          onRequestClose={closeCamera}
-        >
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'column',
-              justifyContent: 'flex-start',
-              height: '100%',
-              width: '100%',
-            }}
-          >
-            {visible && (
-              <Camera
-                onClose={closeCamera}
-                onTakePicture={(photo: CameraCapturedPicture) =>
-                  console.log('photo taken!')
-                }
-                onBarCodeScanned={handleBarCodeScanned}
-              />
-            )}
-          </View>
-        </Modal>
+        <ModalCamera
+          showCamera={visible}
+          openCamera={openCamera}
+          closeCamera={closeCamera}
+          onBarCodeScanned={handleBarCodeScanned}
+          mode='scan'
+        />
       </View>
     </>
   );

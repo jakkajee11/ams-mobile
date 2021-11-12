@@ -3,9 +3,10 @@ import Colors from '../constants/Colors';
 
 const baseStyles = StyleSheet.create({
   scrollView: {
-    flex: 2,
+    flex: 1,
     padding: 5,
     //backgroundColor: Colors.yellow,
+    //height: '100%',
   },
   container: {
     flex: 1,
@@ -58,6 +59,24 @@ const baseStyles = StyleSheet.create({
   },
   col: {
     padding: 5,
+  },
+  column: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    padding: 5,
+  },
+  textCenter: {
+    textAlign: 'center',
+  },
+  label: {
+    fontStyle: 'normal',
+  },
+  longText: {
+    flex: 0.98,
+    textAlign: 'right',
   },
 });
 

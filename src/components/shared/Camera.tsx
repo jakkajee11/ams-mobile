@@ -62,10 +62,11 @@ const wbIcons = {
 
 interface CameraProps {
   onClose(): void;
-  onTakePicture(photo: CameraCapturedPicture | undefined): void;
+  onTakePicture?(photo: CameraCapturedPicture | undefined): void;
   onBarCodeScanned?(result: BarCodeScanningResult): void;
   showImagePicker?: boolean;
   showOptions?: boolean;
+  mode: 'photo' | 'scan';
 }
 
 export default function Camera({
@@ -74,6 +75,7 @@ export default function Camera({
   onBarCodeScanned,
   showImagePicker = false,
   showOptions = false,
+  mode = 'photo',
 }: CameraProps & ExpoCameraProps) {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
@@ -101,7 +103,7 @@ export default function Camera({
       }
       // Camera Permission
       const { status } = await ExpoCamera.requestPermissionsAsync();
-      console.log(['status', status]);
+      //console.log(['status', status]);
       setHasPermission(status === 'granted');
     })();
   }, []);
@@ -147,7 +149,7 @@ export default function Camera({
   }
 
   function handleTakePicture(photo: CameraCapturedPicture) {
-    onTakePicture(photo);
+    onTakePicture && onTakePicture(photo);
     onClose();
   }
 
@@ -202,16 +204,18 @@ export default function Camera({
           </TouchableOpacity>
         )}
         <View style={{ flex: 0.4 }}>
-          <TouchableOpacity
-            onPress={takePicture}
-            style={{ alignSelf: 'center' }}
-            //disabled={!cameraReady}
-          >
-            {saving && <Text style={{ color: 'white' }}>กำลังบันทึกภาพ</Text>}
-            {!saving && (
-              <Ionicons name='ios-radio-button-on' size={70} color='white' />
-            )}
-          </TouchableOpacity>
+          {mode === 'photo' && (
+            <TouchableOpacity
+              onPress={takePicture}
+              style={{ alignSelf: 'center' }}
+              //disabled={!cameraReady}
+            >
+              {saving && <Text style={{ color: 'white' }}>กำลังบันทึกภาพ</Text>}
+              {!saving && (
+                <Ionicons name='ios-radio-button-on' size={70} color='white' />
+              )}
+            </TouchableOpacity>
+          )}
         </View>
         {showPickImage && (
           <TouchableOpacity style={styles.bottomButton} onPress={pickImage}>
@@ -221,6 +225,24 @@ export default function Camera({
             </View>
           </TouchableOpacity>
         )}
+      </View>
+    );
+  }
+
+  function ScanBox() {
+    return (
+      <View
+        style={{
+          flex: 0.5,
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderColor: 'white',
+          borderRadius: 5,
+          borderWidth: 1,
+        }}
+      >
+        {/* <Text>QR Code/Bar Code</Text> */}
       </View>
     );
   }
@@ -250,6 +272,7 @@ export default function Camera({
         onBarCodeScanned={onBarCodeScanned}
       >
         <TopBar />
+        {mode === 'scan' && <ScanBox />}
         <BottomBar />
       </ExpoCamera>
     </View>

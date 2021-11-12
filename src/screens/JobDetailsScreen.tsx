@@ -1,11 +1,10 @@
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { StackScreenProps } from '@react-navigation/stack';
-import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Modal,
   ScrollView,
   StyleSheet,
   TextInput,
@@ -22,28 +21,29 @@ import {
   ListItem,
 } from 'react-native-elements';
 
-import {
-  AuthStackParamList,
-  JobsParamsList,
-  RootStackParamList,
-} from '../types';
+import { JobsParamsList } from '../types';
 import JobDetail from '~components/jobs/JobDetail';
 import baseStyles from '~styles/baseStyles';
-import Colors from '~constants/Colors';
 import useJobApi from '~apis/useJobApi';
 import { JobModel } from '~types/jobs';
 import Loading from '~components/shared/Loading';
 import { JOB_ASSET_STATUS, JOB_PROGRESS, JOB_STATUS } from '~constants/Status';
-import dayjs from 'dayjs';
+import { BarCodeScanningResult } from 'expo-camera';
+import ModalCamera from '~components/shared/ModalCamera';
+import Toast from 'react-native-root-toast';
+import Colors from '~constants/Colors';
 
 export default function JobDetailsScreen({
   route,
   navigation,
 }: StackScreenProps<JobsParamsList, 'JobDetails'>) {
   const [loading, setLoading] = useState(false);
-  const { getJob, updateJobStatus, updateJobProgress } = useJobApi();
+  const { getJob, updateJobStatus, updateJobProgress, updateJobAssetStatus } =
+    useJobApi();
   const [jobDetail, setJobDetail] = useState<JobModel>();
-  const [paused, setPaused] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
+  const [scannedResult, setScannedResult] = useState('');
+  const [totalChecked, setTotalChecked] = useState(0);
 
   const startJob = async () => {
     const res = await updateJobStatus(
@@ -51,10 +51,15 @@ export default function JobDetailsScreen({
       JOB_STATUS.InProgress
     );
     if (res && res.status === 200) {
-      Alert.alert('Success', 'Job is started');
-      navigation.navigate('Jobs');
+      //Alert.alert('Success', 'Job is started');
+      //navigation.navigate('Jobs');
+      await loadJob();
     } else {
-      Alert.alert('Failed', 'Start job failed');
+      //Alert.alert('Failed', 'Start job failed');
+      Toast.show('Start job failed', {
+        textColor: Colors.red,
+        backgroundColor: Colors.yellow,
+      });
     }
   };
 
@@ -80,10 +85,10 @@ export default function JobDetailsScreen({
       )?.length ?? 0;
     if (uncheckedAssets > 0) {
       Alert.alert(
-        'Warining',
+        'Warning',
         `There ${
           uncheckedAssets > 1 ? 'are' : 'is'
-        } ${uncheckedAssets} not yet completed`,
+        } ${uncheckedAssets} asset not yet checked, Are you sure to finish?`,
         [
           {
             text: 'Cancel',
@@ -101,86 +106,120 @@ export default function JobDetailsScreen({
 
   const doFinishJob = async () => {
     setLoading(true);
-    const res = await updateJobProgress(
-      jobDetail?.id ?? '',
-      jobDetail?.jobProgressId === JOB_PROGRESS.Paused
-        ? JOB_PROGRESS.Started
-        : JOB_PROGRESS.Paused
-    );
+    // const res = await updateJobProgress(
+    //   jobDetail?.id ?? '',
+    //   jobDetail?.jobProgressId === JOB_PROGRESS.Paused
+    //     ? JOB_PROGRESS.Started
+    //     : JOB_PROGRESS.Paused
+    // );
+    const res = await updateJobStatus(jobDetail?.id ?? '', JOB_STATUS.Finished);
     if (res && res.status === 200) {
-      Alert.alert('Success', 'Job is saved');
+      //Alert.alert('Success', 'Job is saved');
+      Toast.show('Job was saved', {
+        //textColor: Colors.white,
+        //backgroundColor: Colors.green,
+      });
       setLoading(false);
       navigation.navigate('Jobs');
     } else {
-      Alert.alert('Failed', 'Save job failed');
+      //Alert.alert('Failed', 'Save job failed');
+      Toast.show('Save job failed', {
+        textColor: Colors.red,
+        backgroundColor: Colors.yellow,
+      });
       setLoading(false);
     }
   };
 
-  const renderTimeUsed = () => {
-    const minutes = dayjs(jobDetail?.startedAt).diff(
-      dayjs(jobDetail?.stoppedAt),
-      'm'
-    );
+  const openCamera = () => setShowCamera(true);
+  const closeCamera = () => setShowCamera(false);
+
+  const loadJob = async () => {
+    setLoading(true);
+    const res = await getJob(route.params?.id);
+    if (res && res.status === 200 && res.data) {
+      setJobDetail(res.data);
+    }
+    setLoading(false);
   };
+
+  const handleBarCodeScanned = async ({
+    type,
+    data,
+    cornerPoints,
+  }: BarCodeScanningResult) => {
+    setScannedResult(data);
+    closeCamera();
+    // check asset in system
+    setLoading(true);
+    const res = await updateJobAssetStatus({
+      jobId: jobDetail?.id ?? '',
+      assetId: data,
+      status: JOB_ASSET_STATUS.Checked,
+    });
+    if (res && res.status === 200 && res.data) {
+      await loadJob();
+    } else {
+      //Alert.alert('Info', 'Asset not found');
+      Toast.show('Asset not found');
+    }
+    setLoading(false);
+  };
+
+  const checkedItemCount = () =>
+    jobDetail?.assets.filter(
+      (ja) => ja.jobAssetStatusId === JOB_ASSET_STATUS.Checked
+    )?.length ?? 0;
+
+  const itemCount = () => jobDetail?.assets.length ?? 0;
+
+  const jobProgress = () =>
+    checkedItemCount() === 0
+      ? 0
+      : ((checkedItemCount() / itemCount()) * 100).toFixed(1);
 
   useEffect(() => {
     (async function () {
-      setLoading(true);
-      const res = await getJob(route.params.id);
-
-      if (res && res.status === 200 && res.data) {
-        setJobDetail(res.data);
-      }
-      setLoading(false);
+      await loadJob();
     })();
   }, []);
 
   return (
-    <>
-      {/* <StatusBar /> */}
-
-      {/* <ScrollView style={baseStyles.scrollView}> */}
+    <ScrollView style={baseStyles.scrollView}>
       {loading && <Loading loading={loading} />}
       <View style={baseStyles.container}>
-        {/* <ActivityIndicator animating={true} size='large' /> */}
         {jobDetail && <JobDetail data={jobDetail} />}
       </View>
-      {/* </ScrollView> */}
+
       <View style={{ ...baseStyles.buttonGroupBottom, flex: 0.4 }}>
-        {/* {jobDetail?.jobStatusId === JOB_STATUS.InProgress && (
-          <View
-            style={{
-              flex: 0.3,
-              flexDirection: 'row',
-              justifyContent: 'center',
-              padding: 0,
-            }}
-          >
-            <Icon name='clock' type='font-awesome-5' />
-            <Text style={{ textAlign: 'center', marginLeft: 5 }}>
-              Time used: 1 hour {30} minutes
-            </Text>
-          </View>
-        )} */}
         {jobDetail?.jobStatusId === JOB_STATUS.Pending && (
           <Button title='START' onPress={startJob} />
         )}
         {jobDetail?.jobStatusId === JOB_STATUS.InProgress && (
-          <Button
-            title={
-              jobDetail.jobProgressId === JOB_PROGRESS.Paused
-                ? 'CONTINUE'
-                : 'SAVE'
-            }
-            onPress={updateProgress}
-          />
+          <Button title={'SCAN ASSET'} onPress={openCamera} />
         )}
-        {jobDetail?.jobStatusId === JOB_STATUS.InProgress &&
+        {jobDetail?.jobStatusId === JOB_STATUS.InProgress && (
+          <View>
+            <Text style={baseStyles.textCenter}>
+              Progress {jobProgress()}% ({checkedItemCount()}/{itemCount()}{' '}
+              checked)
+            </Text>
+            <Button title='FINISH' onPress={finishJob} />
+          </View>
+        )}
+        {/* {jobDetail?.jobStatusId === JOB_STATUS.InProgress &&
           jobDetail?.jobProgressId === JOB_PROGRESS.Started && (
             <Button title='FINISH' onPress={finishJob} />
-          )}
+          )} */}
       </View>
-    </>
+
+      <ModalCamera
+        openCamera={openCamera}
+        closeCamera={closeCamera}
+        showCamera={showCamera}
+        onBarCodeScanned={handleBarCodeScanned}
+        mode={'scan'}
+      />
+    </ScrollView>
   );
 }
