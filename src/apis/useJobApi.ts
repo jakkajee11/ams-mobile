@@ -13,7 +13,7 @@ export default function useJobApi() {
   const { get, post, put } = useApi();
 
   const getJobs = async (query: JobQuery) => {
-    return await post(`${endpoint}/search`, query);
+    return await post(`${endpoint}/m/search`, query);
   };
 
   const getPendingJobs = async (query: JobQuery) => {
