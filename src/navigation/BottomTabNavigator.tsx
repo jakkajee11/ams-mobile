@@ -98,13 +98,14 @@ function JobsNavigator() {
       <JobsStack.Screen
         name='JobDetails'
         component={JobDetailsScreen}
-        options={{
-          headerTitle: 'Job Details',
-          headerTitleStyle: { color: Colors.black, textAlign: 'auto' },
-          headerStyle: {
-            backgroundColor: Colors.yellow,
-          },
-        }}
+        // options={{
+        //   headerTitle: 'Job Details',
+        //   headerTitleStyle: { color: Colors.black, textAlign: 'auto' },
+        //   headerStyle: {
+        //     backgroundColor: Colors.yellow,
+        //   },
+        // }}
+        options={{ header: () => <Header title='Job Details' /> }}
       />
       <JobsStack.Screen
         name='AssetDetails'

@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { FlatList, View } from 'react-native';
 import { Text } from 'react-native-elements';
+import { JOB_STATUS } from '~constants/Status';
 import baseStyles from '~styles/baseStyles';
 import { DateTimeFormat } from '~utils/format';
 import { JobModel } from '../../types/jobs';
@@ -9,6 +10,7 @@ import JobAsset from './JobAsset';
 
 interface JobDetailProps {
   data: JobModel;
+  progress?: string;
 }
 
 export default function JobDetail({
@@ -24,6 +26,7 @@ export default function JobDetail({
     assets,
     createdAt,
   },
+  progress,
 }: JobDetailProps) {
   const navigation = useNavigation();
 
@@ -64,7 +67,7 @@ export default function JobDetail({
           <Text>Ship-To: </Text>
           <Text style={baseStyles.longText}>{shipToName}</Text>
         </View>
-        <View style={baseStyles.col}>
+        <View style={baseStyles.row}>
           <Text>Detail:</Text>
           <Text style={baseStyles.longText}>{details}</Text>
         </View>
@@ -75,12 +78,13 @@ export default function JobDetail({
             ListHeaderComponent={
               <Text
                 style={{
-                  //...styles.text,
                   textAlign: 'center',
-                  //fontStyle: 'italic',
                 }}
               >
-                Included {assets.length} assets
+                {jobStatusId === JOB_STATUS.Finished ||
+                jobStatusId === JOB_STATUS.Completed
+                  ? `Finished (${progress} checked)`
+                  : `Included ${assets.length} assets`}
               </Text>
             }
             data={assets}

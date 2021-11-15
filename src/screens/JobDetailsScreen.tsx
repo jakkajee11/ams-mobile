@@ -185,20 +185,44 @@ export default function JobDetailsScreen({
   }, []);
 
   return (
-    <ScrollView style={baseStyles.scrollView}>
-      {loading && <Loading loading={loading} />}
-      <View style={baseStyles.container}>
-        {jobDetail && <JobDetail data={jobDetail} />}
-      </View>
+    <>
+      <ScrollView style={baseStyles.scrollView}>
+        {loading && <Loading loading={loading} />}
+        <View style={baseStyles.container}>
+          {jobDetail && (
+            <JobDetail
+              data={jobDetail}
+              progress={`${jobProgress()}% (${checkedItemCount()}/${itemCount()}`}
+            />
+          )}
+        </View>
 
-      <View style={{ ...baseStyles.buttonGroupBottom, flex: 0.4 }}>
-        {jobDetail?.jobStatusId === JOB_STATUS.Pending && (
+        <ModalCamera
+          openCamera={openCamera}
+          closeCamera={closeCamera}
+          showCamera={showCamera}
+          onBarCodeScanned={handleBarCodeScanned}
+          mode={'scan'}
+        />
+      </ScrollView>
+      {jobDetail?.jobStatusId === JOB_STATUS.Pending && (
+        <View
+          style={{
+            ...baseStyles.buttonGroupBottom,
+            flex: 0.1,
+          }}
+        >
           <Button title='START' onPress={startJob} />
-        )}
-        {jobDetail?.jobStatusId === JOB_STATUS.InProgress && (
+        </View>
+      )}
+      {jobDetail?.jobStatusId === JOB_STATUS.InProgress && (
+        <View
+          style={{
+            ...baseStyles.buttonGroupBottom,
+            flex: 0.4,
+          }}
+        >
           <Button title={'SCAN ASSET'} onPress={openCamera} />
-        )}
-        {jobDetail?.jobStatusId === JOB_STATUS.InProgress && (
           <View>
             <Text style={baseStyles.textCenter}>
               Progress {jobProgress()}% ({checkedItemCount()}/{itemCount()}{' '}
@@ -206,20 +230,8 @@ export default function JobDetailsScreen({
             </Text>
             <Button title='FINISH' onPress={finishJob} />
           </View>
-        )}
-        {/* {jobDetail?.jobStatusId === JOB_STATUS.InProgress &&
-          jobDetail?.jobProgressId === JOB_PROGRESS.Started && (
-            <Button title='FINISH' onPress={finishJob} />
-          )} */}
-      </View>
-
-      <ModalCamera
-        openCamera={openCamera}
-        closeCamera={closeCamera}
-        showCamera={showCamera}
-        onBarCodeScanned={handleBarCodeScanned}
-        mode={'scan'}
-      />
-    </ScrollView>
+        </View>
+      )}
+    </>
   );
 }

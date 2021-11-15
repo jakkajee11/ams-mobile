@@ -2,7 +2,7 @@
   "expo": {
     "name": "AMS App",
     "slug": "ams-mobile",
-    "version": "1.4.5",
+    "version": "1.5.0",
     "orientation": "portrait",
     "icon": "./src/assets/images/ams-icon.png",
     "scheme": "myapp",

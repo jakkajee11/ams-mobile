@@ -43,6 +43,7 @@ export default function ReportAssetFromAddressScreen({
   const { createShipJob } = useJobApi();
   const [shipToId, setShipToId] = useState('');
   const [assets, setAssets] = useState<AssetDetailModel[]>([]);
+  const [totalAssets, setTotalAssets] = useState<number>(0);
   const [open, setOpen] = useState(false);
   const [addressOptions, setAddressOptions] = useState<SelectItemOption[]>([]);
 
@@ -95,6 +96,7 @@ export default function ReportAssetFromAddressScreen({
 
       if (res.status === 200) {
         setAssets(res.data.records as AssetDetailModel[]);
+        setTotalAssets(res.data.totalRecords);
       }
     }
 
@@ -176,7 +178,7 @@ export default function ReportAssetFromAddressScreen({
               <View style={{ marginTop: 10, marginBottom: 10 }}>
                 <FlatList
                   keyExtractor={(item) => item.assetId}
-                  ListFooterComponent={
+                  ListHeaderComponent={
                     <Text
                       style={{
                         //...styles.text,
@@ -184,10 +186,22 @@ export default function ReportAssetFromAddressScreen({
                         //fontStyle: 'italic',
                       }}
                     >
-                      Total {assets.length}{' '}
-                      {`${assets.length > 1 ? 'assets' : 'asset'}`}
+                      Total {totalAssets}{' '}
+                      {`${totalAssets > 1 ? 'assets' : 'asset'}`}
                     </Text>
                   }
+                  // ListFooterComponent={
+                  //   <Text
+                  //     style={{
+                  //       //...styles.text,
+                  //       textAlign: 'center',
+                  //       //fontStyle: 'italic',
+                  //     }}
+                  //   >
+                  //     Total {totalAssets}{' '}
+                  //     {`${totalAssets > 1 ? 'assets' : 'asset'}`}
+                  //   </Text>
+                  // }
                   data={assets}
                   renderItem={renderItem}
                 />
