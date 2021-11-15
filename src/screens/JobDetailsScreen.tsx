@@ -192,7 +192,7 @@ export default function JobDetailsScreen({
           {jobDetail && (
             <JobDetail
               data={jobDetail}
-              progress={`${jobProgress()}% (${checkedItemCount()}/${itemCount()}`}
+              progress={`${jobProgress()}% ${checkedItemCount()}/${itemCount()}`}
             />
           )}
         </View>
