@@ -11,11 +11,14 @@ import {
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 import { ColorSchemeName } from 'react-native';
+import Header from '~components/shared/Header';
+import JobsScreen from '~screens/JobsScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import AuthNavigator from './AuthNavigator';
 import BottomTabNavigator from './BottomTabNavigator';
 import HomeStackNavigator from './HomeStackNavigator';
 import LinkingConfiguration from './LinkingConfiguration';
+import JobStackNavigator from './JobStackNavigator';
 
 export default function Navigation({
   colorScheme,
@@ -65,11 +68,8 @@ function RootNavigator() {
       />
       <Stack.Screen
         name='Jobs'
-        component={BottomTabNavigator}
-        options={{
-          headerShown: false,
-          title: 'My Jobs',
-        }}
+        component={JobStackNavigator}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name='NotFound'

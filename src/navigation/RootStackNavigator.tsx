@@ -13,7 +13,8 @@ export default function RootStackNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name='Home' component={HomeScreen} />
-      <Stack.Screen name='Jobs' component={BottomTabNavigator} />
+      {/* <Stack.Screen name='Jobs' component={BottomTabNavigator} /> */}
+      <Stack.Screen name='Jobs' component={JobsScreen} />
       <Stack.Screen name='JobDetails' component={JobDetailsScreen} />
       <Stack.Screen name='MyProfile' component={ProfileScreen} />
     </Stack.Navigator>
