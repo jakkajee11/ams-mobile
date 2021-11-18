@@ -35,7 +35,11 @@ const flashModeOrder = {
   torch: 'off',
 };
 
-const flashIcons = {
+interface IFlashIcons {
+  [key: string]: 'flash-off' | 'flash-on' | 'flash-auto' | 'highlight';
+}
+
+const flashIcons: IFlashIcons = {
   off: 'flash-off',
   on: 'flash-on',
   auto: 'flash-auto',
@@ -175,11 +179,14 @@ export default function Camera({
       <View style={styles.topBar}>
         {/* <TouchableOpacity style={styles.toggleButton} onPress={() => toggleFacing}>
         <Ionicons name="ios-reverse-camera" size={32} color="white" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.toggleButton} onPress={() => toggleFlash('on')}>
-        <MaterialIcons name={flashIcons[flash]} size={32} color="white" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.toggleButton} onPress={() => toggleWB}>
+    </TouchableOpacity>*/}
+        {/* <TouchableOpacity
+          style={styles.toggleButton}
+          onPress={() => toggleFlash('on')}
+        >
+          <MaterialIcons name={flashIcons[flash]} size={32} color='white' />
+        </TouchableOpacity> */}
+        {/*<TouchableOpacity style={styles.toggleButton} onPress={() => toggleWB}>
         <MaterialIcons name={wbIcons[whiteBalance]} size={32} color="white" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={toggleFocus}>

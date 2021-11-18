@@ -157,11 +157,26 @@ export default function JobDetailsScreen({
       assetId: data,
       status: JOB_ASSET_STATUS.Checked,
     });
+
     if (res && res.status === 200 && res.data) {
+      Toast.show(`Asset serial no "${res.data}" was checked`, {
+        position: Toast.positions.CENTER,
+        duration: Toast.durations.LONG,
+        backgroundColor: Colors.green,
+        keyboardAvoiding: true,
+        hideOnPress: true,
+        animation: true,
+      });
       await loadJob();
     } else {
-      //Alert.alert('Info', 'Asset not found');
-      Toast.show('Asset not found');
+      Toast.show(`QR Code "${data}" not found`, {
+        position: Toast.positions.CENTER,
+        duration: Toast.durations.LONG,
+        backgroundColor: Colors.red,
+        keyboardAvoiding: true,
+        hideOnPress: true,
+        animation: true,
+      });
     }
     setLoading(false);
   };
