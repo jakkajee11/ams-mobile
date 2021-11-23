@@ -158,18 +158,41 @@ export default function JobDetailsScreen({
       status: JOB_ASSET_STATUS.Checked,
     });
 
-    if (res && res.status === 200 && res.data) {
-      Toast.show(`Asset serial no "${res.data}" was checked`, {
-        position: Toast.positions.CENTER,
-        duration: Toast.durations.LONG,
-        backgroundColor: Colors.green,
-        keyboardAvoiding: true,
-        hideOnPress: true,
-        animation: true,
-      });
+    if (res && res.status === 200) {
+      if (res.data) {
+        if (res.data.repeated) {
+          Toast.show(`Asset serial no "${res.data.serialNo}" was Repeated`, {
+            position: Toast.positions.CENTER,
+            duration: Toast.durations.LONG,
+            backgroundColor: Colors.yellow,
+            keyboardAvoiding: true,
+            hideOnPress: true,
+            animation: true,
+          });
+        } else {
+          Toast.show(`Asset serial no "${res.data.serialNo}" was checked`, {
+            position: Toast.positions.CENTER,
+            duration: Toast.durations.LONG,
+            backgroundColor: Colors.green,
+            keyboardAvoiding: true,
+            hideOnPress: true,
+            animation: true,
+          });
+        }
+      } else {
+        Toast.show(`Asset serial no "${res.data.serialNo}" was Wrong Ship-To`, {
+          position: Toast.positions.CENTER,
+          duration: Toast.durations.LONG,
+          backgroundColor: Colors.red,
+          keyboardAvoiding: true,
+          hideOnPress: true,
+          animation: true,
+        });
+      }
+
       await loadJob();
     } else {
-      Toast.show(`QR Code "${data}" not found`, {
+      Toast.show(`QR Code "${data}" Not Found`, {
         position: Toast.positions.CENTER,
         duration: Toast.durations.LONG,
         backgroundColor: Colors.red,
@@ -183,7 +206,7 @@ export default function JobDetailsScreen({
 
   const checkedItemCount = () =>
     jobDetail?.assets.filter(
-      (ja) => ja.jobAssetStatusId === JOB_ASSET_STATUS.Checked
+      (ja) => ja.jobAssetStatusId !== JOB_ASSET_STATUS.NotCheck
     )?.length ?? 0;
 
   const itemCount = () => jobDetail?.assets.length ?? 0;

@@ -6,7 +6,7 @@ export type AssetModel = {
   costCenterId: string;
   assetStatusId: string;
   details: string;
-  location: string;
+  locationId: string;
   subLocation?: string;
   yearOfManufacture?: number;
   warrantyEndAt?: string;
@@ -36,6 +36,7 @@ export type AssetDetailModel = AssetModel & {
   assetClassName: string;
   soldToName: string;
   shipToName: string;
+  locationName: string;
   createdUserName: string;
   modifiedUserName: string;
   ownerRoleName: string;

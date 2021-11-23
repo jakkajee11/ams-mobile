@@ -40,6 +40,7 @@ export type JobAssetModel = {
   serialNo: string;
   assetNo?: string;
   others?: string;
+  qrCode?: string;
 };
 
 export type JobQuery = {

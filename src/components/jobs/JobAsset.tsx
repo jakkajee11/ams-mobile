@@ -18,6 +18,7 @@ export default function JobAsset({
     serialNo,
     jobAssetStatusId,
     assetStatusName,
+    qrCode,
   },
   onPress,
 }: JobAssetProps) {
@@ -27,9 +28,22 @@ export default function JobAsset({
   return (
     <ListItem key={key} bottomDivider onPress={handleOnPress}>
       <ListItem.Content>
-        <ListItem.Title style={{ fontSize: 12 }}>
-          {assetTypeName} / {serialNo} / {assetStatusName}
-        </ListItem.Title>
+        {jobAssetStatusId === JOB_ASSET_STATUS.Checked ||
+          (jobAssetStatusId === JOB_ASSET_STATUS.NotCheck && (
+            <ListItem.Title style={{ fontSize: 12 }}>
+              {assetTypeName} / {serialNo} / {assetStatusName}
+            </ListItem.Title>
+          ))}
+        {jobAssetStatusId === JOB_ASSET_STATUS.WrongShipTo && (
+          <ListItem.Title style={{ fontSize: 12 }}>
+            {assetTypeName} / {serialNo} / {assetStatusName} (Wrong Ship-To)
+          </ListItem.Title>
+        )}
+        {jobAssetStatusId === JOB_ASSET_STATUS.NotFound && (
+          <ListItem.Title style={{ fontSize: 12 }}>
+            {qrCode} (Not Found)
+          </ListItem.Title>
+        )}
       </ListItem.Content>
       {/* <ListItem.Chevron name={jobAssetStatusId === JOB_ASSET_STATUS.Checked ? '' : ''} type='feather' color='red' /> */}
       {jobAssetStatusId === JOB_ASSET_STATUS.NotCheck && (
@@ -40,6 +54,20 @@ export default function JobAsset({
           name='check-circle'
           type='AntDesign'
           color={Colors.green}
+        />
+      )}
+      {jobAssetStatusId === JOB_ASSET_STATUS.WrongShipTo && (
+        <ListItem.Chevron
+          name='exclamation-circle'
+          type='font-awesome-5'
+          color={Colors.red}
+        />
+      )}
+      {jobAssetStatusId === JOB_ASSET_STATUS.NotFound && (
+        <ListItem.Chevron
+          name='exclamation-circle'
+          type='font-awesome-5'
+          color={Colors.red}
         />
       )}
     </ListItem>

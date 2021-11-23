@@ -8,6 +8,7 @@ const green = '#009697';
 const darkGrey = '#3c464b';
 const lightGrey = '#eaebeb';
 const grey = '#cccccc';
+const blue = 'rgb(24,144,255)';
 
 export default {
   light: {
@@ -35,6 +36,7 @@ export default {
   darkGrey,
   lightGrey,
   grey,
+  blue,
   background: {
     black: black,
   },

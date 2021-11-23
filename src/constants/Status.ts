@@ -17,6 +17,8 @@ export const JOB_PROGRESS = {
 export const JOB_ASSET_STATUS = {
   NotCheck: 0,
   Checked: 1,
+  WrongShipTo: 2,
+  NotFound: 3,
 };
 
 export const ATTACHMENT_TYPE = {

@@ -32,7 +32,7 @@ export default function JobDetail({
 
   const renderItem = ({ item }: any) => (
     <JobAsset
-      key={item.assetId}
+      key={item.serialNo}
       data={item}
       onPress={() =>
         navigation.navigate('AssetDetails', { assetId: item.assetId })
@@ -74,7 +74,7 @@ export default function JobDetail({
 
         <View style={{ marginTop: 10, marginBottom: 10 }}>
           <FlatList
-            keyExtractor={(item) => item.assetId}
+            keyExtractor={(item) => item.serialNo}
             ListHeaderComponent={
               <Text
                 style={{

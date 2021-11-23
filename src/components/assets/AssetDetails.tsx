@@ -55,7 +55,7 @@ export default function AssetDetails({ data, onPress }: AssetProps) {
       </View>
       <View style={baseStyles.row}>
         <Text style={baseStyles.label}>Location:</Text>
-        <Text style={baseStyles.longText}>{data?.location}</Text>
+        <Text style={baseStyles.longText}>{data?.locationName}</Text>
       </View>
       <View style={baseStyles.row}>
         <Text style={baseStyles.label}>Year of Mfg:</Text>
