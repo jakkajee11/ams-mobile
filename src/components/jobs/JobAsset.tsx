@@ -28,12 +28,12 @@ export default function JobAsset({
   return (
     <ListItem key={key} bottomDivider onPress={handleOnPress}>
       <ListItem.Content>
-        {jobAssetStatusId === JOB_ASSET_STATUS.Checked ||
-          (jobAssetStatusId === JOB_ASSET_STATUS.NotCheck && (
-            <ListItem.Title style={{ fontSize: 12 }}>
-              {assetTypeName} / {serialNo} / {assetStatusName}
-            </ListItem.Title>
-          ))}
+        {(jobAssetStatusId === JOB_ASSET_STATUS.Checked ||
+          jobAssetStatusId === JOB_ASSET_STATUS.NotCheck) && (
+          <ListItem.Title style={{ fontSize: 12 }}>
+            {assetTypeName} / {serialNo} / {assetStatusName}
+          </ListItem.Title>
+        )}
         {jobAssetStatusId === JOB_ASSET_STATUS.WrongShipTo && (
           <ListItem.Title style={{ fontSize: 12 }}>
             {assetTypeName} / {serialNo} / {assetStatusName} (Wrong Ship-To)
