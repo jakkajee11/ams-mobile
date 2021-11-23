@@ -36,12 +36,12 @@ export default function JobAsset({
         )}
         {jobAssetStatusId === JOB_ASSET_STATUS.WrongShipTo && (
           <ListItem.Title style={{ fontSize: 12 }}>
-            {assetTypeName} / {serialNo} / {assetStatusName} (Wrong Ship-To)
+            {assetTypeName} / {serialNo} / {assetStatusName} / (Wrong Ship-To)
           </ListItem.Title>
         )}
         {jobAssetStatusId === JOB_ASSET_STATUS.NotFound && (
           <ListItem.Title style={{ fontSize: 12 }}>
-            {qrCode} (Not Found)
+            {qrCode} / (Not Found)
           </ListItem.Title>
         )}
       </ListItem.Content>
