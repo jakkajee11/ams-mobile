@@ -12,7 +12,7 @@ interface JobItemProps {
 }
 
 export default function JobItem({ data, onPress }: JobItemProps) {
-  const handleOnPress = (jobNumber: string) => {
+  const goToJobDetail = (jobNumber: string) => {
     const job = data.find((j) => j.jobNumber === jobNumber);
     job && onPress && onPress(job);
   };
@@ -34,37 +34,35 @@ export default function JobItem({ data, onPress }: JobItemProps) {
             flex: 1,
             flexDirection: 'row',
             justifyContent: 'space-between',
+            width: '100%',
           }}
         >
           <TouchableOpacity
             style={{ width: '100%' }}
-            onPress={() => handleOnPress(jobNumber)}
+            onPressIn={() => goToJobDetail(jobNumber)}
           >
             <View
               style={{
+                flex: 1,
                 flexDirection: 'row',
                 padding: 10,
+                justifyContent: 'space-around',
+                width: '100%',
               }}
             >
               <Text style={{ width: 170 }}>{jobNumber}</Text>
               <Text>
                 {DateTimeFormat.toStandardDate(dueDate ? dueDate : createdAt)}
               </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-        <View>
-          <Button
-            icon={
               <Icon
                 name='info-circle'
                 type='font-awesome-5'
                 size={20}
-                color='white'
+                color={Colors.black}
+                style={{ marginTop: 0, marginRight: 5 }}
               />
-            }
-            onPress={() => handleOnPress(jobNumber)}
-          />
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -72,7 +70,7 @@ export default function JobItem({ data, onPress }: JobItemProps) {
 
   return (
     <FlatList
-      keyExtractor={(item) => item.jobNumber}
+      keyExtractor={(item) => item.id}
       data={data}
       renderItem={renderItem}
     />

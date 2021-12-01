@@ -106,8 +106,9 @@ export default function Camera({
         }
       }
       // Camera Permission
-      const { status } = await ExpoCamera.requestPermissionsAsync();
+      const { status } = await ExpoCamera.requestCameraPermissionsAsync();
       //console.log(['status', status]);
+
       setHasPermission(status === 'granted');
     })();
   }, []);
@@ -272,8 +273,8 @@ export default function Camera({
         style={{ flex: 1, justifyContent: 'space-between' }}
         type={type}
         autoFocus={ExpoCamera.Constants.AutoFocus.on}
-        useCamera2Api={true}
-        ratio={'16:9'}
+        useCamera2Api={false}
+        ratio={'4:3'}
         ref={camera}
         onCameraReady={onCameraReady}
         onBarCodeScanned={onBarCodeScanned}

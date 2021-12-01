@@ -25,10 +25,10 @@ export default function useAssetApi() {
     return await get(url);
   };
 
-  const checkAsset = async (assetId: string) => {
-    const url = `${endpoint}/checkasset/${assetId}`;
-    return await get(url);
-  };
+  // const checkAsset = async (assetId: string) => {
+  //   const url = `${endpoint}/checkasset/${assetId}`;
+  //   return await get(url);
+  // };
 
   // const reportAssetLocation = async (model: ReportAssetModel) => {
   //   return await post(`${endpoint}/notify`, model);
@@ -38,7 +38,7 @@ export default function useAssetApi() {
     getAsset,
     getAssetInfo,
     getAssetByAddressId,
-    checkAsset,
+    //checkAsset,
     searchAssets,
     // reportAssetLocation,
   };
