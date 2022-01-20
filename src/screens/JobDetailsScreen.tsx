@@ -169,6 +169,18 @@ export default function JobDetailsScreen({
             hideOnPress: true,
             animation: true,
           });
+        } else if (res.data.wrongShipTo) {
+          Toast.show(
+            `Asset serial no "${res.data.serialNo}" was Wrong Ship-To`,
+            {
+              position: Toast.positions.CENTER,
+              duration: Toast.durations.LONG,
+              backgroundColor: Colors.red,
+              keyboardAvoiding: true,
+              hideOnPress: true,
+              animation: true,
+            }
+          );
         } else {
           Toast.show(`Asset serial no "${res.data.serialNo}" was checked`, {
             position: Toast.positions.CENTER,
@@ -180,7 +192,7 @@ export default function JobDetailsScreen({
           });
         }
       } else {
-        Toast.show(`Asset serial no "${res.data.serialNo}" was Wrong Ship-To`, {
+        Toast.show(`QR Code "${data}" Not Found`, {
           position: Toast.positions.CENTER,
           duration: Toast.durations.LONG,
           backgroundColor: Colors.red,
@@ -192,7 +204,7 @@ export default function JobDetailsScreen({
 
       await loadJob();
     } else {
-      Toast.show(`QR Code "${data}" Not Found`, {
+      Toast.show(`Request failed "${res.statusText}"`, {
         position: Toast.positions.CENTER,
         duration: Toast.durations.LONG,
         backgroundColor: Colors.red,
@@ -223,18 +235,20 @@ export default function JobDetailsScreen({
   }, []);
 
   return (
-    <>
-      <ScrollView style={baseStyles.scrollView}>
-        {loading && <Loading loading={loading} />}
-        <View style={baseStyles.container}>
-          {jobDetail && (
-            <JobDetail
-              data={jobDetail}
-              progress={`${jobProgress()}% ${checkedItemCount()}/${itemCount()}`}
-            />
-          )}
-        </View>
-
+    <View style={{ ...baseStyles.container }}>
+      {/* <ScrollView style={baseStyles.scrollView}> */}
+      {loading && <Loading loading={loading} />}
+      <View
+        style={{
+          flex: jobDetail?.jobStatusId === JOB_STATUS.Pending ? 0.9 : 0.8,
+        }}
+      >
+        {jobDetail && (
+          <JobDetail
+            data={jobDetail}
+            progress={`${jobProgress()}% ${checkedItemCount()}/${itemCount()}`}
+          />
+        )}
         <ModalCamera
           openCamera={openCamera}
           closeCamera={closeCamera}
@@ -242,12 +256,15 @@ export default function JobDetailsScreen({
           onBarCodeScanned={handleBarCodeScanned}
           mode={'scan'}
         />
-      </ScrollView>
+      </View>
+
+      {/* </ScrollView> */}
       {jobDetail?.jobStatusId === JOB_STATUS.Pending && (
         <View
           style={{
-            ...baseStyles.buttonGroupBottom,
+            //...baseStyles.buttonGroupBottom,
             flex: 0.1,
+            //height: '10%',
           }}
         >
           <Button title='START' onPress={startJob} />
@@ -257,7 +274,7 @@ export default function JobDetailsScreen({
         <View
           style={{
             ...baseStyles.buttonGroupBottom,
-            flex: 0.4,
+            flex: 0.2,
           }}
         >
           <Button title={'SCAN ASSET'} onPress={openCamera} />
@@ -270,6 +287,6 @@ export default function JobDetailsScreen({
           </View>
         </View>
       )}
-    </>
+    </View>
   );
 }
