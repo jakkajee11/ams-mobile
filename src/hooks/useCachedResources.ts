@@ -40,35 +40,38 @@ export default function useCachedResources() {
           //console.log(['refresh', res.status]);
           if (res && res.status === 200 && res.data) {
             await Storages.saveUserToken(JSON.stringify(res.data));
+          } else {
+            console.log('Silent sign user in...');
+            silentSignIn();
           }
           // refresh token failed
           // silent signin user
-          if (res && res.status === 203) {
-            //silentSignIn().signIn();
-            // const userName = await Storages.getString('@__ui$');
-            // const password = await Storages.getString('@__us$');
-            // if (
-            //   userName &&
-            //   userName.length > 0 &&
-            //   password &&
-            //   password.length > 0
-            // ) {
-            //   const signInResult = await signIn({
-            //     clientId: APP_CONFIG.clientId,
-            //     userName,
-            //     password,
-            //   });
-            //   if (
-            //     signInResult &&
-            //     signInResult.status === 200 &&
-            //     signInResult.data
-            //   ) {
-            //     await Storages.saveUserToken(JSON.stringify(signInResult.data));
-            //   }
-            // }
-            //silentSignIn();
-            silentSignIn();
-          }
+          // if (res && res.status === 203) {
+          //   //silentSignIn().signIn();
+          //   // const userName = await Storages.getString('@__ui$');
+          //   // const password = await Storages.getString('@__us$');
+          //   // if (
+          //   //   userName &&
+          //   //   userName.length > 0 &&
+          //   //   password &&
+          //   //   password.length > 0
+          //   // ) {
+          //   //   const signInResult = await signIn({
+          //   //     clientId: APP_CONFIG.clientId,
+          //   //     userName,
+          //   //     password,
+          //   //   });
+          //   //   if (
+          //   //     signInResult &&
+          //   //     signInResult.status === 200 &&
+          //   //     signInResult.data
+          //   //   ) {
+          //   //     await Storages.saveUserToken(JSON.stringify(signInResult.data));
+          //   //   }
+          //   // }
+          //   //silentSignIn();
+          //   silentSignIn();
+          // }
         } else {
           console.warn('No token found, login required!!!');
           Storages.removeUserToken();

@@ -29,6 +29,10 @@ const axiosConfig = merge({}, DEFAULT_AXIOS_CONFIG);
 //   }
 // );
 
+const sleep = (ms: number) => {
+  return new Promise((resolve, reject) => setTimeout(resolve, ms));
+};
+
 export default function useApi() {
   const instance = createInstance();
 
@@ -47,17 +51,42 @@ export default function useApi() {
     return { ...axiosConfig, ...config };
   };
 
+  const retryGet = async (url: string, cfg?: AxiosRequestConfig) => {
+    const res = await instance.get(url, cfg);
+    if (res && res.status === 401) {
+      await sleep(1000);
+      return await instance.post(url, cfg);
+    }
+
+    return res;
+  };
+
+  const retryPost = async (
+    url: string,
+    data?: any,
+    cfg?: AxiosRequestConfig
+  ) => {
+    const res = await instance.post(url, data, cfg);
+    if (res && res.status === 401) {
+      await sleep(1000);
+      return await instance.post(url, data, cfg);
+    }
+
+    return res;
+  };
+
   return {
     instance,
     find: async function (route: string, query: SearchQuery) {
       const url = `${route}${buildQueryString(query)}`;
       const cfg = await getConfig();
-      return await instance.get(url, cfg);
+      //return await instance.get(url, cfg);
+      return await retryGet(url, cfg);
     },
     get: async function (url: string, config?: AxiosRequestConfig) {
       const cfg = await getConfig(config);
-      //console.log(['axiosConfig', axiosConfig]);
-      return await instance.get(url, cfg);
+      //return await instance.get(url, cfg);
+      return await retryGet(url, cfg);
     },
     patch: async function (
       url: string,
@@ -73,7 +102,8 @@ export default function useApi() {
       config?: AxiosRequestConfig
     ) {
       const cfg = await getConfig(config);
-      return await instance.post(url, data, cfg);
+      //return await instance.post(url, data, cfg);
+      return await retryPost(url, data, cfg);
     },
     put: async function (url: string, data?: any, config?: AxiosRequestConfig) {
       const cfg = await getConfig(config);

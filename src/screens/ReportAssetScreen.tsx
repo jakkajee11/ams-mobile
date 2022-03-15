@@ -64,10 +64,13 @@ export default function ReportAssetScreen({
       Toast.show(`Asset was reported successfully`, {});
       reset();
     } else {
-      Toast.show(`Error: Report asset failed`, {
-        textColor: Colors.red,
-        backgroundColor: Colors.yellow,
-      });
+      Toast.show(
+        `Error (${res.status}): Report asset failed. please try again.`,
+        {
+          textColor: Colors.red,
+          backgroundColor: Colors.yellow,
+        }
+      );
       setLoading(false);
     }
   };

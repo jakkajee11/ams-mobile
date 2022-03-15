@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios';
 import merge from 'lodash/merge';
 import { APP_CONFIG } from '~constants/Config';
+import { refreshAuth } from '~utils/auth';
 
 const DEFAULT_AXIOS_CONFIG = {
   baseURL: APP_CONFIG.apiEndpoint,
@@ -27,7 +28,9 @@ export default function createInstance(
       console.warn(['interceptors.error', error]);
       const response = error.response;
       if (response && response.status === 401) {
+        console.log(['status 401: re-login attempt...']);
         source.cancel(axiosCancelMessage);
+        refreshAuth();
         return Promise.resolve(response);
       } else if (response.status === 404) {
         return Promise.resolve(response);
