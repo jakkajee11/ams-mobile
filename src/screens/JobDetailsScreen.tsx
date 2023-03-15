@@ -44,6 +44,7 @@ export default function JobDetailsScreen({
   const [showCamera, setShowCamera] = useState(false);
   const [scannedResult, setScannedResult] = useState('');
   const [totalChecked, setTotalChecked] = useState(0);
+  const [counter, setCounter] = useState(0);
 
   const startJob = async () => {
     const res = await updateJobStatus(
@@ -53,7 +54,8 @@ export default function JobDetailsScreen({
     if (res && res.status === 200) {
       //Alert.alert('Success', 'Job is started');
       //navigation.navigate('Jobs');
-      await loadJob();
+      //await loadJob();
+      setCounter(() => counter + 1);
     } else {
       //Alert.alert('Failed', 'Start job failed');
       Toast.show('Start job failed', {
@@ -106,12 +108,7 @@ export default function JobDetailsScreen({
 
   const doFinishJob = async () => {
     setLoading(true);
-    // const res = await updateJobProgress(
-    //   jobDetail?.id ?? '',
-    //   jobDetail?.jobProgressId === JOB_PROGRESS.Paused
-    //     ? JOB_PROGRESS.Started
-    //     : JOB_PROGRESS.Paused
-    // );
+
     const res = await updateJobStatus(jobDetail?.id ?? '', JOB_STATUS.Finished);
     if (res && res.status === 200) {
       //Alert.alert('Success', 'Job is saved');
@@ -153,44 +150,34 @@ export default function JobDetailsScreen({
     // check asset in system
     setLoading(true);
     const res = await updateJobAssetStatus({
-      jobId: jobDetail?.id ?? '',
+      jobId: jobDetail?.id ?? route.params?.id,
       assetId: data,
       status: JOB_ASSET_STATUS.Checked,
     });
 
+    let title = '';
+    let bgColor = Colors.red;
+
     if (res && res.status === 200) {
       if (res.data) {
         if (res.data.repeated) {
-          Toast.show(`Asset serial no "${res.data.serialNo}" was Repeated`, {
-            position: Toast.positions.CENTER,
-            duration: Toast.durations.LONG,
-            backgroundColor: Colors.yellow,
-            keyboardAvoiding: true,
-            hideOnPress: true,
-            animation: true,
-          });
+          title = `Asset serial no "${res.data.serialNo}" was Repeated`;
+          bgColor = Colors.yellow;
         } else if (res.data.wrongShipTo) {
-          Toast.show(
-            `Asset serial no "${res.data.serialNo}" was Wrong Ship-To`,
-            {
-              position: Toast.positions.CENTER,
-              duration: Toast.durations.LONG,
-              backgroundColor: Colors.red,
-              keyboardAvoiding: true,
-              hideOnPress: true,
-              animation: true,
-            }
-          );
+          title = `Asset serial no "${res.data.serialNo}" was Wrong Ship-To`;
         } else {
-          Toast.show(`Asset serial no "${res.data.serialNo}" was checked`, {
-            position: Toast.positions.CENTER,
-            duration: Toast.durations.LONG,
-            backgroundColor: Colors.green,
-            keyboardAvoiding: true,
-            hideOnPress: true,
-            animation: true,
-          });
+          bgColor = Colors.green;
+          title = `Asset serial no "${res.data.serialNo}" was checked`;
         }
+
+        Toast.show(title, {
+          position: Toast.positions.CENTER,
+          duration: Toast.durations.LONG,
+          backgroundColor: bgColor,
+          keyboardAvoiding: true,
+          hideOnPress: true,
+          animation: true,
+        });
       } else {
         Toast.show(`QR Code "${data}" Not Found`, {
           position: Toast.positions.CENTER,
@@ -202,7 +189,8 @@ export default function JobDetailsScreen({
         });
       }
 
-      await loadJob();
+      //await loadJob();
+      setCounter(() => counter + 1);
     } else {
       Toast.show(`Request failed "${res.statusText}"`, {
         position: Toast.positions.CENTER,
@@ -213,6 +201,7 @@ export default function JobDetailsScreen({
         animation: true,
       });
     }
+
     setLoading(false);
   };
 
@@ -232,7 +221,7 @@ export default function JobDetailsScreen({
     (async function () {
       await loadJob();
     })();
-  }, []);
+  }, [counter]);
 
   return (
     <View style={{ ...baseStyles.container }}>
