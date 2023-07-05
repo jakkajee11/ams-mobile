@@ -191,7 +191,7 @@ export default function HomeScreen({
               )}
             </View>
           }
-          onPress={() => navigation.navigate('Jobs')}
+          onPress={() => navigation.navigate('MyJobs')}
           loading={loading}
         />
 

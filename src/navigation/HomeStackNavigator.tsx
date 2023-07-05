@@ -33,11 +33,11 @@ export default function HomeStackNavigator() {
         component={ReportAssetFromAddressScreen}
         options={{ header: () => <Header title='Create Job' /> }}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name='AssetDetails'
         component={AssetDetailsScreen}
         options={{ header: () => <Header title='Asset Detail' /> }}
-      /> */}
+      />
       <Stack.Screen
         name='ScanQRCode'
         component={ScanQRCodeScreen}

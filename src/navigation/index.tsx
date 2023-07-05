@@ -62,12 +62,12 @@ function RootNavigator() {
   return (
     <Stack.Navigator headerMode='screen' screenOptions={{ headerShown: false }}>
       <Stack.Screen
-        name='Home'
+        name='Main'
         component={HomeStackNavigator}
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name='Jobs'
+        name='MyJobs'
         component={JobStackNavigator}
         options={{ headerShown: false }}
       />

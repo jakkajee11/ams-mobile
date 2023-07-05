@@ -2,7 +2,7 @@
   "expo": {
     "name": "AMS App",
     "slug": "ams-mobile",
-    "version": "1.9.6",
+    "version": "1.10.3",
     "orientation": "portrait",
     "icon": "./src/assets/images/ams-icon.png",
     "scheme": "myapp",
@@ -15,11 +15,19 @@
     "notification": {
       "icon": "./src/assets/images/icon1024.png"
     },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
+        }
+      ]
+    ],
     "updates": {
       "enabled": true,
       "checkAutomatically": "ON_LOAD",
       "fallbackToCacheTimeout": 30000,
-      "url": "https://expo.io/@jakkajee11/ams-mobile"
+      "url": "https://u.expo.dev/e7451209-961c-4d6f-96e7-3b9f21984b4a"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -32,9 +40,8 @@
       },
       "package": "com.thjhams.app",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 21,
+      "versionCode": 26,
       "permissions": [
-        "ACCESS_FINE_LOCATION",
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
@@ -43,6 +50,14 @@
     },
     "web": {
       "favicon": "./src/assets/images/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e7451209-961c-4d6f-96e7-3b9f21984b4a"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
     }
   },
   "author": {

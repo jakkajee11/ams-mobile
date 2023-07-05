@@ -12,10 +12,12 @@ import {
   CameraProps as ExpoCameraProps,
   CameraCapturedPicture,
   BarCodeScanningResult,
+  CameraType,
+  AutoFocus,
 } from 'expo-camera';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
-import * as Permissions from 'expo-permissions';
+//import * as Permissions from 'expo-permissions';
 import * as FileSystem from 'expo-file-system';
 import Constants from 'expo-constants';
 import {
@@ -25,6 +27,7 @@ import {
   MaterialCommunityIcons,
   Octicons,
 } from '@expo/vector-icons';
+import { BarCodeScanner } from 'expo-barcode-scanner';
 
 const landmarkSize = 2;
 
@@ -82,8 +85,9 @@ export default function Camera({
   mode = 'photo',
 }: CameraProps & ExpoCameraProps) {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [permission, requestPermission] = ExpoCamera.useCameraPermissions();
   const [cameraReady, setCameraReady] = useState(false);
-  const [type, setType] = useState(ExpoCamera.Constants.Type.back);
+  const [type, setType] = useState(CameraType.back);
   const [saving, setSaving] = useState<boolean>(false);
   const [newPhotos, setNewPhotos] = useState<boolean>(false);
   const [flash, toggleFlash] = useState<string>('off');
@@ -98,16 +102,17 @@ export default function Camera({
     (async () => {
       // Camera roll Permission
       if (Platform.OS === 'ios') {
-        const { status } = await Permissions.askAsync(
-          Permissions.MEDIA_LIBRARY
-        );
-        if (status !== 'granted') {
+        // const { status } = await Permissions.askAsync(
+        //   Permissions.MEDIA_LIBRARY
+        // );
+
+        const status = permission?.status;
+        if (status !== ImagePicker.PermissionStatus.GRANTED) {
           alert('Sorry, we need camera roll permissions to make this work!');
         }
       }
       // Camera Permission
       const { status } = await ExpoCamera.requestCameraPermissionsAsync();
-      //console.log(['status', status]);
 
       setHasPermission(status === 'granted');
     })();
@@ -272,12 +277,15 @@ export default function Camera({
       <ExpoCamera
         style={{ flex: 1, justifyContent: 'space-between' }}
         type={type}
-        autoFocus={ExpoCamera.Constants.AutoFocus.on}
+        autoFocus={AutoFocus.on}
         useCamera2Api={false}
         ratio={'4:3'}
         ref={camera}
         onCameraReady={onCameraReady}
         onBarCodeScanned={onBarCodeScanned}
+        barCodeScannerSettings={{
+          barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+        }}
       >
         <TopBar />
         {mode === 'scan' && <ScanBox />}

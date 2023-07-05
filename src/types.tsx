@@ -35,6 +35,7 @@ export type RootStackParamList = {
   ReportAssetFromAddress: any;
   SearchSerialNo: any;
   AssetDetails: AssetDetailParams;
+  MyJobs: undefined;
   Jobs: undefined;
   JobDetails: any; //JobModel;
   MyProfile: any;

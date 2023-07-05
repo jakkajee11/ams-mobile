@@ -14,6 +14,7 @@ import {
   ListRenderItem,
   ListRenderItemInfo,
   RefreshControl,
+  SectionList,
 } from 'react-native';
 import { Button, Icon } from 'react-native-elements';
 import 'react-native-get-random-values';
@@ -47,7 +48,7 @@ export default function ReportAssetFromAddressScreen({
   const [open, setOpen] = useState(false);
   const [addressOptions, setAddressOptions] = useState<SelectItemOption[]>([]);
 
-  const [id] = useState(uuidv4());
+  //const [id] = useState(uuidv4());
   const [loading, setLoading] = useState(false);
   const [buttonDisplay, setButtonDisplay] = useState<'flex' | 'none'>('flex');
 
@@ -163,7 +164,13 @@ export default function ReportAssetFromAddressScreen({
               setOpen={toggleDropdown}
               setValue={setShipToId}
               //setItems={setAddressOptions}
+              listMode='MODAL'
+              //itemSeparator={true}
               maxHeight={600}
+              selectedItemContainerStyle={{
+                backgroundColor: Colors.yellow,
+              }}
+              placeholderStyle={{ minWidth: 250 }}
               ListEmptyComponent={() => (
                 <Text style={{ textAlign: 'center' }}>No item found</Text>
               )}
@@ -181,27 +188,13 @@ export default function ReportAssetFromAddressScreen({
                   ListHeaderComponent={
                     <Text
                       style={{
-                        //...styles.text,
                         textAlign: 'center',
-                        //fontStyle: 'italic',
                       }}
                     >
                       Total {totalAssets}{' '}
                       {`${totalAssets > 1 ? 'assets' : 'asset'}`}
                     </Text>
                   }
-                  // ListFooterComponent={
-                  //   <Text
-                  //     style={{
-                  //       //...styles.text,
-                  //       textAlign: 'center',
-                  //       //fontStyle: 'italic',
-                  //     }}
-                  //   >
-                  //     Total {totalAssets}{' '}
-                  //     {`${totalAssets > 1 ? 'assets' : 'asset'}`}
-                  //   </Text>
-                  // }
                   data={assets}
                   renderItem={renderItem}
                 />

@@ -11,6 +11,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   RefreshControl,
+  FlatList,
+  TouchableOpacity,
+  Pressable,
 } from 'react-native';
 import { Button, Icon, Input } from 'react-native-elements';
 import 'react-native-get-random-values';
@@ -31,6 +34,7 @@ import extractFileName from '~utils/extractFileName';
 import useUploadApi from '~apis/useUploadApi';
 import Toast from 'react-native-root-toast';
 import useAssetNotificationApi from '~apis/useAssetNotificationApi';
+import { DateTimeFormat } from '~utils/format';
 
 export default function SearchSerialNoScreen({
   route,
@@ -48,7 +52,6 @@ export default function SearchSerialNoScreen({
   const [assetOptions, setAssetOptions] = useState<SelectItemOption[]>([]);
   const [attachments, setAttachemnts] = useState<CameraCapturedPicture[]>([]);
   const [showCamera, setShowCamera] = useState(false);
-  const [id] = useState(uuidv4());
   const [uploadErrors, setUploadErrors] = useState<string[]>([]);
 
   const openCamera = () => setShowCamera(true);
@@ -63,7 +66,7 @@ export default function SearchSerialNoScreen({
       const data: ReportAssetModel = {
         assetId: asset?.assetId ?? '',
         serialNo: asset?.serialNo ?? '',
-        location: asset?.location ?? '',
+        location: asset?.locationId ?? '',
         details: asset?.details,
         comments: 'Confirm Location',
         attachments: [],
@@ -96,7 +99,7 @@ export default function SearchSerialNoScreen({
     if (photo && photo.uri && photo.base64) {
       setAttachemnts([...attachments, photo]);
       const data: UploadFileBase64Model = {
-        id,
+        id: uuidv4(),
         fileName: extractFileName(photo.uri),
         base64: photo.base64,
         refCode: asset?.assetId,
@@ -147,108 +150,91 @@ export default function SearchSerialNoScreen({
 
   return (
     <>
-      <ScrollView
-        style={baseStyles.scrollView}
-        // refreshControl={
-        //   <RefreshControl
-        //     refreshing={loading}
-        //     onRefresh={prepareData}
-        //     colors={[Colors.yellow]}
-        //   />
-        // }
-      >
+      <ScrollView style={baseStyles.scrollView}>
         <KeyboardAvoidingView
           behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
           style={baseStyles.container}
         >
-          <View>
-            <View
-              style={{
-                ...baseStyles.container,
-                minHeight: 500,
-                //maxHeight: 500,
-              }}
-            >
-              <DropDownPicker
-                placeholder='Search serial no.'
-                searchable={true}
-                loading={loading}
-                searchPlaceholder={'at least 3 letters to search...'}
-                open={open}
-                value={serialNo}
-                items={assetOptions}
-                setOpen={toggleDropdown}
-                setValue={setSerialNo}
-                //setItems={setAddressOptions}
-                onChangeSearchText={(text: string) => {
-                  console.log(['Search', text]);
-                  setSearchText(text);
-                }}
-                maxHeight={600}
-                ListEmptyComponent={() => (
-                  <Text style={{ textAlign: 'center' }}>No item found</Text>
-                )}
-              />
-              {serialNo.length > 0 && asset && assets.length > 0 && (
-                <AssetDetails data={asset} />
-              )}
-              <View style={{ ...baseStyles.container }}>
-                {loading && <Loading loading={loading} />}
+          <DropDownPicker
+            placeholder='Search serial no.'
+            searchable={true}
+            loading={loading}
+            searchPlaceholder={'put at least 3 letters to search...'}
+            open={open}
+            value={serialNo}
+            items={assetOptions}
+            setOpen={toggleDropdown}
+            setValue={setSerialNo}
+            listMode='MODAL'
+            onChangeSearchText={(text: string) => {
+              setSearchText(text);
+            }}
+            maxHeight={600}
+            selectedItemContainerStyle={{
+              backgroundColor: Colors.yellow,
+            }}
+            ListEmptyComponent={() => (
+              <Text style={{ textAlign: 'center' }}>No item found</Text>
+            )}
+          />
+          {serialNo.length > 0 && asset && assets.length > 0 && (
+            <AssetDetails data={asset} />
+          )}
+          <View style={{ ...baseStyles.container }}>
+            {loading && <Loading loading={loading} />}
 
-                {searchText.length > 0 && assets.length === 0 && (
-                  <View style={{ ...baseStyles.container, marginTop: 100 }}>
-                    <View style={baseStyles.column}>
-                      <View>
-                        <Text
-                          style={{
-                            ...baseStyles.textCenter,
-                            fontSize: 18,
-                            color: Colors.yellow,
-                          }}
-                        >
-                          {searchText}
-                        </Text>
-                        <Text
-                          style={{
-                            ...baseStyles.textCenter,
-                            fontSize: 18,
-                            color: Colors.red,
-                          }}
-                        >
-                          NOT FOUND
-                        </Text>
-                      </View>
-                    </View>
-
-                    <View
+            {searchText.length > 0 && assets.length === 0 && (
+              <View style={{ ...baseStyles.container, marginTop: 100 }}>
+                <View style={baseStyles.column}>
+                  <View>
+                    <Text
                       style={{
-                        width: '100%',
-                        padding: 5,
-                        justifyContent: 'space-between',
-                        flex: 0.5,
+                        ...baseStyles.textCenter,
+                        fontSize: 18,
+                        color: Colors.yellow,
                       }}
                     >
-                      <Button
-                        icon={
-                          <Icon
-                            name='clipboard'
-                            type='font-awesome-5'
-                            size={28}
-                            color={Colors.white}
-                          />
-                        }
-                        title=' Report this item'
-                        onPress={() =>
-                          navigation.navigate('ReportAsset', {
-                            serialNo: searchText,
-                          })
-                        }
-                      />
-                    </View>
+                      {searchText}
+                    </Text>
+                    <Text
+                      style={{
+                        ...baseStyles.textCenter,
+                        fontSize: 18,
+                        color: Colors.red,
+                      }}
+                    >
+                      NOT FOUND
+                    </Text>
                   </View>
-                )}
+                </View>
+
+                <View
+                  style={{
+                    width: '100%',
+                    padding: 5,
+                    justifyContent: 'space-between',
+                    flex: 0.5,
+                  }}
+                >
+                  <Button
+                    icon={
+                      <Icon
+                        name='clipboard'
+                        type='font-awesome-5'
+                        size={28}
+                        color={Colors.white}
+                      />
+                    }
+                    title=' Report this item'
+                    onPress={() =>
+                      navigation.navigate('ReportAsset', {
+                        serialNo: searchText,
+                      })
+                    }
+                  />
+                </View>
               </View>
-            </View>
+            )}
           </View>
         </KeyboardAvoidingView>
       </ScrollView>

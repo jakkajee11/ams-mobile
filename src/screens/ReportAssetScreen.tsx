@@ -41,7 +41,7 @@ export default function ReportAssetScreen({
   const [details, setDetails] = useState('');
   const [attachments, setAttachemnts] = useState<CameraCapturedPicture[]>([]);
   const [showCamera, setShowCamera] = useState(false);
-  const [id] = useState(uuidv4());
+  //const [id] = useState(uuidv4());
   const [loading, setLoading] = useState(false);
   const [uploadErrors, setUploadErrors] = useState<string[]>([]);
   const [buttonDisplay, setButtonDisplay] = useState<'flex' | 'none'>('flex');
@@ -122,7 +122,7 @@ export default function ReportAssetScreen({
     if (photo && photo.uri && photo.base64) {
       setAttachemnts([...attachments, photo]);
       const data: UploadFileBase64Model = {
-        id,
+        id: uuidv4(),
         fileName: extractFileName(photo.uri),
         base64: photo.base64,
         refCode: searchText,
