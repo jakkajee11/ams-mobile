@@ -1,42 +1,42 @@
-import { StackScreenProps } from '@react-navigation/stack';
-import { StatusBar } from 'expo-status-bar';
-import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { Keyboard, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Button, Icon, Input, Text } from 'react-native-elements';
-import Toast from 'react-native-root-toast';
-import useUserApi from '~apis/useUserApi';
-import Colors from '~constants/Colors';
-import Logo from '../components/shared/Logo';
+import { StackScreenProps } from '@react-navigation/stack'
+import { StatusBar } from 'expo-status-bar'
+import * as React from 'react'
+import { useEffect, useState } from 'react'
+import { Keyboard, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { Button, Icon, Input, Text } from 'react-native-elements'
+import Toast from 'react-native-root-toast'
+import useUserApi from '~apis/useUserApi'
+import Colors from '~constants/Colors'
+import Logo from '../components/shared/Logo'
 
-import { AuthStackParamList } from '../types';
+import { AuthStackParamList } from '../types'
 
 export default function ForgotPasswordScreen({
   navigation,
 }: StackScreenProps<AuthStackParamList, 'ForgotPassword'>) {
-  const { resetPassword } = useUserApi();
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [buttonDisplay, setButtonDisplay] = useState<'flex' | 'none'>('flex');
+  const { resetPassword } = useUserApi()
+  const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [buttonDisplay, setButtonDisplay] = useState<'flex' | 'none'>('flex')
 
   const isEmail = () => {
-    const regex = new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g);
-    return regex.test(email);
+    const regex = new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)
+    return regex.test(email)
     // console.log(['res', res, email]);
     // return res;
-  };
+  }
   const passwordReset = async () => {
-    setLoading(true);
+    setLoading(true)
     if (email.length === 0) {
       //alert('Please input email');
-      Toast.show('Email is required');
+      Toast.show('Email is required')
     } else {
       // call api to signin
-      const res = await resetPassword(email);
+      const res = await resetPassword(email)
 
       if (res && res.status === 200) {
         //alert(`New password has been sent to ${email}`);
-        Toast.show(`New password has been sent to ${email}`);
+        Toast.show(`New password has been sent to ${email}`)
       } else {
         //alert('Reset password failed');
         Toast.show(
@@ -45,29 +45,29 @@ export default function ForgotPasswordScreen({
             textColor: Colors.red,
             backgroundColor: Colors.yellow,
           }
-        );
+        )
       }
     }
-  };
+  }
 
   const hideActionButton = () => {
-    setButtonDisplay('none');
-  };
+    setButtonDisplay('none')
+  }
 
   const showActionButton = () => {
-    setButtonDisplay('flex');
-  };
+    setButtonDisplay('flex')
+  }
 
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', hideActionButton);
-    Keyboard.addListener('keyboardDidHide', showActionButton);
+    Keyboard.addListener('keyboardDidShow', hideActionButton)
+    Keyboard.addListener('keyboardDidHide', showActionButton)
 
     // cleanup function
     return () => {
-      Keyboard.removeListener('keyboardDidShow', hideActionButton);
-      Keyboard.removeListener('keyboardDidHide', showActionButton);
-    };
-  }, []);
+      Keyboard.removeAllListeners('keyboardDidShow')
+      Keyboard.removeAllListeners('keyboardDidHide')
+    }
+  }, [])
 
   return (
     <View style={styles.container}>
@@ -129,16 +129,16 @@ export default function ForgotPasswordScreen({
             password
           </Text>
           <Input
-            placeholder='E-mail Address'
+            placeholder="E-mail Address"
             leftIcon={{ type: 'feather', name: 'mail' }}
             //style={styles}
-            textContentType='emailAddress'
+            textContentType="emailAddress"
             onChangeText={(email: string) => setEmail(email)}
           />
 
           <Button
             //icon={<Icon name='send' type='Feather' size={28} color='white' />}
-            title='Reset Password'
+            title="Reset Password"
             titleStyle={{
               fontWeight: '600',
               fontSize: 18,
@@ -150,8 +150,8 @@ export default function ForgotPasswordScreen({
             disabled={!isEmail()}
           />
           <Button
-            type='clear'
-            title='Back to login'
+            type="clear"
+            title="Back to login"
             onPress={() => navigation.navigate('Login')}
           />
         </View>
@@ -167,7 +167,7 @@ export default function ForgotPasswordScreen({
         <Text>Jungheinrich Thailand</Text>
       </View>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -179,4 +179,4 @@ const styles = StyleSheet.create({
     padding: 5,
     opacity: 0.9,
   },
-});
+})

@@ -1,8 +1,8 @@
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import { StackScreenProps } from '@react-navigation/stack';
-import { StatusBar } from 'expo-status-bar';
-import * as React from 'react';
-import { useState } from 'react';
+import { FontAwesome, Ionicons } from '@expo/vector-icons'
+import { StackScreenProps } from '@react-navigation/stack'
+import { StatusBar } from 'expo-status-bar'
+import * as React from 'react'
+import { useState } from 'react'
 import {
   Alert,
   Keyboard,
@@ -10,73 +10,73 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import * as Notifications from 'expo-notifications';
-import { Button, Icon, Input, Image, Text } from 'react-native-elements';
-import { Divider } from 'react-native-elements/dist/divider/Divider';
-import Logo from '../components/shared/Logo';
-import * as AuthSession from 'expo-auth-session';
-import * as WebBrowser from 'expo-web-browser';
+} from 'react-native'
+import * as Notifications from 'expo-notifications'
+import { Button, Icon, Input, Image, Text } from 'react-native-elements'
+import { Divider } from 'react-native-elements/dist/divider/Divider'
+import Logo from '../components/shared/Logo'
+import * as AuthSession from 'expo-auth-session'
+import * as WebBrowser from 'expo-web-browser'
 
-import { AuthStackParamList, RootStackParamList } from '../types';
-import useAuthApi from '~apis/useAuthApi';
-import Storages from '~utils/Storages';
-import { APP_CONFIG } from '~constants/Config';
-import useAuth from '~hooks/useAuth';
-import useUserApi from '~apis/useUserApi';
-import Colors from '~constants/Colors';
-import Toast from 'react-native-root-toast';
+import { AuthStackParamList, RootStackParamList } from '../types'
+import useAuthApi from '~apis/useAuthApi'
+import Storages from '~utils/Storages'
+import { APP_CONFIG } from '~constants/Config'
+import useAuth from '~hooks/useAuth'
+import useUserApi from '~apis/useUserApi'
+import Colors from '~constants/Colors'
+import Toast from 'react-native-root-toast'
 
 export default function LoginScreen({
   navigation,
 }: StackScreenProps<AuthStackParamList & RootStackParamList, 'Login'>) {
-  const { signIn } = useAuthApi();
-  const { updateUserNotificationToken } = useUserApi();
-  const { isLoggedIn } = useAuth();
-  const [userName, setUserName] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [buttonDisplay, setButtonDisplay] = useState<'flex' | 'none'>('flex');
+  const { signIn } = useAuthApi()
+  const { updateUserNotificationToken } = useUserApi()
+  const { isLoggedIn } = useAuth()
+  const [userName, setUserName] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [buttonDisplay, setButtonDisplay] = useState<'flex' | 'none'>('flex')
 
-  const clientId = APP_CONFIG.clientId;
+  const clientId = APP_CONFIG.clientId
 
   const login = async () => {
-    setLoading(true);
+    setLoading(true)
     if (userName.length === 0 || password.length === 0) {
       //Alert.alert('Error', 'Invalid UserName/Password');
       Toast.show('Invalid UserName/Password', {
         //position: Toast.positions.CENTER,
         textColor: Colors.red,
         backgroundColor: Colors.yellow,
-      });
+      })
     } else {
       // call api to signin
       const res = await signIn({
         clientId,
         userName,
         password,
-      });
+      })
 
       if (res && res.status === 200 && res.data) {
-        await Storages.saveUserToken(JSON.stringify(res.data));
-        await Storages.saveUserName(userName);
-        await Storages.saveUserSecret(password);
+        await Storages.saveUserToken(JSON.stringify(res.data))
+        await Storages.saveUserName(userName)
+        await Storages.saveUserSecret(password)
 
         // update notification Token
-        const token = (await Notifications.getExpoPushTokenAsync()).data;
+        const token = (await Notifications.getExpoPushTokenAsync()).data
 
         if (token) {
           try {
             const tokenRes = await updateUserNotificationToken({
               token,
-            });
+            })
           } catch {
             //alert(`pushToken: ${token} failed`);
             Toast.show(`pushToken: ${token} failed`, {
               //position: Toast.positions.CENTER,
               textColor: Colors.red,
               backgroundColor: Colors.yellow,
-            });
+            })
           }
         } else {
           //alert(`token not founded`);
@@ -84,44 +84,44 @@ export default function LoginScreen({
             //position: Toast.positions.CENTER,
             textColor: Colors.red,
             backgroundColor: Colors.yellow,
-          });
+          })
         }
-        setLoading(false);
+        setLoading(false)
 
-        navigation.navigate('Root');
+        navigation.navigate('Root')
       } else {
-        Toast.show(`Error: Invalid username or password`);
+        Toast.show(`Error: Invalid username or password`)
       }
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const hideActionButton = () => {
-    setButtonDisplay('none');
-  };
+    setButtonDisplay('none')
+  }
 
   const showActionButton = () => {
-    setButtonDisplay('flex');
-  };
+    setButtonDisplay('flex')
+  }
 
   React.useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', hideActionButton);
-    Keyboard.addListener('keyboardDidHide', showActionButton);
+    Keyboard.addListener('keyboardDidShow', hideActionButton)
+    Keyboard.addListener('keyboardDidHide', showActionButton)
 
-    (async function () {
-      const loggedIn = await isLoggedIn();
+    ;(async function () {
+      const loggedIn = await isLoggedIn()
       if (loggedIn) {
-        console.log('User already logged in :)');
-        navigation.navigate('Root');
+        console.log('User already logged in :)')
+        navigation.navigate('Root')
       }
-    })();
+    })()
 
     // cleanup function
     return () => {
-      Keyboard.removeListener('keyboardDidShow', hideActionButton);
-      Keyboard.removeListener('keyboardDidHide', showActionButton);
-    };
-  }, []);
+      Keyboard.removeAllListeners('keyboardDidShow')
+      Keyboard.removeAllListeners('keyboardDidHide')
+    }
+  }, [])
 
   return (
     <View style={styles.container}>
@@ -153,19 +153,19 @@ export default function LoginScreen({
         }}
       >
         <Input
-          placeholder='Username'
+          placeholder="Username"
           leftIcon={{ type: 'font-awesome-5', name: 'user-alt' }}
           onChangeText={(username: string) => setUserName(username)}
         />
         <Input
-          placeholder='Password'
+          placeholder="Password"
           leftIcon={{ type: 'font-awesome-5', name: 'lock' }}
           secureTextEntry
           onChangeText={(password: string) => setPassword(password)}
         />
         <Button
-          icon={<Icon name='login' type='Feather' size={28} color='white' />}
-          title='Sign in'
+          icon={<Icon name="login" type="Feather" size={28} color="white" />}
+          title="Sign in"
           titleStyle={{ fontWeight: '600', fontSize: 18, marginLeft: 10 }}
           loading={loading}
           onPress={login}
@@ -174,8 +174,8 @@ export default function LoginScreen({
 
         <View style={{ marginTop: 30 }}>
           <Button
-            type='clear'
-            title='Forgot Password?'
+            type="clear"
+            title="Forgot Password?"
             onPress={() => navigation.navigate('ForgotPassword')}
           />
         </View>
@@ -191,7 +191,7 @@ export default function LoginScreen({
         <Text>Jungheinrich Thailand</Text>
       </View>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -203,4 +203,4 @@ const styles = StyleSheet.create({
     padding: 10,
     opacity: 0.9,
   },
-});
+})

@@ -1,7 +1,7 @@
-import { StackScreenProps } from '@react-navigation/stack';
-import { CameraCapturedPicture } from 'expo-camera';
-import * as React from 'react';
-import { useState } from 'react';
+import { StackScreenProps } from '@react-navigation/stack'
+import { CameraCapturedPicture } from 'expo-camera'
+import * as React from 'react'
+import { useState } from 'react'
 import {
   ScrollView,
   StatusBar,
@@ -9,106 +9,106 @@ import {
   Image,
   View,
   ActivityIndicator,
-} from 'react-native';
-import { Button, Icon } from 'react-native-elements';
-import useUploadApi from '~apis/useUploadApi';
-import { AssetDetailModel, ReportAssetModel } from '~types/assets';
-import { UploadFileBase64Model } from '~types/fileUploads';
-import extractFileName from '~utils/extractFileName';
-import Colors from '../constants/Colors';
-import baseStyles from '../styles/baseStyles';
-import { v4 as uuidv4 } from 'uuid';
-import { RootStackParamList } from '../types';
-import Header from '~components/shared/Header';
-import { ATTACHMENT_TYPE } from '~constants/Status';
-import ModalCamera from '~components/shared/ModalCamera';
-import useAssetNotificationApi from '~apis/useAssetNotificationApi';
-import Toast from 'react-native-root-toast';
-import AssetDetails from '~components/assets/AssetDetails';
+} from 'react-native'
+import { Button, Icon } from 'react-native-elements'
+import useUploadApi from '~apis/useUploadApi'
+import { AssetDetailModel, ReportAssetModel } from '~types/assets'
+import { UploadFileBase64Model } from '~types/fileUploads'
+import extractFileName from '~utils/extractFileName'
+import Colors from '../constants/Colors'
+import baseStyles from '../styles/baseStyles'
+import { v4 as uuidv4 } from 'uuid'
+import { RootStackParamList } from '../types'
+import Header from '~components/shared/Header'
+import { ATTACHMENT_TYPE } from '~constants/Status'
+import ModalCamera from '~components/shared/ModalCamera'
+import useAssetNotificationApi from '~apis/useAssetNotificationApi'
+import Toast from 'react-native-root-toast'
+import AssetDetails from '~components/assets/AssetDetails'
 
 export default function ScanQRCodeFoundScreen({
   route,
   navigation,
 }: StackScreenProps<RootStackParamList, 'ScanQRCodeFound'>) {
-  const { reportAssetLocation } = useAssetNotificationApi();
-  const { uploadFile } = useUploadApi();
+  const { reportAssetLocation } = useAssetNotificationApi()
+  const { uploadFile } = useUploadApi()
   const [asset, setAsset] = useState<AssetDetailModel | undefined>(
     route.params?.data
-  );
-  const [loading, setLoading] = useState(false);
-  const [attachments, setAttachemnts] = useState<CameraCapturedPicture[]>([]);
-  const [showCamera, setShowCamera] = useState(false);
-  const [id] = useState(uuidv4());
-  const [uploadErrors, setUploadErrors] = useState<string[]>([]);
+  )
+  const [loading, setLoading] = useState(false)
+  const [attachments, setAttachemnts] = useState<CameraCapturedPicture[]>([])
+  const [showCamera, setShowCamera] = useState(false)
+  const [id] = useState(uuidv4())
+  const [uploadErrors, setUploadErrors] = useState<string[]>([])
 
   const submitReport = async (photo: CameraCapturedPicture) => {
-    setLoading(true);
+    setLoading(true)
 
-    const uploadSuccess = await addAttachment(photo);
+    const uploadSuccess = await addAttachment(photo)
 
     if (uploadSuccess) {
       const data: ReportAssetModel = {
         assetId: asset?.assetId ?? '',
         serialNo: asset?.serialNo ?? '',
-        location: asset?.location ?? '',
+        location: asset?.locationId ?? '',
         details: asset?.details,
         comments: 'Confirm Location',
         attachments: [],
-      };
+      }
 
-      const res = await reportAssetLocation(data);
+      const res = await reportAssetLocation(data)
 
       if (res && res.status === 200) {
-        Toast.show(`Asset was reported successfully`, {});
+        Toast.show(`Asset was reported successfully`, {})
       } else {
         Toast.show(`Error: Report asset failed`, {
           //position: Toast.positions.CENTER,
           textColor: Colors.red,
           backgroundColor: Colors.yellow,
-        });
+        })
       }
     } else {
       Toast.show(`Error: Report asset failed`, {
         //position: Toast.positions.CENTER,
         textColor: Colors.red,
         backgroundColor: Colors.yellow,
-      });
+      })
     }
 
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
-  const openCamera = () => setShowCamera(true);
-  const closeCamera = () => setShowCamera(false);
+  const openCamera = () => setShowCamera(true)
+  const closeCamera = () => setShowCamera(false)
 
   const addAttachment = async (photo: CameraCapturedPicture) => {
     // upload file
     if (photo && photo.uri && photo.base64) {
-      setAttachemnts([...attachments, photo]);
+      setAttachemnts([...attachments, photo])
       const data: UploadFileBase64Model = {
         id,
         fileName: extractFileName(photo.uri),
         base64: photo.base64,
         refCode: asset?.assetId,
-      };
-      const res = await uploadFile(data);
+      }
+      const res = await uploadFile(data)
       if (res && res.status !== 200) {
-        setUploadErrors([...uploadErrors, extractFileName(photo.uri)]);
-        return false;
+        setUploadErrors([...uploadErrors, extractFileName(photo.uri)])
+        return false
       }
 
-      return true;
+      return true
     }
 
-    return false;
-  };
+    return false
+  }
 
   return (
     <>
       <Header title={asset?.serialNo ?? 'QR CODE FOUNDED'} />
       <StatusBar backgroundColor={Colors.yellow} />
       <ScrollView style={baseStyles.scrollView}>
-        {loading && <ActivityIndicator animating={loading} size='large' />}
+        {loading && <ActivityIndicator animating={loading} size="large" />}
         <AssetDetails data={asset} />
         {/* <View style={baseStyles.container}>
           <View style={{ padding: 5 }}>
@@ -227,22 +227,22 @@ export default function ScanQRCodeFoundScreen({
         <Button
           icon={
             <Icon
-              name='clipboard'
-              type='font-awesome-5'
+              name="clipboard"
+              type="font-awesome-5"
               size={28}
-              color='white'
+              color="white"
             />
           }
-          title='  Report this item'
+          title="  Report this item"
           onPress={() =>
             navigation.navigate('ReportAsset', { serialNo: asset?.serialNo })
           }
         />
         <Button
           icon={
-            <Icon name='camera' type='font-awesome-5' size={28} color='white' />
+            <Icon name="camera" type="font-awesome-5" size={28} color="white" />
           }
-          title='  Take a Photo & Confirm'
+          title="  Take a Photo & Confirm"
           loading={loading}
           onPress={openCamera}
         />
@@ -253,8 +253,8 @@ export default function ScanQRCodeFoundScreen({
         openCamera={openCamera}
         closeCamera={closeCamera}
         onTakePicture={submitReport}
-        mode='photo'
+        mode="photo"
       />
     </>
-  );
+  )
 }

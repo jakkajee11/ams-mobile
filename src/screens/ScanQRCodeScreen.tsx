@@ -1,14 +1,13 @@
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import { useIsFocused } from '@react-navigation/native';
-import { StackScreenProps } from '@react-navigation/stack';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { FontAwesome, Ionicons } from '@expo/vector-icons'
+import { useIsFocused } from '@react-navigation/native'
+import { StackScreenProps } from '@react-navigation/stack'
 import {
-  BarCodeScanningResult,
+  BarcodeScanningResult,
   CameraCapturedPicture,
   Camera as ExpoCamera,
-} from 'expo-camera';
-import * as React from 'react';
-import { useEffect, useState } from 'react';
+} from 'expo-camera'
+import * as React from 'react'
+import { useEffect, useState } from 'react'
 import {
   Modal,
   StyleSheet,
@@ -16,49 +15,49 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { Button, Icon } from 'react-native-elements';
-import useAssetApi from '~apis/useAssetApi';
-import ModalCamera from '~components/shared/ModalCamera';
-import Camera from '../components/shared/Camera';
+} from 'react-native'
+import { Button, Icon } from 'react-native-elements'
+import useAssetApi from '~apis/useAssetApi'
+import ModalCamera from '~components/shared/ModalCamera'
+import Camera from '../components/shared/Camera'
 
-import { RootStackParamList } from '../types';
+import { RootStackParamList } from '../types'
 
 export default function ScanQRCodeScreen({
   navigation,
 }: StackScreenProps<RootStackParamList, 'ScanQRCode'>) {
-  const { getAssetInfo } = useAssetApi();
-  const isFocused = useIsFocused();
-  const [loading, setLoading] = useState(false);
+  const { getAssetInfo } = useAssetApi()
+  const isFocused = useIsFocused()
+  const [loading, setLoading] = useState(false)
 
-  const [scannedResult, setScannedResult] = useState('');
-  const [visible, setVisible] = useState(isFocused);
+  const [scannedResult, setScannedResult] = useState('')
+  const [visible, setVisible] = useState(isFocused)
 
   const prepareCamera = () => {
-    setScannedResult('');
-    openCamera();
-  };
+    setScannedResult('')
+    openCamera()
+  }
 
-  const openCamera = () => setVisible(true);
-  const closeCamera = () => setVisible(false);
+  const openCamera = () => setVisible(true)
+  const closeCamera = () => setVisible(false)
 
   const handleBarCodeScanned = async ({
     type,
     data,
     cornerPoints,
-  }: BarCodeScanningResult) => {
-    setScannedResult(data);
-    closeCamera();
+  }: BarcodeScanningResult) => {
+    setScannedResult(data)
+    closeCamera()
     // check asset in system
-    setLoading(true);
-    const res = await getAssetInfo(data);
+    setLoading(true)
+    const res = await getAssetInfo(data)
     if (res && res.status === 200 && res.data) {
-      navigation.navigate('ScanQRCodeFound', { data: res.data });
+      navigation.navigate('ScanQRCodeFound', { data: res.data })
     } else {
-      navigation.navigate('ScanQRCodeNotFound', { data });
+      navigation.navigate('ScanQRCodeNotFound', { data })
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
     <>
@@ -66,7 +65,7 @@ export default function ScanQRCodeScreen({
         <Text style={styles.text}>{scannedResult}</Text>
         {/* {loading && <Text>Loading...</Text>} */}
         <Button
-          style={{ width: '100px' }}
+          // style={{ width: '100px' }}
           title={
             <View
               style={{
@@ -75,10 +74,10 @@ export default function ScanQRCodeScreen({
               }}
             >
               <Icon
-                name='qr-code-scanner'
-                type='MaterialIcons'
+                name="qr-code-scanner"
+                type="MaterialIcons"
                 size={60}
-                color='white'
+                color="white"
               />
               <Text
                 style={{
@@ -99,12 +98,12 @@ export default function ScanQRCodeScreen({
           showCamera={visible}
           openCamera={openCamera}
           closeCamera={closeCamera}
-          onBarCodeScanned={handleBarCodeScanned}
-          mode='scan'
+          onBarcodeScanned={handleBarCodeScanned}
+          mode="scan"
         />
       </View>
     </>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -119,4 +118,4 @@ const styles = StyleSheet.create({
     color: 'red',
     margin: 20,
   },
-});
+})

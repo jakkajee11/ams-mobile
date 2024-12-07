@@ -1,8 +1,8 @@
-import { StackScreenProps } from '@react-navigation/stack';
-import { CameraCapturedPicture } from 'expo-camera';
-import _ from 'lodash';
-import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { StackScreenProps } from '@react-navigation/stack'
+import { CameraCapturedPicture } from 'expo-camera'
+import _ from 'lodash'
+import * as React from 'react'
+import { useEffect, useState } from 'react'
 import {
   Text,
   View,
@@ -11,58 +11,58 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-} from 'react-native';
-import { Button, CheckBox, Icon, Image, Input } from 'react-native-elements';
-import 'react-native-get-random-values';
-import Toast from 'react-native-root-toast';
-import { v4 as uuidv4 } from 'uuid';
-import useAssetApi from '~apis/useAssetApi';
-import useAssetNotificationApi from '~apis/useAssetNotificationApi';
-import useUploadApi from '~apis/useUploadApi';
-import ModalCamera from '~components/shared/ModalCamera';
-import Colors from '~constants/Colors';
-import { ReportAssetModel } from '~types/assets';
-import { UploadFileBase64Model } from '~types/fileUploads';
-import extractFileName from '~utils/extractFileName';
-import baseStyles from '../styles/baseStyles';
-import { RootStackParamList } from '../types';
+} from 'react-native'
+import { Button, CheckBox, Icon, Image, Input } from 'react-native-elements'
+import 'react-native-get-random-values'
+import Toast from 'react-native-root-toast'
+import { v4 as uuidv4 } from 'uuid'
+import useAssetApi from '~apis/useAssetApi'
+import useAssetNotificationApi from '~apis/useAssetNotificationApi'
+import useUploadApi from '~apis/useUploadApi'
+import ModalCamera from '~components/shared/ModalCamera'
+import Colors from '~constants/Colors'
+import { ReportAssetModel } from '~types/assets'
+import { UploadFileBase64Model } from '~types/fileUploads'
+import extractFileName from '~utils/extractFileName'
+import baseStyles from '../styles/baseStyles'
+import { RootStackParamList } from '../types'
 
 export default function ReportAssetScreen({
   route,
   navigation,
 }: StackScreenProps<RootStackParamList, 'ReportAsset'>) {
-  const { getAssetInfo } = useAssetApi();
-  const { reportAssetLocation } = useAssetNotificationApi();
-  const { uploadFile } = useUploadApi();
+  const { getAssetInfo } = useAssetApi()
+  const { reportAssetLocation } = useAssetNotificationApi()
+  const { uploadFile } = useUploadApi()
   const [searchText, setSearchText] = useState(
     route.params?.assetId ?? route.params?.serialNo ?? ''
-  );
-  const [location, setLocation] = useState('');
-  const [details, setDetails] = useState('');
-  const [attachments, setAttachemnts] = useState<CameraCapturedPicture[]>([]);
-  const [showCamera, setShowCamera] = useState(false);
+  )
+  const [location, setLocation] = useState('')
+  const [details, setDetails] = useState('')
+  const [attachments, setAttachemnts] = useState<CameraCapturedPicture[]>([])
+  const [showCamera, setShowCamera] = useState(false)
   //const [id] = useState(uuidv4());
-  const [loading, setLoading] = useState(false);
-  const [uploadErrors, setUploadErrors] = useState<string[]>([]);
-  const [buttonDisplay, setButtonDisplay] = useState<'flex' | 'none'>('flex');
+  const [loading, setLoading] = useState(false)
+  const [uploadErrors, setUploadErrors] = useState<string[]>([])
+  const [buttonDisplay, setButtonDisplay] = useState<'flex' | 'none'>('flex')
 
-  const maximum = 5;
+  const maximum = 5
 
   const submitReportAsset = async () => {
-    setLoading(true);
+    setLoading(true)
     const data: ReportAssetModel = {
       assetId: route.params?.assetId ? route.params?.assetId : searchText,
       serialNo: route.params?.serialNo ? route.params?.serialNo : searchText,
       location,
       details,
       attachments: [],
-    };
+    }
 
-    const res = await reportAssetLocation(data);
+    const res = await reportAssetLocation(data)
 
     if (res && res.status === 200) {
-      Toast.show(`Asset was reported successfully`, {});
-      reset();
+      Toast.show(`Asset was reported successfully`, {})
+      reset()
     } else {
       Toast.show(
         `Error (${res.status}): Report asset failed. please try again.`,
@@ -70,10 +70,10 @@ export default function ReportAssetScreen({
           textColor: Colors.red,
           backgroundColor: Colors.yellow,
         }
-      );
-      setLoading(false);
+      )
+      setLoading(false)
     }
-  };
+  }
 
   const reportAsset = async () => {
     if (
@@ -88,11 +88,11 @@ export default function ReportAssetScreen({
           textColor: Colors.red,
           backgroundColor: Colors.yellow,
         }
-      );
+      )
     } else {
-      setLoading(true);
+      setLoading(true)
 
-      const res = await getAssetInfo(searchText);
+      const res = await getAssetInfo(searchText)
 
       if (res && res.status === 204) {
         Alert.alert(
@@ -107,59 +107,59 @@ export default function ReportAssetScreen({
             { text: 'OK', onPress: submitReportAsset },
           ],
           { cancelable: true }
-        );
+        )
       } else {
-        await submitReportAsset();
+        await submitReportAsset()
       }
     }
-  };
+  }
 
-  const openCamera = () => setShowCamera(true);
-  const closeCamera = () => setShowCamera(false);
+  const openCamera = () => setShowCamera(true)
+  const closeCamera = () => setShowCamera(false)
 
   const addAttachment = async (photo: CameraCapturedPicture) => {
     // upload file
     if (photo && photo.uri && photo.base64) {
-      setAttachemnts([...attachments, photo]);
+      setAttachemnts([...attachments, photo])
       const data: UploadFileBase64Model = {
         id: uuidv4(),
         fileName: extractFileName(photo.uri),
         base64: photo.base64,
         refCode: searchText,
-      };
-      const res = await uploadFile(data);
+      }
+      const res = await uploadFile(data)
       if (res && res.status !== 200) {
-        setUploadErrors([...uploadErrors, extractFileName(photo.uri)]);
+        setUploadErrors([...uploadErrors, extractFileName(photo.uri)])
       }
     }
-  };
+  }
 
   const reset = () => {
-    setSearchText('');
-    setLocation('');
-    setDetails('');
-    setAttachemnts([]);
-    setLoading(false);
-  };
+    setSearchText('')
+    setLocation('')
+    setDetails('')
+    setAttachemnts([])
+    setLoading(false)
+  }
 
   const hideActionButton = () => {
-    setButtonDisplay('none');
-  };
+    setButtonDisplay('none')
+  }
 
   const showActionButton = () => {
-    setButtonDisplay('flex');
-  };
+    setButtonDisplay('flex')
+  }
 
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', hideActionButton);
-    Keyboard.addListener('keyboardDidHide', showActionButton);
+    Keyboard.addListener('keyboardDidShow', hideActionButton)
+    Keyboard.addListener('keyboardDidHide', showActionButton)
 
     // cleanup function
     return () => {
-      Keyboard.removeListener('keyboardDidShow', hideActionButton);
-      Keyboard.removeListener('keyboardDidHide', showActionButton);
-    };
-  }, []);
+      Keyboard.removeAllListeners('keyboardDidShow')
+      Keyboard.removeAllListeners('keyboardDidHide')
+    }
+  }, [])
 
   return (
     <>
@@ -173,7 +173,7 @@ export default function ReportAssetScreen({
               <Input
                 //placeholder='Code (Required)'
                 maxLength={255}
-                label='Serial No./QR Code'
+                label="Serial No./QR Code"
                 renderErrorMessage={searchText === ''}
                 errorMessage={searchText.length > 0 ? undefined : '* Required'}
                 onChangeText={(text) => setSearchText(text)}
@@ -181,14 +181,14 @@ export default function ReportAssetScreen({
               />
               <Input
                 //placeholder='Location (Required)'
-                label='Location'
+                label="Location"
                 renderErrorMessage={true}
                 errorMessage={location.length > 0 ? undefined : '* Required'}
                 onChangeText={(text) => setLocation(text)}
                 value={location}
               />
               <Input
-                label='Detail'
+                label="Detail"
                 multiline
                 numberOfLines={4}
                 renderErrorMessage={true}
@@ -220,7 +220,7 @@ export default function ReportAssetScreen({
       >
         <Button
           icon={
-            <Icon name='camera' type='font-awesome-5' size={28} color='white' />
+            <Icon name="camera" type="font-awesome-5" size={28} color="white" />
           }
           title={
             attachments.length === maximum
@@ -238,9 +238,9 @@ export default function ReportAssetScreen({
         <Text></Text>
         <Button
           icon={
-            <Icon name='save' type='font-awesome-5' size={28} color='white' />
+            <Icon name="save" type="font-awesome-5" size={28} color="white" />
           }
-          title=' Submit'
+          title=" Submit"
           disabled={
             searchText.length === 0 ||
             location.length === 0 ||
@@ -255,8 +255,8 @@ export default function ReportAssetScreen({
         openCamera={openCamera}
         closeCamera={closeCamera}
         onTakePicture={addAttachment}
-        mode='photo'
+        mode="photo"
       />
     </>
-  );
+  )
 }

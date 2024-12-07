@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, createRef } from 'react';
+import React, { useState, useEffect, useRef, createRef } from 'react'
 import {
   StyleSheet,
   Text,
@@ -6,40 +6,39 @@ import {
   TouchableOpacity,
   Platform,
   GestureResponderEvent,
-} from 'react-native';
+} from 'react-native'
 import {
   Camera as ExpoCamera,
-  CameraProps as ExpoCameraProps,
+  CameraViewProps,
   CameraCapturedPicture,
-  BarCodeScanningResult,
   CameraType,
-  AutoFocus,
-} from 'expo-camera';
-import * as ImageManipulator from 'expo-image-manipulator';
-import * as ImagePicker from 'expo-image-picker';
-//import * as Permissions from 'expo-permissions';
-import * as FileSystem from 'expo-file-system';
-import Constants from 'expo-constants';
+  CameraView,
+  useCameraPermissions,
+  BarcodeScanningResult,
+} from 'expo-camera'
+import * as ImageManipulator from 'expo-image-manipulator'
+import * as ImagePicker from 'expo-image-picker'
+import * as FileSystem from 'expo-file-system'
+import Constants from 'expo-constants'
 import {
   Ionicons,
   MaterialIcons,
   Foundation,
   MaterialCommunityIcons,
   Octicons,
-} from '@expo/vector-icons';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+} from '@expo/vector-icons'
 
-const landmarkSize = 2;
+const landmarkSize = 2
 
 const flashModeOrder = {
   off: 'on',
   on: 'auto',
   auto: 'torch',
   torch: 'off',
-};
+}
 
 interface IFlashIcons {
-  [key: string]: 'flash-off' | 'flash-on' | 'flash-auto' | 'highlight';
+  [key: string]: 'flash-off' | 'flash-on' | 'flash-auto' | 'highlight'
 }
 
 const flashIcons: IFlashIcons = {
@@ -47,7 +46,7 @@ const flashIcons: IFlashIcons = {
   on: 'flash-on',
   auto: 'flash-auto',
   torch: 'highlight',
-};
+}
 
 const wbOrder = {
   auto: 'sunny',
@@ -56,7 +55,7 @@ const wbOrder = {
   shadow: 'fluorescent',
   fluorescent: 'incandescent',
   incandescent: 'auto',
-};
+}
 
 const wbIcons = {
   auto: 'wb-auto',
@@ -65,58 +64,59 @@ const wbIcons = {
   shadow: 'beach-access',
   fluorescent: 'wb-iridescent',
   incandescent: 'wb-incandescent',
-};
+}
 
 interface CameraProps {
-  onClose(): void;
-  onTakePicture?(photo: CameraCapturedPicture | undefined): void;
-  onBarCodeScanned?(result: BarCodeScanningResult): void;
-  showImagePicker?: boolean;
-  showOptions?: boolean;
-  mode: 'photo' | 'scan';
+  onClose(): void
+  onTakePicture?(photo: CameraCapturedPicture | undefined): void
+  showImagePicker?: boolean
+  showOptions?: boolean
+  displayMode: 'photo' | 'scan'
 }
 
 export default function Camera({
   onClose,
   onTakePicture,
-  onBarCodeScanned,
+  onBarcodeScanned,
+  autofocus,
   showImagePicker = false,
   showOptions = false,
-  mode = 'photo',
-}: CameraProps & ExpoCameraProps) {
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [permission, requestPermission] = ExpoCamera.useCameraPermissions();
-  const [cameraReady, setCameraReady] = useState(false);
-  const [type, setType] = useState(CameraType.back);
-  const [saving, setSaving] = useState<boolean>(false);
-  const [newPhotos, setNewPhotos] = useState<boolean>(false);
-  const [flash, toggleFlash] = useState<string>('off');
-  const [whiteBalance, toggleWB] = useState<string>('auto');
-  const [showMoreOptions, toggleMoreOptions] = useState<boolean>(showOptions);
-  const [showPickImage, setShowPickImage] = useState<boolean>(showImagePicker);
-  const [scannedResult, setScannedResult] = useState('');
+  mode = 'picture',
+  displayMode = 'scan',
+}: CameraProps & CameraViewProps) {
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null)
+  const [permission, requestPermission] = useCameraPermissions()
+  const [cameraReady, setCameraReady] = useState(false)
+  const [type, setType] = useState(ImagePicker.CameraType.back)
+  const [saving, setSaving] = useState<boolean>(false)
+  const [newPhotos, setNewPhotos] = useState<boolean>(false)
+  const [flash, toggleFlash] = useState<string>('off')
+  const [whiteBalance, toggleWB] = useState<string>('auto')
+  const [showMoreOptions, toggleMoreOptions] = useState<boolean>(showOptions)
+  const [showPickImage, setShowPickImage] = useState<boolean>(showImagePicker)
+  const [scannedResult, setScannedResult] = useState('')
 
-  const camera = useRef<ExpoCamera>(null);
+  const camera = useRef<ExpoCamera>(null)
 
   useEffect(() => {
-    (async () => {
+    ;(async () => {
       // Camera roll Permission
       if (Platform.OS === 'ios') {
         // const { status } = await Permissions.askAsync(
         //   Permissions.MEDIA_LIBRARY
         // );
 
-        const status = permission?.status;
+        const status = permission?.status
         if (status !== ImagePicker.PermissionStatus.GRANTED) {
-          alert('Sorry, we need camera roll permissions to make this work!');
+          alert('Sorry, we need camera roll permissions to make this work!')
         }
       }
       // Camera Permission
-      const { status } = await ExpoCamera.requestCameraPermissionsAsync();
+      const { status } = await ExpoCamera.requestCameraPermissionsAsync()
 
-      setHasPermission(status === 'granted');
-    })();
-  }, []);
+      setHasPermission(status === 'granted')
+    })()
+  }, [])
 
   async function takePicture() {
     try {
@@ -127,23 +127,21 @@ export default function Camera({
           base64: true,
           onPictureSaved: onPictureSaved,
           skipProcessing: true,
-        });
+        })
 
         //onTakePicture(photo);
         //onClose();
       } else {
-        console.log(['camera is undefined']);
+        console.log(['camera is undefined'])
       }
     } catch (err) {
-      console.log(['error', err]);
+      console.log(['error', err])
     }
   }
 
   async function onPictureSaved(photo: CameraCapturedPicture) {
     //setSaving(true);
-    const savedPhoto = `${
-      FileSystem.documentDirectory
-    }photos/${Date.now()}.jpg`;
+    const savedPhoto = `${FileSystem.documentDirectory}photos/${Date.now()}.jpg`
     // await FileSystem.moveAsync({
     //   from: photo.uri,
     //   to: savedPhoto,
@@ -155,29 +153,27 @@ export default function Camera({
     //setNewPhotos(true);
 
     // update parent
-    handleTakePicture(photo);
+    handleTakePicture(photo)
   }
 
   function handleTakePicture(photo: CameraCapturedPicture) {
-    onTakePicture && onTakePicture(photo);
-    onClose();
+    onTakePicture && onTakePicture(photo)
+    onClose()
   }
 
   async function pickImage() {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    });
+      mediaTypes: ['images'],
+    })
   }
 
   function onCameraReady() {
-    console.log('camera is ready for use');
+    console.log('camera is ready for use')
     //setCameraReady(true);
   }
 
-  function toggleView() {}
-
   function closeCamera() {
-    onClose();
+    onClose()
   }
 
   function TopBar() {
@@ -199,10 +195,10 @@ export default function Camera({
         <Text style={[styles.autoFocusLabel, { color: autoFocus === 'on' ? "white" : "#6b6b6b" }]}>AF</Text>
       </TouchableOpacity>  */}
         <TouchableOpacity style={styles.toggleButton} onPress={closeCamera}>
-          <Ionicons name='ios-close-circle-outline' size={32} color='white' />
+          <Ionicons name="close-circle-outline" size={32} color="white" />
         </TouchableOpacity>
       </View>
-    );
+    )
   }
 
   function BottomBar() {
@@ -213,11 +209,11 @@ export default function Camera({
             style={styles.bottomButton}
             onPress={() => toggleMoreOptions(true)}
           >
-            <Octicons name='kebab-horizontal' size={30} color='white' />
+            <Octicons name="kebab-horizontal" size={30} color="white" />
           </TouchableOpacity>
         )}
         <View style={{ flex: 0.4 }}>
-          {mode === 'photo' && (
+          {displayMode === 'photo' && (
             <TouchableOpacity
               onPress={takePicture}
               style={{ alignSelf: 'center' }}
@@ -225,7 +221,7 @@ export default function Camera({
             >
               {saving && <Text style={{ color: 'white' }}>กำลังบันทึกภาพ</Text>}
               {!saving && (
-                <Ionicons name='ios-radio-button-on' size={70} color='white' />
+                <Ionicons name="radio-button-on" size={70} color="white" />
               )}
             </TouchableOpacity>
           )}
@@ -233,13 +229,13 @@ export default function Camera({
         {showPickImage && (
           <TouchableOpacity style={styles.bottomButton} onPress={pickImage}>
             <View>
-              <Foundation name='thumbnails' size={30} color='white' />
+              <Foundation name="thumbnails" size={30} color="white" />
               {newPhotos && <View style={styles.newPhotosDot} />}
             </View>
           </TouchableOpacity>
         )}
       </View>
-    );
+    )
   }
 
   function ScanBox() {
@@ -257,42 +253,42 @@ export default function Camera({
       >
         {/* <Text>QR Code/Bar Code</Text> */}
       </View>
-    );
+    )
   }
 
-  //   function onBarCodeScanned(result: BarCodeScanningResult) {
-  //     console.log(['handleBarCodeScanned', result]);
-  //     setScannedResult(result.data);
-  //   }
+  // function onBarCodeScanned(result: BarcodeScanningResult) {
+  //   console.log(['handleBarCodeScanned', result])
+  //   setScannedResult(result.data)
+  // }
 
   if (hasPermission === null) {
-    return <View />;
+    return <View />
   }
   if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+    return <Text>No access to camera</Text>
   }
 
   return (
     <View style={{ flex: 1 }}>
-      <ExpoCamera
+      <CameraView
         style={{ flex: 1, justifyContent: 'space-between' }}
-        type={type}
-        autoFocus={AutoFocus.on}
-        useCamera2Api={false}
+        facing={type}
+        //autoFocus={AutoFocus.on}
+        //useCamera2Api={false}
         ratio={'4:3'}
         ref={camera}
         onCameraReady={onCameraReady}
-        onBarCodeScanned={onBarCodeScanned}
-        barCodeScannerSettings={{
-          barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+        onBarcodeScanned={onBarcodeScanned}
+        barcodeScannerSettings={{
+          barcodeTypes: ['qr', 'pdf417'],
         }}
       >
         <TopBar />
-        {mode === 'scan' && <ScanBox />}
+        {displayMode === 'scan' && <ScanBox />}
         <BottomBar />
-      </ExpoCamera>
+      </CameraView>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -429,4 +425,4 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
   },
-});
+})
