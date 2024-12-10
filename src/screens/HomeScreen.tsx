@@ -1,51 +1,51 @@
-import { useNavigation } from '@react-navigation/core';
-import { StackScreenProps } from '@react-navigation/stack';
-import dayjs from 'dayjs';
-import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Badge, Button, Icon } from 'react-native-elements';
-import useJobApi from '~apis/useJobApi';
-import Loading from '~components/shared/Loading';
-import Colors from '~constants/Colors';
-import Logo from '../components/shared/Logo';
+import { useNavigation } from '@react-navigation/core'
+import { StackScreenProps } from '@react-navigation/stack'
+import dayjs from 'dayjs'
+import * as React from 'react'
+import { useEffect, useState } from 'react'
+import { StyleSheet, Text, View } from 'react-native'
+import { Badge, Button, Icon } from 'react-native-elements'
+import useJobApi from '~apis/useJobApi'
+import Loading from '~components/shared/Loading'
+import Colors from '~constants/Colors'
+import Logo from '../components/shared/Logo'
 
-import { RootStackParamList } from '../types';
+import { RootStackParamList } from '../types'
 
 export default function HomeScreen({
   navigation,
 }: StackScreenProps<RootStackParamList, 'Home'>) {
-  const { getJobsCount } = useJobApi();
-  const [loading, setLoading] = useState(false);
-  const [jobPendingCount, setJobPendingCount] = useState(0);
-  const nav = useNavigation();
+  const { getJobsCount } = useJobApi()
+  const [loading, setLoading] = useState(false)
+  const [jobPendingCount, setJobPendingCount] = useState(0)
+  const nav = useNavigation()
 
   const setJobCount = async () => {
-    setLoading(true);
+    setLoading(true)
     const res = await getJobsCount({
       startDate: '2021-07-01',
       endDate: dayjs().utc().endOf('month').toISOString(),
-    });
+    })
 
     if (res && res.status === 200 && res.data) {
-      if (res.data['Pending']) setJobPendingCount(res.data['Pending']);
+      if (res.data['Pending']) setJobPendingCount(res.data['Pending'])
     }
 
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   useEffect(() => {
-    nav.addListener('focus', setJobCount);
+    nav.addListener('focus', setJobCount)
 
     return () =>
-      nav.removeListener('focus', () => console.log('remove focus listener'));
-  }, []);
+      nav.removeListener('focus', () => console.log('remove focus listener'))
+  }, [])
 
   useEffect(() => {
-    (async function () {
-      await setJobCount();
-    })();
-  }, []);
+    ;(async function () {
+      await setJobCount()
+    })()
+  }, [])
 
   return (
     <View style={styles.container}>
@@ -71,155 +71,39 @@ export default function HomeScreen({
           justifyContent: 'space-around',
         }}
       >
-        <Button
-          title={
-            <View
-              style={{
-                padding: 3,
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}
-            >
-              <Icon
-                name='qr-code-scanner'
-                type='MaterialIcons'
-                size={55}
-                color='white'
-              />
-              <Text
+        {menuItems.map((m) => (
+          <Button
+            key={m.navigate}
+            title={
+              <View
                 style={{
-                  marginLeft: 10,
-                  fontSize: 18,
-                  fontWeight: '600',
-                  color: 'white',
+                  padding: 3,
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
                 }}
               >
-                Scan QR Code
-              </Text>
-            </View>
-          }
-          onPress={() => navigation.navigate('ScanQRCode')}
-        />
-
-        <Button
-          title={
-            <View
-              style={{
-                padding: 3,
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}
-            >
-              <Icon
-                name='search-location'
-                type='font-awesome-5'
-                size={55}
-                color='white'
-              />
-              <Text
-                style={{
-                  marginLeft: 10,
-                  fontSize: 18,
-                  fontWeight: '600',
-                  color: 'white',
-                }}
-              >
-                Search Serial No.
-              </Text>
-            </View>
-          }
-          onPress={() => navigation.navigate('SearchSerialNo')}
-        />
-
-        <Button
-          title={
-            <View
-              style={{
-                padding: 3,
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}
-            >
-              <Icon name='send' type='font-awesome' size={55} color='white' />
-              <Text
-                style={{
-                  marginLeft: 10,
-                  fontSize: 18,
-                  fontWeight: '600',
-                  color: 'white',
-                }}
-              >
-                Report Asset
-              </Text>
-            </View>
-          }
-          onPress={() => navigation.navigate('ReportAsset')}
-        />
-
-        <Button
-          title={
-            <View
-              style={{
-                padding: 3,
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}
-            >
-              <Icon
-                name='tasks'
-                type='font-awesome-5'
-                size={55}
-                color='white'
-              />
-              <Text
-                style={{
-                  marginLeft: 10,
-                  fontSize: 18,
-                  fontWeight: '600',
-                  color: 'white',
-                }}
-              >
-                My Jobs
-              </Text>
-
-              {jobPendingCount > 0 && (
-                <Badge value={jobPendingCount} status='error' />
-              )}
-            </View>
-          }
-          onPress={() => navigation.navigate('MyJobs')}
-          loading={loading}
-        />
-
-        <Button
-          title={
-            <View
-              style={{
-                padding: 3,
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}
-            >
-              <Icon name='plus' type='feather' size={55} color='white' />
-              <Text
-                style={{
-                  marginLeft: 10,
-                  fontSize: 18,
-                  fontWeight: '600',
-                  color: 'white',
-                }}
-              >
-                Create Job
-              </Text>
-            </View>
-          }
-          onPress={() => navigation.navigate('ReportAssetFromAddress')}
-        />
+                <Icon
+                  name={m.icon}
+                  type={m.iconType}
+                  size={m.size}
+                  color="white"
+                />
+                <Text
+                  style={{
+                    marginLeft: 10,
+                    fontSize: 18,
+                    fontWeight: '600',
+                    color: 'white',
+                  }}
+                >
+                  {m.text}
+                </Text>
+              </View>
+            }
+            onPress={() => navigation.navigate(m.navigate)}
+          />
+        ))}
       </View>
       <View style={{ flex: 0.2, justifyContent: 'flex-end' }}>
         <View
@@ -239,7 +123,7 @@ export default function HomeScreen({
           <Button
             //type='clear'
             icon={
-              <Icon name='user' type='font-awesome-5' size={28} color='white' />
+              <Icon name="user" type="font-awesome-5" size={28} color="white" />
             }
             //title='Forgot Password?'
             onPress={() => navigation.navigate('MyProfile')}
@@ -247,7 +131,7 @@ export default function HomeScreen({
         </View>
       </View>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -262,4 +146,56 @@ const styles = StyleSheet.create({
     padding: 10,
     height: 150,
   },
-});
+})
+
+const menuItems = [
+  {
+    icon: 'qr-code-scanner',
+    iconType: 'MaterialIcons',
+    size: 35,
+    text: 'Scan QR Code',
+    navigate: 'ScanQRCode',
+  },
+  {
+    icon: 'search-location',
+    iconType: 'font-awesome-5',
+    size: 35,
+    text: 'Search Serial No.',
+    navigate: 'SearchSerialNo',
+  },
+  {
+    icon: 'send',
+    iconType: 'font-awesome',
+    size: 35,
+    text: 'Report Asset',
+    navigate: 'ReportAsset',
+  },
+  {
+    icon: 'tasks',
+    iconType: 'font-awesome-5',
+    size: 35,
+    text: 'My Jobs',
+    navigate: 'MyJobs',
+  },
+  {
+    icon: 'plus',
+    iconType: 'feather',
+    size: 35,
+    text: 'Create Job',
+    navigate: 'ReportAssetFromAddress',
+  },
+  {
+    icon: 'map',
+    iconType: 'feather',
+    size: 35,
+    text: 'Status & Location',
+    navigate: 'StatusAndLocation',
+  },
+  {
+    icon: 'bar-chart',
+    iconType: 'feather',
+    size: 35,
+    text: 'Aging Report',
+    navigate: 'AgingReport',
+  },
+]

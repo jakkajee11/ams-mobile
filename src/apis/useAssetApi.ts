@@ -1,45 +1,50 @@
-import useApi from '~hooks/useApi';
-import { ReportAssetModel } from '~types/assets';
+import useApi from '~hooks/useApi'
+import {
+  ReportAssetModel,
+  UpdateAssetStatusAndLocationModel,
+} from '~types/assets'
 
-const endpoint = 'v1/assets';
+const endpoint = 'v1/assets'
 export default function useAssetApi() {
-  const { get, post } = useApi();
+  const { get, post, put } = useApi()
 
   const getAsset = async (id: string) => {
-    const url = `${endpoint}/${id}`;
-    return await get(url);
-  };
+    const url = `${endpoint}/${id}`
+    return await get(url)
+  }
 
   const getAssetInfo = async (assetId: string) => {
-    const url = `${endpoint}/assetinfo?code=${encodeURIComponent(assetId)}`;
-    return await get(url);
-  };
+    const url = `${endpoint}/assetinfo?code=${encodeURIComponent(assetId)}`
+    return await get(url)
+  }
 
   const searchAssets = async (serialNo: string) => {
-    const url = `${endpoint}/search/${serialNo}`;
-    return await get(url);
-  };
+    const url = `${endpoint}/search/${serialNo}`
+    return await get(url)
+  }
 
   const getAssetByAddressId = async (id: string) => {
-    const url = `${endpoint}/shipto/${id}?page=0&size=10`;
-    return await get(url);
-  };
+    const url = `${endpoint}/shipto/${id}?page=0&size=10`
+    return await get(url)
+  }
 
-  // const checkAsset = async (assetId: string) => {
-  //   const url = `${endpoint}/checkasset/${assetId}`;
-  //   return await get(url);
-  // };
+  const getAllStatus = async () => {
+    //const url = `${endpoint}/shipto/${id}?page=0&size=10`;
+    //return await get(url);
+    Promise.resolve([{}])
+  }
 
-  // const reportAssetLocation = async (model: ReportAssetModel) => {
-  //   return await post(`${endpoint}/notify`, model);
-  // };
+  const updateStatusAndLocations = async (
+    assets: UpdateAssetStatusAndLocationModel[]
+  ) => {
+    return await put(`${endpoint}/status-location/bulk`, assets)
+  }
 
   return {
     getAsset,
     getAssetInfo,
     getAssetByAddressId,
-    //checkAsset,
     searchAssets,
-    // reportAssetLocation,
-  };
+    updateStatusAndLocations,
+  }
 }

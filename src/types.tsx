@@ -3,63 +3,65 @@
  * https://reactnavigation.org/docs/typescript/
  */
 
-import { AssetDetailModel, AssetModel } from '~types/assets';
-import { JobAssetModel, JobModel } from './types/jobs';
+import { AssetDetailModel, AssetModel } from '~types/assets'
+import { JobAssetModel, JobModel } from './types/jobs'
 
 export type AppStackParamList = {
-  Auth: undefined;
-  Root: undefined;
-};
+  Auth: undefined
+  Root: undefined
+}
 
 export type AuthStackParamList = {
-  Login: undefined;
-  ForgotPassword: undefined;
-  Root: undefined;
-};
+  Login: undefined
+  ForgotPassword: undefined
+  Root: undefined
+}
 
 export type QRCodeFoundModel = {
-  data: AssetDetailModel;
-};
+  data: AssetDetailModel
+}
 
 export type QRCodeNotFoundModel = {
-  data: string;
-};
+  data: string
+}
 
 export type RootStackParamList = {
-  Auth: undefined;
-  Home: undefined;
-  ScanQRCode: undefined;
-  ScanQRCodeFound: QRCodeFoundModel | undefined;
-  ScanQRCodeNotFound: QRCodeNotFoundModel | undefined;
-  ReportAsset: any;
-  ReportAssetFromAddress: any;
-  SearchSerialNo: any;
-  AssetDetails: AssetDetailParams;
-  MyJobs: undefined;
-  Jobs: undefined;
-  JobDetails: any; //JobModel;
-  MyProfile: any;
-  NotFound: undefined;
-};
+  Auth: undefined
+  Home: undefined
+  ScanQRCode: undefined
+  ScanQRCodeFound: QRCodeFoundModel | undefined
+  ScanQRCodeNotFound: QRCodeNotFoundModel | undefined
+  ReportAsset: any
+  ReportAssetFromAddress: any
+  SearchSerialNo: any
+  AssetDetails: AssetDetailParams
+  MyJobs: undefined
+  Jobs: undefined
+  JobDetails: any //JobModel;
+  MyProfile: any
+  StatusAndLocation: any
+  AgingReport: any
+  NotFound: undefined
+}
 
 export type BottomTabParamList = {
-  Auth: undefined;
-  Home: undefined;
-  MyJobs: undefined;
-  ScanQRCode: undefined;
-  Settings: undefined;
-};
+  Auth: undefined
+  Home: undefined
+  MyJobs: undefined
+  ScanQRCode: undefined
+  Settings: undefined
+}
 
 type AssetDetailParams = {
-  assetId: string;
-};
+  assetId: string
+}
 export type JobsParamsList = {
-  Jobs: undefined;
-  JobDetails: any; //JobModel;
-  JobAssetDetails: JobAssetModel;
-  AssetDetails: AssetDetailParams;
-};
+  Jobs: undefined
+  JobDetails: any //JobModel;
+  JobAssetDetails: JobAssetModel
+  AssetDetails: AssetDetailParams
+}
 
 export type AllParamList = AppStackParamList &
   AuthStackParamList &
-  RootStackParamList & {};
+  RootStackParamList & {}

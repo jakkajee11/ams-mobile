@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "AMS App",
+    "name": "AMS Mobile App",
     "slug": "ams-mobile",
     "version": "1.11.0",
     "orientation": "portrait",
@@ -25,24 +25,26 @@
       "expo-font",
       "expo-asset"
     ],
-    "updates": {
-      "enabled": true,
-      "checkAutomatically": "ON_LOAD",
-      "fallbackToCacheTimeout": 30000,
-      "url": "https://u.expo.dev/e7451209-961c-4d6f-96e7-3b9f21984b4a"
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
       "supportsTablet": true
     },
+    "extra": {
+      "eas": {
+        "projectId": "c46bb8d7-6e3c-483c-bbb1-cf2f0cdc7dad"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/ams-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.thjhams.app",
+      "package": "com.amsthjh.app",
       "googleServicesFile": "./google-services.json",
       "versionCode": 28,
       "permissions": [
@@ -54,19 +56,6 @@
     },
     "web": {
       "favicon": "./src/assets/images/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "e7451209-961c-4d6f-96e7-3b9f21984b4a"
-      }
-    },
-    "runtimeVersion": {
-      "policy": "sdkVersion"
     }
-  },
-  "author": {
-    "name": "Jirapong Pasuknirun",
-    "email": "j.pasuknirun@gmail.com",
-    "url": "https://expo.io/@jakkajee11/ams-mobile"
   }
 }

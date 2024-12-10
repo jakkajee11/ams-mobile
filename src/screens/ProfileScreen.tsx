@@ -1,9 +1,9 @@
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import { StackScreenProps } from '@react-navigation/stack';
-import { StatusBar } from 'expo-status-bar';
-import * as React from 'react';
-import { useState, useEffect } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { FontAwesome, Ionicons } from '@expo/vector-icons'
+import { StackScreenProps } from '@react-navigation/stack'
+import { StatusBar } from 'expo-status-bar'
+import * as React from 'react'
+import { useState, useEffect } from 'react'
+import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 import {
   Button,
   Icon,
@@ -12,82 +12,74 @@ import {
   Tab,
   TabView,
   ListItem,
-} from 'react-native-elements';
-import useAuthApi from '~apis/useAuthApi';
-import { APP_CONFIG } from '~constants/Config';
-import Storages from '~utils/Storages';
-import Logo from '../components/shared/Logo';
-import Constants from 'expo-constants';
+} from 'react-native-elements'
+import useAuthApi from '~apis/useAuthApi'
+import { APP_CONFIG } from '~constants/Config'
+import Storages from '~utils/Storages'
+import Logo from '../components/shared/Logo'
+import Constants from 'expo-constants'
 
 import {
   AuthStackParamList,
   BottomTabParamList,
   JobsParamsList,
   RootStackParamList,
-} from '../types';
-import baseStyles from '~styles/baseStyles';
-import { ProfileModel } from '~types/users';
-import useUserApi from '~apis/useUserApi';
-import Loading from '~components/shared/Loading';
-import * as Notifications from 'expo-notifications';
+} from '../types'
+import baseStyles from '~styles/baseStyles'
+import { ProfileModel } from '~types/users'
+import useUserApi from '~apis/useUserApi'
+import Loading from '~components/shared/Loading'
+import * as Notifications from 'expo-notifications'
 
 export default function ProfileScreen({
   route,
   navigation,
 }: StackScreenProps<RootStackParamList, 'MyProfile'>) {
-  const { getMyProfile } = useUserApi();
-  const { signOut } = useAuthApi();
-  const [token, setToken] = useState('');
-  const [profile, setProfile] = useState<ProfileModel | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [pushToken, setPushToken] = useState('');
+  const { getMyProfile } = useUserApi()
+  const { signOut } = useAuthApi()
+  const [token, setToken] = useState('')
+  const [profile, setProfile] = useState<ProfileModel | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [pushToken, setPushToken] = useState('')
 
   const logout = async () => {
-    setLoading(true);
-    await Storages.removeUserToken();
-    navigation.navigate('Auth');
-    setLoading(false);
-  };
-
-  // const getToken = async () => {
-  //   const { status } = await Notifications.requestPermissionsAsync();
-  //   //alert(['status', status]);
-  //   const token = (await Notifications.getExpoPushTokenAsync()).data;
-  //   setPushToken(token);
-  //   return token;
-  // };
+    setLoading(true)
+    await Storages.removeUserToken()
+    navigation.navigate('Auth')
+    setLoading(false)
+  }
 
   useEffect(() => {
-    (async function () {
+    ;(async function () {
       // const accessToken = await Storages.getAccessToken();
       // setToken(accessToken);
-      setLoading(true);
-      const profile = await Storages.getProfile();
+      setLoading(true)
+      const profile = await Storages.getProfile()
       if (!profile) {
-        const res = await getMyProfile();
+        const res = await getMyProfile()
 
         if (res && res.status === 200) {
-          const { id, userName, email, isAdmin, active } = res.data;
+          const { id, userName, email, isAdmin, active } = res.data
           const p: ProfileModel = {
             id,
             userName,
             email,
             isAdmin,
             active,
-          };
+          }
 
-          await Storages.saveUserProfile(JSON.stringify(p));
+          await Storages.saveUserProfile(JSON.stringify(p))
 
-          setProfile(p);
+          setProfile(p)
         }
       } else {
-        setProfile(profile);
+        setProfile(profile)
       }
       //const token = (await Notifications.getExpoPushTokenAsync()).data;
       //setPushToken(token);
-      setLoading(false);
-    })();
-  }, []);
+      setLoading(false)
+    })()
+  }, [])
 
   return (
     <View
@@ -98,7 +90,7 @@ export default function ProfileScreen({
         alignContent: 'center',
       }}
     >
-      <StatusBar backgroundColor='#ffb900' />
+      <StatusBar backgroundColor="#ffb900" />
       <View
         style={{
           flex: 1,
@@ -118,7 +110,7 @@ export default function ProfileScreen({
               alignItems: 'center',
             }}
           >
-            <Icon name='user-circle' type='font-awesome-5' size={40} />
+            <Icon name="user-circle" type="font-awesome-5" size={40} />
             <Text style={{ marginLeft: 15 }}>{profile?.userName}</Text>
           </View>
           <View
@@ -128,13 +120,13 @@ export default function ProfileScreen({
               alignItems: 'center',
             }}
           >
-            <Icon name='email' type='MaterialIcons' size={40} />
+            <Icon name="email" type="MaterialIcons" size={40} />
             <Text style={{ marginLeft: 15 }}>{profile?.email}</Text>
           </View>
           <Button
-            icon={<Icon name='logout' type='AntDesign' />}
-            title='  LOGOUT'
-            type='outline'
+            icon={<Icon name="logout" type="AntDesign" />}
+            title="  LOGOUT"
+            type="outline"
             loading={loading}
             onPress={logout}
           />
@@ -163,7 +155,7 @@ export default function ProfileScreen({
         >
           <Button
             icon={
-              <Icon name='home' type='font-awesome-5' size={28} color='white' />
+              <Icon name="home" type="font-awesome-5" size={28} color="white" />
             }
             //title='Forgot Password?'
             onPress={() => navigation.navigate('Home')}
@@ -179,5 +171,5 @@ export default function ProfileScreen({
         </View>
       </View>
     </View>
-  );
+  )
 }
