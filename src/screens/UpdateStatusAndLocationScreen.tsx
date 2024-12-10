@@ -60,11 +60,16 @@ export default function UpdateStatusAndLocationScreen({
   const openCamera = () => setShowCamera(true)
   const closeCamera = () => setShowCamera(false)
   const toggleDialog = () => setDialogVisible(!dialogVisible)
+  const reset = () => {
+    setAssets([])
+    setAssetStatus('')
+    setLocation('')
+  }
 
   const submitForm = async () => {
-    console.log('submitForm')
-    return
     setLoading(true)
+
+    toggleDialog()
 
     const data = assets.map((x) => ({
       id: x.id,
@@ -75,12 +80,12 @@ export default function UpdateStatusAndLocationScreen({
     const res = await updateStatusAndLocations(data)
 
     if (res && res.status === 200) {
-      Toast.show(`Asset was updated successfully`, {})
-    } else {
-      Toast.show(`Error: Update asset failed`, {
-        textColor: Colors.red,
-        backgroundColor: Colors.yellow,
+      Toast.show(`Asset was updated successfully`, {
+        position: Toast.positions.CENTER,
       })
+      reset()
+    } else {
+      Alert.alert('Error', 'Update asset failed')
     }
 
     setLoading(false)
@@ -93,8 +98,6 @@ export default function UpdateStatusAndLocationScreen({
       size: 100,
       search: '',
     })
-
-    console.log('res3', res)
 
     if (res.status === 200) {
       const data = res.data as AssetStatusModel[]
@@ -140,13 +143,7 @@ export default function UpdateStatusAndLocationScreen({
     if (res && res.status === 200 && res.data) {
       if (!assets.some((x) => x.id === res.data.id))
         setAssets([...assets, res.data])
-      // else
-      //   Toast.show('Item already added to list', {
-      //     position: Toast.positions.CENTER,
-      //     textColor: Colors.red,
-      //     backgroundColor: Colors.yellow,
-      //     duration: 3000,
-      //   })
+      else Alert.alert('Error', 'Item already added to list')
     }
 
     setLoading(false)
