@@ -1,22 +1,52 @@
-import React from 'react';
-import { View } from 'react-native';
-import { Image, Text } from 'react-native-elements';
-import { ATTACHMENT_TYPE } from '~constants/Status';
-import baseStyles from '~styles/baseStyles';
-import { AssetDetailModel } from '../../types/assets';
+import React from 'react'
+import { View } from 'react-native'
+import { Image, Text } from 'react-native-elements'
+import { ATTACHMENT_TYPE } from '~constants/Status'
+import baseStyles from '~styles/baseStyles'
+import { AssetDetailModel } from '../../types/assets'
+import Stack from '~components/shared/Stack'
 
 interface AssetProps {
-  data: AssetDetailModel | undefined;
-  onPress?: () => void;
+  data: AssetDetailModel | undefined
+  showAgedDays?: boolean
+  onPress?: () => void
 }
 
-export default function AssetDetails({ data, onPress }: AssetProps) {
+export default function AssetDetails({
+  data,
+  showAgedDays = false,
+  onPress,
+}: AssetProps) {
   const handleOnPress = () => {
-    onPress && onPress();
-  };
+    onPress && onPress()
+  }
 
   return (
     <View style={baseStyles.container}>
+      {showAgedDays && (
+        <View style={baseStyles.row}>
+          <Text h4>Aging Day:</Text>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+            }}
+          >
+            <Text
+              h4
+              style={{
+                color:
+                  data && data?.agedDays > data?.agingDays ? 'red' : 'green',
+              }}
+            >
+              {data?.agedDays}
+            </Text>
+            <Text h4>/</Text>
+            <Text h4>{data?.agingDays}</Text>
+          </View>
+        </View>
+      )}
       <View style={baseStyles.row}>
         <Text>Serial No: </Text>
         <Text style={baseStyles.longText}>{data?.serialNo} </Text>
@@ -110,5 +140,5 @@ export default function AssetDetails({ data, onPress }: AssetProps) {
         )}
       </View>
     </View>
-  );
+  )
 }

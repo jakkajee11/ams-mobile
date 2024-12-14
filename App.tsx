@@ -1,16 +1,16 @@
-import 'react-native-gesture-handler';
-import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useRef, useState } from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import * as Notifications from 'expo-notifications';
-import useCachedResources from './src/hooks/useCachedResources';
-import useColorScheme from './src/hooks/useColorScheme';
-import Navigation from './src/navigation';
-import { ThemeProvider } from 'react-native-elements';
-import { AppContext, NotifyContext } from './src/contexts/AppContext';
-import Colors from './src/constants/Colors';
-import registerForPushNotificationsAsync from './src/utils/registerForPushNotificationsAsync';
-import { RootSiblingParent } from 'react-native-root-siblings';
+import 'react-native-gesture-handler'
+import { StatusBar } from 'expo-status-bar'
+import React, { useEffect, useRef, useState } from 'react'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+import * as Notifications from 'expo-notifications'
+import useCachedResources from './src/hooks/useCachedResources'
+import useColorScheme from './src/hooks/useColorScheme'
+import Navigation from './src/navigation'
+import { ThemeProvider } from 'react-native-elements'
+import { AppContext, NotifyContext } from './src/contexts/AppContext'
+import Colors from './src/constants/Colors'
+import registerForPushNotificationsAsync from './src/utils/registerForPushNotificationsAsync'
+import { RootSiblingParent } from 'react-native-root-siblings'
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -18,7 +18,7 @@ Notifications.setNotificationHandler({
     shouldPlaySound: false,
     shouldSetBadge: false,
   }),
-});
+})
 
 const theme = {
   colors: {
@@ -52,60 +52,59 @@ const theme = {
       fontSize: 14,
     },
   },
-};
+}
 
 export default function App() {
   //const navigation = useNavigation();
-  const { isLoadingComplete, isUserLoggedIn } = useCachedResources();
-  const colorScheme = useColorScheme();
-  const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState<any>();
-  const [notiCount, setNotiCount] = useState(0);
-  const notificationListener = useRef<any>();
-  const responseListener = useRef<any>();
+  const { isLoadingComplete, isUserLoggedIn } = useCachedResources()
+  const colorScheme = useColorScheme()
+  const [expoPushToken, setExpoPushToken] = useState('')
+  const [notification, setNotification] = useState<any>()
+  const [notiCount, setNotiCount] = useState(0)
+  const notificationListener = useRef<any>()
+  const responseListener = useRef<any>()
 
   const handleNotificationReceived = (response: Notifications.Notification) => {
-    console.log(['handleNotificationReceived', response]);
+    console.log(['handleNotificationReceived', response])
     //alert(`noti received: ${notiCount}`);
-    setNotiCount(notiCount + 1);
-  };
+    setNotiCount(notiCount + 1)
+  }
   const handleNotificationResponse = (
     response: Notifications.NotificationResponse
   ) => {
-    console.log(['handleNotificationResponse', response]);
+    console.log(['handleNotificationResponse', response])
     //navigation.navigate('Jobs');
     // Todo: navigate to related screen
-  };
+  }
 
   useEffect(() => {
+    console.log('colorScheme', colorScheme)
     registerForPushNotificationsAsync().then((token) => {
-      setExpoPushToken(token);
-    });
+      setExpoPushToken(token)
+    })
 
     // This listener is fired whenever a notification is received while the app is foregrounded
     notificationListener.current =
-      Notifications.addNotificationReceivedListener(handleNotificationReceived);
+      Notifications.addNotificationReceivedListener(handleNotificationReceived)
 
     // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener(
         handleNotificationResponse
-      );
+      )
 
     return () => {
-      Notifications.removeNotificationSubscription(
-        notificationListener.current
-      );
-      Notifications.removeNotificationSubscription(responseListener.current);
-    };
-  }, []);
+      Notifications.removeNotificationSubscription(notificationListener.current)
+      Notifications.removeNotificationSubscription(responseListener.current)
+    }
+  }, [])
 
   if (!isLoadingComplete) {
-    return null;
+    return null
   } else {
     return (
       <SafeAreaProvider>
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={theme} useDark={colorScheme === 'dark'}>
           <RootSiblingParent>
             <AppContext.Provider value={{ notiCount }}>
               <Navigation
@@ -117,6 +116,6 @@ export default function App() {
           </RootSiblingParent>
         </ThemeProvider>
       </SafeAreaProvider>
-    );
+    )
   }
 }

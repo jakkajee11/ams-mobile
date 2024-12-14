@@ -1,15 +1,15 @@
-import * as React from 'react';
-import { StyleSheet } from 'react-native';
-import { Image } from 'react-native-elements';
+import * as React from 'react'
+import { StyleSheet } from 'react-native'
+import { Image } from 'react-native-elements'
 
 const Logo = () => (
   <Image
     source={require('../../assets/images/jungheinrich-logo.png')}
     style={styles.logo}
   />
-);
+)
 
-export default Logo;
+export default Logo
 
 const styles = StyleSheet.create({
   logo: {
@@ -17,4 +17,4 @@ const styles = StyleSheet.create({
     height: 100,
     marginTop: 20,
   },
-});
+})

@@ -2,11 +2,12 @@
   "expo": {
     "name": "AMS Mobile App",
     "slug": "ams-mobile",
-    "version": "1.11.0",
+    "version": "2.0.1",
     "orientation": "portrait",
     "icon": "./src/assets/images/ams-icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
     "splash": {
       "image": "./src/assets/images/icon1024.png",
       "resizeMode": "contain",
@@ -46,7 +47,7 @@
       },
       "package": "com.amsthjh.app",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 28,
+      "versionCode": 30,
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",

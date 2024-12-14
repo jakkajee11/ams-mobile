@@ -9,7 +9,7 @@ import SwipeableAsset from './SwipeableAsset'
 
 interface AssetProps {
   data: AssetDetailModel[] | []
-  onPress?: () => void
+  onPress?: (id: string) => void
   onDelete?: (id: string) => void
 }
 
@@ -18,8 +18,8 @@ export default function AssetMinimalDetails({
   onPress,
   onDelete,
 }: AssetProps) {
-  const handleOnPress = () => {
-    onPress && onPress()
+  const handleOnPress = (id: string) => {
+    onPress && onPress(id)
   }
 
   const handleOnDelete = (id: string) => {
@@ -27,7 +27,7 @@ export default function AssetMinimalDetails({
   }
 
   const renderItem = ({ item }: ListRenderItemInfo<AssetDetailModel>) => {
-    return <SwipeableAsset data={item} onDelete={onDelete} />
+    return <SwipeableAsset data={item} onPress={onPress} onDelete={onDelete} />
   }
 
   return (
@@ -38,9 +38,10 @@ export default function AssetMinimalDetails({
           <Text
             style={{
               textAlign: 'center',
+              fontStyle: 'italic',
             }}
           >
-            Total {data.length} {`${data.length > 1 ? 'assets' : 'asset'}`}
+            Total {data.length} {`${data.length > 1 ? 'items' : 'item'}`}
           </Text>
         }
         data={data}

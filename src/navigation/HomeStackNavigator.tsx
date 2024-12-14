@@ -12,7 +12,10 @@ import AssetDetailsScreen from '~screens/AssetDetailsScreen'
 import ProfileScreen from '~screens/ProfileScreen'
 import SearchSerialNoScreen from '~screens/SearchSerialNoScreen'
 import JobDetailsScreen from '~screens/JobDetailsScreen'
-import UpdateStatusAndLocationScreen from '~screens/UpdateStatusAndLocationScreen'
+import UpdateAssetStatusAndLocationScreen from '~screens/UpdateAssetStatusAndLocationScreen'
+import AssetAgingScreen from '~screens/AssetAgingScreen'
+import AssetAgingDetailsScreen from '~screens/AssetAgingDetailsScreen'
+import AssetAgingListScreen from '~screens/AssetAgingListScreen'
 
 const Stack = createStackNavigator<RootStackParamList>()
 
@@ -36,13 +39,23 @@ export default function HomeStackNavigator() {
       />
       <Stack.Screen
         name="StatusAndLocation"
-        component={UpdateStatusAndLocationScreen}
+        component={UpdateAssetStatusAndLocationScreen}
         options={{ header: () => <Header title="Status & Location" /> }}
       />
       <Stack.Screen
-        name="AgingReport"
-        component={ReportAssetFromAddressScreen}
-        options={{ header: () => <Header title="Create Job" /> }}
+        name="AssetAging"
+        component={AssetAgingScreen}
+        options={{ header: () => <Header title="Asset Aging" /> }}
+      />
+      <Stack.Screen
+        name="AssetAgingList"
+        component={AssetAgingListScreen}
+        options={{ header: () => <Header title="Aging List" /> }}
+      />
+      <Stack.Screen
+        name="AssetAgingDetails"
+        component={AssetAgingDetailsScreen}
+        options={{ header: () => <Header title="Asset Aging" /> }}
       />
       <Stack.Screen
         name="AssetDetails"

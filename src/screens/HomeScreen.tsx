@@ -196,6 +196,6 @@ const menuItems = [
     iconType: 'feather',
     size: 35,
     text: 'Aging Report',
-    navigate: 'AgingReport',
+    navigate: 'AssetAging',
   },
 ]

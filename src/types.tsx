@@ -40,7 +40,9 @@ export type RootStackParamList = {
   JobDetails: any //JobModel;
   MyProfile: any
   StatusAndLocation: any
-  AgingReport: any
+  AssetAging: any
+  AssetAgingList: any
+  AssetAgingDetails: AssetAgingDetailParams
   NotFound: undefined
 }
 
@@ -52,9 +54,14 @@ export type BottomTabParamList = {
   Settings: undefined
 }
 
+type AssetAgingDetailParams = {
+  data: AssetDetailModel
+}
+
 type AssetDetailParams = {
   assetId: string
 }
+
 export type JobsParamsList = {
   Jobs: undefined
   JobDetails: any //JobModel;

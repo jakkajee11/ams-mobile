@@ -28,6 +28,11 @@ export default function useAssetApi() {
     return await get(url)
   }
 
+  const getAssetByAssetTypeDetailId = async (id: string) => {
+    const url = `${endpoint}/type-detail/${id}?page=0&size=10`
+    return await get(url)
+  }
+
   const getAllStatus = async () => {
     //const url = `${endpoint}/shipto/${id}?page=0&size=10`;
     //return await get(url);
@@ -44,6 +49,7 @@ export default function useAssetApi() {
     getAsset,
     getAssetInfo,
     getAssetByAddressId,
+    getAssetByAssetTypeDetailId,
     searchAssets,
     updateStatusAndLocations,
   }

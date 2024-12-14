@@ -41,7 +41,9 @@ export type AssetDetailModel = AssetModel & {
   modifiedUserName: string
   ownerRoleName: string
   comments: string
-  agingEnabled?: boolean
+  agingEnabled: boolean
+  agingDays: number
+  agedDays: number
 }
 
 export type ReportAssetModel = {
@@ -58,4 +60,13 @@ export type UpdateAssetStatusAndLocationModel = {
   id: string
   assetStatusId: string
   locationId: string
+}
+
+export type AssetAgingListModel = {
+  id: string
+  serialNo: string
+  assetTypeDetail: string
+  detail: string
+  agingDays: number
+  agedDays: number
 }

@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import Colors from '../constants/Colors';
+import { StyleSheet } from 'react-native'
+import Colors from '../constants/Colors'
 
 const baseStyles = StyleSheet.create({
   scrollView: {
@@ -78,6 +78,13 @@ const baseStyles = StyleSheet.create({
     flex: 0.98,
     textAlign: 'right',
   },
-});
+  textSmallItalic: {
+    fontSize: 12,
+    fontStyle: 'italic',
+  },
+  textItalic: {
+    fontStyle: 'italic',
+  },
+})
 
-export default baseStyles;
+export default baseStyles

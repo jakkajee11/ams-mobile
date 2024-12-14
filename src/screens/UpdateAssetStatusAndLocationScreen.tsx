@@ -36,7 +36,7 @@ import Toast from 'react-native-root-toast'
 import { AssetStatusModel, LocationModel } from '~types/masterData'
 import AssetMinimalDetails from '~components/assets/AssetMinimalDetails'
 
-export default function UpdateStatusAndLocationScreen({
+export default function UpdateAssetStatusAndLocationScreen({
   route,
   navigation,
 }: StackScreenProps<RootStackParamList, 'StatusAndLocation'>) {
@@ -113,7 +113,7 @@ export default function UpdateStatusAndLocationScreen({
     setLoading(true)
     const res = await getLocations({
       page: 1,
-      size: 10,
+      size: 20,
       search: searchText,
     })
 
@@ -147,6 +147,10 @@ export default function UpdateStatusAndLocationScreen({
     }
 
     setLoading(false)
+  }
+
+  const handleOnPress = (assetId: string) => {
+    navigation.navigate('AssetDetails', { assetId })
   }
 
   const handleOnDelete = (id: string) => {
@@ -194,7 +198,7 @@ export default function UpdateStatusAndLocationScreen({
           <DropDownPicker
             placeholder="Select location"
             searchable={true}
-            searchPlaceholder={'put at least 3 letters to search...'}
+            searchPlaceholder={'type to search...'}
             loading={loading}
             open={openLocation}
             value={location}
@@ -214,7 +218,11 @@ export default function UpdateStatusAndLocationScreen({
             )}
           />
           {assets.length > 0 && (
-            <AssetMinimalDetails data={assets} onDelete={handleOnDelete} />
+            <AssetMinimalDetails
+              data={assets}
+              onPress={handleOnPress}
+              onDelete={handleOnDelete}
+            />
           )}
           <View style={{ ...baseStyles.container }}>
             {loading && <Loading loading={loading} />}
