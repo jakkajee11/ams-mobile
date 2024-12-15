@@ -2,10 +2,9 @@ import { StackScreenProps } from '@react-navigation/stack'
 import _ from 'lodash'
 import * as React from 'react'
 import { useEffect, useState } from 'react'
-import { View, FlatList, ListRenderItemInfo, Pressable } from 'react-native'
+import { View, FlatList, ListRenderItemInfo } from 'react-native'
 import { Button, Icon, ListItem, Text } from 'react-native-elements'
 import 'react-native-get-random-values'
-import useAssetApi from '~apis/useAssetApi'
 import useMasterDataApi from '~apis/useMasterDataApi'
 import { RootStackParamList } from '../types'
 import Colors from '~constants/Colors'
@@ -47,7 +46,6 @@ export default function AssetAgingListScreen({
     setOpenAssetTypeDetail(!openAssetTypeDetail)
 
   const fetchReports = async () => {
-    console.log('fetchReport')
     const res = await getAgingReport({
       page: 0,
       size: 10,
@@ -109,7 +107,7 @@ export default function AssetAgingListScreen({
         assetTypeDetails.data
       ) {
         setAssetTypeDetailOptions(
-          assetTypes.data.records.map((x: AssetTypeDetailModel) => ({
+          assetTypeDetails.data.records.map((x: AssetTypeDetailModel) => ({
             label: x.name,
             value: x.id,
           }))

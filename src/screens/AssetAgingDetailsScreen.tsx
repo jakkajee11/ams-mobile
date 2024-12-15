@@ -2,7 +2,7 @@ import { StackScreenProps } from '@react-navigation/stack'
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 import { Alert, ScrollView, View } from 'react-native'
-import { Text, Image, Button, Icon } from 'react-native-elements'
+import { Text, Image, Button, Icon, Dialog } from 'react-native-elements'
 
 import { RootStackParamList } from '../types'
 import Loading from '~components/shared/Loading'
@@ -19,6 +19,8 @@ export default function AssetAgingDetailsScreen({
   const { getAssetInfo, resetAging } = useAssetApi()
   const [loading, setLoading] = useState(false)
   const [assetDetail, setAssetDetail] = useState<AssetDetailModel>()
+  const [dialogVisible, setDialogVisible] = useState(false)
+  const toggleDialog = () => setDialogVisible(!dialogVisible)
 
   const updateAssetAging = async () => {
     setLoading(true)
@@ -65,8 +67,28 @@ export default function AssetAgingDetailsScreen({
         title="  RESET AGING"
         loading={loading}
         disabled={loading || assetDetail?.agedDays === 0}
-        onPress={updateAssetAging}
+        onPress={toggleDialog}
       />
+      <Dialog
+        style={{ width: 1000 }}
+        isVisible={dialogVisible}
+        onBackdropPress={toggleDialog}
+      >
+        <Dialog.Title title="Please confirm?" />
+
+        <Dialog.Actions>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'flex-start',
+              flex: 1,
+            }}
+          >
+            <Dialog.Button title="CONFIRM" onPress={updateAssetAging} />
+            <Dialog.Button title="CANCEL" onPress={toggleDialog} />
+          </View>
+        </Dialog.Actions>
+      </Dialog>
     </Stack>
   )
 }

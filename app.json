@@ -47,7 +47,7 @@
       },
       "package": "com.amsthjh.app",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 30,
+      "versionCode": 31,
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
