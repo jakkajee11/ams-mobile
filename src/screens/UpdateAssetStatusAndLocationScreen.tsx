@@ -35,11 +35,14 @@ import { BarcodeScanningResult, CameraCapturedPicture } from 'expo-camera'
 import Toast from 'react-native-root-toast'
 import { AssetStatusModel, LocationModel } from '~types/masterData'
 import AssetMinimalDetails from '~components/assets/AssetMinimalDetails'
+import Unauthorized from '~components/Unauthorized'
+import useUserApi from '~apis/useUserApi'
 
 export default function UpdateAssetStatusAndLocationScreen({
   route,
   navigation,
 }: StackScreenProps<RootStackParamList, 'StatusAndLocation'>) {
+  const { hasRights } = useUserApi()
   const { getAssetInfo, searchAssets, updateStatusAndLocations } = useAssetApi()
   const { getWarehouseAssetStatuses, getLocations } = useMasterDataApi()
   const [assetStatus, setAssetStatus] = useState('')
@@ -56,10 +59,12 @@ export default function UpdateAssetStatusAndLocationScreen({
   const [showCamera, setShowCamera] = useState(false)
   const [__, setScannedResult] = useState('')
   const [dialogVisible, setDialogVisible] = useState(false)
+  const [hasPermission, setHasPermission] = useState(false)
 
   const openCamera = () => setShowCamera(true)
   const closeCamera = () => setShowCamera(false)
   const toggleDialog = () => setDialogVisible(!dialogVisible)
+
   const reset = () => {
     setAssets([])
     setAssetStatus('')
@@ -89,6 +94,13 @@ export default function UpdateAssetStatusAndLocationScreen({
     }
 
     setLoading(false)
+  }
+
+  const fetchRights = async () => {
+    const res = await hasRights('', 4)
+    if (res.status === 200) {
+      setHasPermission(res.data)
+    }
   }
 
   const fetchStatus = async () => {
@@ -159,6 +171,7 @@ export default function UpdateAssetStatusAndLocationScreen({
 
   useEffect(() => {
     ;(async function () {
+      await fetchRights()
       await fetchStatus()
     })()
   }, [])
@@ -176,110 +189,116 @@ export default function UpdateAssetStatusAndLocationScreen({
           behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
           style={baseStyles.container}
         >
-          <DropDownPicker
-            placeholder="Select asset status"
-            searchable={false}
-            loading={loading}
-            open={open}
-            value={assetStatus}
-            items={assetStatusOptions}
-            setOpen={toggleDropdown}
-            setValue={setAssetStatus}
-            listMode="MODAL"
-            maxHeight={600}
-            selectedItemContainerStyle={{
-              backgroundColor: Colors.yellow,
-            }}
-            ListEmptyComponent={() => (
-              <Text style={{ textAlign: 'center' }}>No item found</Text>
-            )}
-          />
+          {hasPermission ? (
+            <View>
+              <DropDownPicker
+                placeholder="Select asset status"
+                searchable={false}
+                loading={loading}
+                open={open}
+                value={assetStatus}
+                items={assetStatusOptions}
+                setOpen={toggleDropdown}
+                setValue={setAssetStatus}
+                listMode="MODAL"
+                maxHeight={600}
+                selectedItemContainerStyle={{
+                  backgroundColor: Colors.yellow,
+                }}
+                ListEmptyComponent={() => (
+                  <Text style={{ textAlign: 'center' }}>No item found</Text>
+                )}
+              />
 
-          <DropDownPicker
-            placeholder="Select location"
-            searchable={true}
-            searchPlaceholder={'type to search...'}
-            loading={loading}
-            open={openLocation}
-            value={location}
-            items={locationOptions}
-            setOpen={toggleLocationDropdown}
-            setValue={setLocation}
-            listMode="MODAL"
-            onChangeSearchText={(text: string) => {
-              setSearchText(text)
-            }}
-            maxHeight={600}
-            selectedItemContainerStyle={{
-              backgroundColor: Colors.yellow,
-            }}
-            ListEmptyComponent={() => (
-              <Text style={{ textAlign: 'center' }}>No item found</Text>
-            )}
-          />
-          {assets.length > 0 && (
-            <AssetMinimalDetails
-              data={assets}
-              onPress={handleOnPress}
-              onDelete={handleOnDelete}
-            />
-          )}
-          <View style={{ ...baseStyles.container }}>
-            {loading && <Loading loading={loading} />}
+              <DropDownPicker
+                placeholder="Select location"
+                searchable={true}
+                searchPlaceholder={'type to search...'}
+                loading={loading}
+                open={openLocation}
+                value={location}
+                items={locationOptions}
+                setOpen={toggleLocationDropdown}
+                setValue={setLocation}
+                listMode="MODAL"
+                onChangeSearchText={(text: string) => {
+                  setSearchText(text)
+                }}
+                maxHeight={600}
+                selectedItemContainerStyle={{
+                  backgroundColor: Colors.yellow,
+                }}
+                ListEmptyComponent={() => (
+                  <Text style={{ textAlign: 'center' }}>No item found</Text>
+                )}
+              />
+              {assets.length > 0 && (
+                <AssetMinimalDetails
+                  data={assets}
+                  onPress={handleOnPress}
+                  onDelete={handleOnDelete}
+                />
+              )}
+              <View style={{ ...baseStyles.container }}>
+                {loading && <Loading loading={loading} />}
 
-            {searchText.length > 0 && assets.length === 0 && (
-              <View style={{ ...baseStyles.container, marginTop: 100 }}>
-                <View style={baseStyles.column}>
-                  <View>
-                    <Text
+                {searchText.length > 0 && assets.length === 0 && (
+                  <View style={{ ...baseStyles.container, marginTop: 100 }}>
+                    <View style={baseStyles.column}>
+                      <View>
+                        <Text
+                          style={{
+                            ...baseStyles.textCenter,
+                            fontSize: 18,
+                            color: Colors.yellow,
+                          }}
+                        >
+                          {searchText}
+                        </Text>
+                        <Text
+                          style={{
+                            ...baseStyles.textCenter,
+                            fontSize: 18,
+                            color: Colors.red,
+                          }}
+                        >
+                          NOT FOUND
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View
                       style={{
-                        ...baseStyles.textCenter,
-                        fontSize: 18,
-                        color: Colors.yellow,
+                        width: '100%',
+                        padding: 5,
+                        justifyContent: 'space-between',
+                        flex: 0.5,
                       }}
                     >
-                      {searchText}
-                    </Text>
-                    <Text
-                      style={{
-                        ...baseStyles.textCenter,
-                        fontSize: 18,
-                        color: Colors.red,
-                      }}
-                    >
-                      NOT FOUND
-                    </Text>
-                  </View>
-                </View>
-
-                <View
-                  style={{
-                    width: '100%',
-                    padding: 5,
-                    justifyContent: 'space-between',
-                    flex: 0.5,
-                  }}
-                >
-                  <Button
-                    icon={
-                      <Icon
-                        name="clipboard"
-                        type="font-awesome-5"
-                        size={28}
-                        color={Colors.white}
+                      <Button
+                        icon={
+                          <Icon
+                            name="clipboard"
+                            type="font-awesome-5"
+                            size={28}
+                            color={Colors.white}
+                          />
+                        }
+                        title=" Report this item"
+                        onPress={() =>
+                          navigation.navigate('ReportAsset', {
+                            serialNo: searchText,
+                          })
+                        }
                       />
-                    }
-                    title=" Report this item"
-                    onPress={() =>
-                      navigation.navigate('ReportAsset', {
-                        serialNo: searchText,
-                      })
-                    }
-                  />
-                </View>
+                    </View>
+                  </View>
+                )}
               </View>
-            )}
-          </View>
+            </View>
+          ) : (
+            <Unauthorized />
+          )}
         </KeyboardAvoidingView>
       </ScrollView>
 

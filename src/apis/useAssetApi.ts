@@ -1,6 +1,6 @@
 import useApi from '~hooks/useApi'
 import {
-  ReportAssetModel,
+  UpdateAssetAgingModel,
   UpdateAssetStatusAndLocationModel,
 } from '~types/assets'
 
@@ -33,16 +33,14 @@ export default function useAssetApi() {
     return await get(url)
   }
 
-  const getAllStatus = async () => {
-    //const url = `${endpoint}/shipto/${id}?page=0&size=10`;
-    //return await get(url);
-    Promise.resolve([{}])
-  }
-
   const updateStatusAndLocations = async (
     assets: UpdateAssetStatusAndLocationModel[]
   ) => {
     return await put(`${endpoint}/status-location/bulk`, assets)
+  }
+
+  const resetAging = async (payload: UpdateAssetAgingModel) => {
+    return await put(`${endpoint}/aging/reset`, payload)
   }
 
   return {
@@ -52,5 +50,6 @@ export default function useAssetApi() {
     getAssetByAssetTypeDetailId,
     searchAssets,
     updateStatusAndLocations,
+    resetAging,
   }
 }

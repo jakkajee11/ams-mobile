@@ -70,3 +70,7 @@ export type AssetAgingListModel = {
   agingDays: number
   agedDays: number
 }
+
+export type UpdateAssetAgingModel = {
+  serialNos: string[]
+}

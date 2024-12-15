@@ -3,7 +3,7 @@ import _ from 'lodash'
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 import { View, FlatList, ListRenderItemInfo, Pressable } from 'react-native'
-import { Badge, Button, ListItem, Text } from 'react-native-elements'
+import { Button, Icon, ListItem, Text } from 'react-native-elements'
 import 'react-native-get-random-values'
 import useAssetApi from '~apis/useAssetApi'
 import useMasterDataApi from '~apis/useMasterDataApi'
@@ -11,9 +11,9 @@ import { RootStackParamList } from '../types'
 import Colors from '~constants/Colors'
 import DropDownPicker from 'react-native-dropdown-picker'
 import { SelectItemOption } from '~types/selectOptions'
-import { AssetTypeDetailModel } from '~types/masterData'
+import { AssetTypeDetailModel, AssetTypeModel } from '~types/masterData'
 import Stack from '~components/shared/Stack'
-import { AssetAgingListModel, AssetDetailModel } from '~types/assets'
+import { AssetDetailModel } from '~types/assets'
 import baseStyles from '~styles/baseStyles'
 import useReportApi from '~apis/useReportApi'
 import AssetListItemContent from '~components/assets/AssetListItemContent'
@@ -23,58 +23,36 @@ export default function AssetAgingListScreen({
   route,
   navigation,
 }: StackScreenProps<RootStackParamList, 'AssetAgingList'>) {
-  const { getAssetInfo, searchAssets, getAssetByAssetTypeDetailId } =
-    useAssetApi()
   const { getAgingReport } = useReportApi()
-  const { getAssetTypeDetails } = useMasterDataApi()
+  const { getAssetTypes, getAssetTypeDetails } = useMasterDataApi()
   const [searchText, setSearchText] = useState('')
+  const [assetTypeId, setAssetTypeId] = useState('')
   const [assetTypeDetailId, setAssetTypeDetailId] = useState('')
+  const [assetTypeOptions, setAssetTypeOptions] = useState<SelectItemOption[]>(
+    []
+  )
   const [assetTypeDetailOptions, setAssetTypeDetailOptions] = useState<
     SelectItemOption[]
   >([])
   const [loading, setLoading] = useState(false)
-  const [open, setOpen] = useState(false)
+  const [openAssetType, setOpenAssetType] = useState(false)
+  const [openAssetTypeDetail, setOpenAssetTypeDetail] = useState(false)
   const [data, setData] = useState<AssetDetailModel[]>([])
 
-  const renderItem = ({ item }: ListRenderItemInfo<AssetDetailModel>) => (
-    <ListItem
-      bottomDivider
-      onPress={() => navigation.navigate('AssetAgingDetails', { data: item })}
-    >
-      {/* <View style={{ ...baseStyles.column, alignItems: 'flex-start' }}>
-        <View style={baseStyles.row}>
-          <Stack direction="row">
-            <Text>{item.serialNo}</Text>
-            <Text>
-              <Text
-                style={{
-                  color: item.agedDays > item.agingDays ? 'red' : 'green',
-                }}
-              >
-                {item.agedDays}
-              </Text>
-              <Text>/</Text>
-              <Text>{item.agingDays}</Text>
-            </Text>
-          </Stack>
-        </View>
-        <Text style={baseStyles.textSmallItalic}>
-          {item.assetTypeName} / {item.assetTypeDetailName} /{' '}
-          {item.assetStatusName}
-        </Text>
-        <Text style={baseStyles.textSmallItalic}>{item.details}</Text>
-      </View> */}
-      <AssetListItemContent data={item} />
-    </ListItem>
-  )
+  const useAssetTypeFilter = false
+  const useAssetTypeDetailFilter = true
 
-  const toggleDropdown = () => setOpen(!open)
+  const toggleAssetTypeDropdown = () => setOpenAssetType(!openAssetType)
+  const toggleAssetTypeDetailDropdown = () =>
+    setOpenAssetTypeDetail(!openAssetTypeDetail)
 
   const fetchReports = async () => {
+    console.log('fetchReport')
     const res = await getAgingReport({
       page: 0,
       size: 10,
       sort: '',
+      assetTypeId: assetTypeId === '' ? [] : [assetTypeId],
       assetTypeDetailId: assetTypeDetailId === '' ? [] : [assetTypeDetailId],
     })
     if (res.status === 200) {
@@ -82,10 +60,28 @@ export default function AssetAgingListScreen({
     }
   }
 
+  const resetDropdown = () => {
+    setAssetTypeDetailId('')
+  }
+
+  const renderItem = ({ item }: ListRenderItemInfo<AssetDetailModel>) => (
+    <ListItem
+      bottomDivider
+      onPress={() => navigation.navigate('AssetAgingDetails', { data: item })}
+    >
+      <AssetListItemContent data={item} />
+    </ListItem>
+  )
+
   useEffect(() => {
     ;(async function () {
       setLoading(true)
-      const [assetTypes, reports] = await Promise.all([
+      const [assetTypes, assetTypeDetails, reports] = await Promise.all([
+        getAssetTypes({
+          page: 1,
+          size: 100,
+          search: searchText,
+        }),
         getAssetTypeDetails({
           page: 1,
           size: 100,
@@ -99,6 +95,19 @@ export default function AssetAgingListScreen({
       ])
 
       if (assetTypes && assetTypes.status === 200 && assetTypes.data) {
+        setAssetTypeOptions(
+          assetTypes.data.records.map((x: AssetTypeModel) => ({
+            label: x.name,
+            value: x.id,
+          }))
+        )
+      }
+
+      if (
+        assetTypeDetails &&
+        assetTypeDetails.status === 200 &&
+        assetTypeDetails.data
+      ) {
         setAssetTypeDetailOptions(
           assetTypes.data.records.map((x: AssetTypeDetailModel) => ({
             label: x.name,
@@ -115,35 +124,80 @@ export default function AssetAgingListScreen({
     })()
   }, [])
 
+  useEffect(() => {
+    fetchReports()
+  }, [assetTypeDetailId])
+
   return (
     <>
       <View style={baseStyles.container}>
         {loading && <Loading loading={loading} />}
         <Stack>
-          <DropDownPicker
-            placeholder="Asset Type Detail"
-            searchable={true}
-            searchPlaceholder={'search...'}
-            loading={loading}
-            open={open}
-            value={assetTypeDetailId}
-            items={assetTypeDetailOptions}
-            setOpen={toggleDropdown}
-            setValue={setAssetTypeDetailId}
-            listMode="MODAL"
-            onChangeSearchText={(text: string) => {
-              setSearchText(text)
-            }}
-            onSelectItem={fetchReports}
-            maxHeight={600}
-            selectedItemContainerStyle={{
-              backgroundColor: Colors.yellow,
-            }}
-            ListEmptyComponent={() => (
-              <Text style={{ textAlign: 'center' }}>No item found</Text>
-            )}
-          />
+          {useAssetTypeFilter && (
+            <DropDownPicker
+              placeholder="Asset Type"
+              searchable={true}
+              searchPlaceholder={'search...'}
+              loading={loading}
+              open={openAssetType}
+              value={assetTypeId}
+              items={assetTypeOptions}
+              setOpen={toggleAssetTypeDropdown}
+              setValue={setAssetTypeId}
+              listMode="MODAL"
+              onChangeSearchText={(text: string) => {
+                setSearchText(text)
+              }}
+              maxHeight={600}
+              selectedItemContainerStyle={{
+                backgroundColor: Colors.yellow,
+              }}
+              ListEmptyComponent={() => (
+                <Text style={{ textAlign: 'center' }}>No item found</Text>
+              )}
+            />
+          )}
 
+          <View style={{ flexDirection: 'row' }}>
+            {useAssetTypeDetailFilter && (
+              <View style={{ width: '90%' }}>
+                <DropDownPicker
+                  placeholder="All - Asset Type Detail"
+                  searchable={true}
+                  searchPlaceholder={'search...'}
+                  loading={loading}
+                  open={openAssetTypeDetail}
+                  value={assetTypeDetailId}
+                  items={assetTypeDetailOptions}
+                  setOpen={toggleAssetTypeDetailDropdown}
+                  setValue={setAssetTypeDetailId}
+                  listMode="MODAL"
+                  onChangeSearchText={(text: string) => {
+                    setSearchText(text)
+                  }}
+                  maxHeight={600}
+                  selectedItemContainerStyle={{
+                    backgroundColor: Colors.yellow,
+                  }}
+                  ListEmptyComponent={() => (
+                    <Text style={{ textAlign: 'center' }}>No item found</Text>
+                  )}
+                  style={{ width: '100%' }}
+                />
+              </View>
+            )}
+            <View
+              style={{
+                justifyContent: 'center',
+              }}
+            >
+              <Button
+                type="clear"
+                icon={<Icon name="x" type="feather" size={28} color="white" />}
+                onPress={resetDropdown}
+              />
+            </View>
+          </View>
           <FlatList
             keyExtractor={(item) => item.id}
             extraData={assetTypeDetailId}
