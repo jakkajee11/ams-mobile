@@ -23,7 +23,7 @@ export default function useUserApi() {
   }
 
   const hasRights = async (key: string, permission: number) => {
-    return await get(`${endpoint}/rights/{key}/{permission}`)
+    return await get(`${endpoint}/rights/${key}/${permission}`)
   }
 
   return {
