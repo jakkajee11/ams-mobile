@@ -52,7 +52,7 @@ export default function UpdateAssetStatusAndLocationScreen({
   const [showCamera, setShowCamera] = useState(false)
   const [scannedResult, setScannedResult] = useState('')
   const [dialogVisible, setDialogVisible] = useState(false)
-  const [hasPermission, setHasPermission] = useState(false)
+  const [hasPermission, setHasPermission] = useState(true)
 
   const openCamera = () => setShowCamera(true)
   const closeCamera = () => setShowCamera(false)
@@ -97,7 +97,7 @@ export default function UpdateAssetStatusAndLocationScreen({
       PERMISSION.Update
     )
     if (res.status === 200) {
-      setHasPermission(true)
+      setHasPermission(res.data)
     } else {
       setHasPermission(false)
     }
