@@ -126,18 +126,9 @@ export default function useMasterDataApi() {
 
   const warehouseStatuses = ['At warehouse', 'At customer site', 'Under Repair']
 
-  const getWarehouseAssetStatuses = async (query: SearchQuery) => {
-    var url = `${endpoint}/statuses`
-    const res = await find(url, query)
-
-    const data = res.data.records.filter((r: AssetStatusModel) =>
-      warehouseStatuses.some((s) => s === r.name)
-    )
-
-    return Promise.resolve({
-      status: 200,
-      data,
-    })
+  const getWarehouseAssetStatuses = async () => {
+    var url = `${endpoint}/statuses/role/warehouse`
+    return await get(url)
   }
 
   const getAssetStatus = async (id: string) => {

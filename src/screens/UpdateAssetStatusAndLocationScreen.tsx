@@ -40,6 +40,7 @@ export default function UpdateAssetStatusAndLocationScreen({
   const [assetStatus, setAssetStatus] = useState('')
   const [location, setLocation] = useState('')
   const [searchText, setSearchText] = useState('')
+  const [asset, setAsset] = useState<AssetDetailModel>()
   const [assets, setAssets] = useState<AssetDetailModel[]>([])
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
@@ -49,7 +50,7 @@ export default function UpdateAssetStatusAndLocationScreen({
   >([])
   const [locationOptions, setLocationOptions] = useState<SelectItemOption[]>([])
   const [showCamera, setShowCamera] = useState(false)
-  const [__, setScannedResult] = useState('')
+  const [scannedResult, setScannedResult] = useState('')
   const [dialogVisible, setDialogVisible] = useState(false)
   const [hasPermission, setHasPermission] = useState(false)
 
@@ -62,6 +63,8 @@ export default function UpdateAssetStatusAndLocationScreen({
     setAssetStatus('')
     setLocation('')
   }
+
+  const resetSearchText = () => setSearchText('')
 
   const submitForm = async () => {
     setLoading(true)
@@ -94,17 +97,15 @@ export default function UpdateAssetStatusAndLocationScreen({
       PERMISSION.Update
     )
     if (res.status === 200) {
-      setHasPermission(res.data)
+      setHasPermission(true)
+    } else {
+      setHasPermission(false)
     }
   }
 
   const fetchStatus = async () => {
     setLoading(true)
-    const res = await getWarehouseAssetStatuses({
-      page: 1,
-      size: 100,
-      search: '',
-    })
+    const res = await getWarehouseAssetStatuses()
 
     if (res.status === 200) {
       const data = res.data as AssetStatusModel[]
@@ -119,7 +120,7 @@ export default function UpdateAssetStatusAndLocationScreen({
   const fetchLocation = async () => {
     setLoading(true)
     const res = await getLocations({
-      page: 1,
+      page: 0,
       size: 20,
       search: searchText,
     })
@@ -148,9 +149,12 @@ export default function UpdateAssetStatusAndLocationScreen({
     setLoading(true)
     const res = await getAssetInfo(data)
     if (res && res.status === 200 && res.data) {
+      setAsset(res.data)
       if (!assets.some((x) => x.id === res.data.id))
         setAssets([...assets, res.data])
       else Alert.alert('Error', 'Item already added to list')
+    } else {
+      setAsset(undefined)
     }
 
     setLoading(false)
@@ -179,6 +183,7 @@ export default function UpdateAssetStatusAndLocationScreen({
 
   return (
     <>
+      {loading && <Loading loading={loading} />}
       {hasPermission ? (
         <>
           <ScrollView style={baseStyles.scrollView}>
@@ -220,6 +225,7 @@ export default function UpdateAssetStatusAndLocationScreen({
                   onChangeSearchText={(text: string) => {
                     setSearchText(text)
                   }}
+                  onClose={resetSearchText}
                   maxHeight={600}
                   selectedItemContainerStyle={{
                     backgroundColor: Colors.yellow,
@@ -238,7 +244,7 @@ export default function UpdateAssetStatusAndLocationScreen({
                 <View style={{ ...baseStyles.container }}>
                   {loading && <Loading loading={loading} />}
 
-                  {searchText.length > 0 && assets.length === 0 && (
+                  {scannedResult.length > 0 && asset === undefined && (
                     <View style={{ ...baseStyles.container, marginTop: 100 }}>
                       <View style={baseStyles.column}>
                         <View>
@@ -249,7 +255,7 @@ export default function UpdateAssetStatusAndLocationScreen({
                               color: Colors.yellow,
                             }}
                           >
-                            {searchText}
+                            {scannedResult}
                           </Text>
                           <Text
                             style={{
