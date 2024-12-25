@@ -14,12 +14,15 @@ import { Button, Dialog, Icon } from 'react-native-elements'
 import 'react-native-get-random-values'
 import useAssetApi from '~apis/useAssetApi'
 import useMasterDataApi from '~apis/useMasterDataApi'
-import { AssetDetailModel } from '~types/assets'
+import {
+  AssetDetailModel,
+  UpdateAssetStatusAndLocationModel,
+} from '~types/assets'
 import baseStyles from '../styles/baseStyles'
 import { RootStackParamList } from '../types'
 import Loading from '~components/shared/Loading'
 import Colors from '~constants/Colors'
-import DropDownPicker from 'react-native-dropdown-picker'
+import DropDownPicker, { ItemType } from 'react-native-dropdown-picker'
 import { SelectItemOption } from '~types/selectOptions'
 import ModalCamera from '~components/shared/ModalCamera'
 import { BarcodeScanningResult } from 'expo-camera'
@@ -53,6 +56,7 @@ export default function UpdateAssetStatusAndLocationScreen({
   const [scannedResult, setScannedResult] = useState('')
   const [dialogVisible, setDialogVisible] = useState(false)
   const [hasPermission, setHasPermission] = useState(true)
+  const [showLocation, setShowLocation] = useState(false)
 
   const openCamera = () => setShowCamera(true)
   const closeCamera = () => setShowCamera(false)
@@ -71,10 +75,10 @@ export default function UpdateAssetStatusAndLocationScreen({
 
     toggleDialog()
 
-    const data = assets.map((x) => ({
+    const data: UpdateAssetStatusAndLocationModel[] = assets.map((x) => ({
       id: x.id,
-      assetStatusId: x.assetStatusId,
-      locationId: x.locationId,
+      assetStatusId: assetStatus,
+      locationId: location === '' ? null : location,
     }))
 
     const res = await updateStatusAndLocations(data)
@@ -160,6 +164,16 @@ export default function UpdateAssetStatusAndLocationScreen({
     setLoading(false)
   }
 
+  const assetStatusThatShowLocation = ['At warehouse', 'Under Repair']
+  const handleAssetStatusChange = (selectedItem: ItemType<string>) => {
+    const visible = assetStatusThatShowLocation.includes(
+      selectedItem.label ?? ''
+    )
+    setShowLocation(visible)
+    setAssetStatus(selectedItem.value ?? '')
+    setLocation('')
+  }
+
   const handleOnPress = (assetId: string) => {
     navigation.navigate('AssetDetails', { assetId })
   }
@@ -200,7 +214,9 @@ export default function UpdateAssetStatusAndLocationScreen({
                   value={assetStatus}
                   items={assetStatusOptions}
                   setOpen={toggleDropdown}
-                  setValue={setAssetStatus}
+                  //setValue={setAssetStatus}
+                  onSelectItem={handleAssetStatusChange}
+                  //onChangeValue={() => console.log('onChangeValue')}
                   listMode="MODAL"
                   maxHeight={600}
                   selectedItemContainerStyle={{
@@ -211,29 +227,31 @@ export default function UpdateAssetStatusAndLocationScreen({
                   )}
                 />
 
-                <DropDownPicker
-                  placeholder="Select location"
-                  searchable={true}
-                  searchPlaceholder={'type to search...'}
-                  loading={loading}
-                  open={openLocation}
-                  value={location}
-                  items={locationOptions}
-                  setOpen={toggleLocationDropdown}
-                  setValue={setLocation}
-                  listMode="MODAL"
-                  onChangeSearchText={(text: string) => {
-                    setSearchText(text)
-                  }}
-                  onClose={resetSearchText}
-                  maxHeight={600}
-                  selectedItemContainerStyle={{
-                    backgroundColor: Colors.yellow,
-                  }}
-                  ListEmptyComponent={() => (
-                    <Text style={{ textAlign: 'center' }}>No item found</Text>
-                  )}
-                />
+                {showLocation && (
+                  <DropDownPicker
+                    placeholder="Select location"
+                    searchable={true}
+                    searchPlaceholder={'type to search...'}
+                    loading={loading}
+                    open={openLocation}
+                    value={location}
+                    items={locationOptions}
+                    setOpen={toggleLocationDropdown}
+                    setValue={setLocation}
+                    listMode="MODAL"
+                    onChangeSearchText={(text: string) => {
+                      setSearchText(text)
+                    }}
+                    onClose={resetSearchText}
+                    maxHeight={600}
+                    selectedItemContainerStyle={{
+                      backgroundColor: Colors.yellow,
+                    }}
+                    ListEmptyComponent={() => (
+                      <Text style={{ textAlign: 'center' }}>No item found</Text>
+                    )}
+                  />
+                )}
                 {assets.length > 0 && (
                   <AssetMinimalDetails
                     data={assets}
@@ -244,58 +262,60 @@ export default function UpdateAssetStatusAndLocationScreen({
                 <View style={{ ...baseStyles.container }}>
                   {loading && <Loading loading={loading} />}
 
-                  {scannedResult.length > 0 && asset === undefined && (
-                    <View style={{ ...baseStyles.container, marginTop: 100 }}>
-                      <View style={baseStyles.column}>
-                        <View>
-                          <Text
-                            style={{
-                              ...baseStyles.textCenter,
-                              fontSize: 18,
-                              color: Colors.yellow,
-                            }}
-                          >
-                            {scannedResult}
-                          </Text>
-                          <Text
-                            style={{
-                              ...baseStyles.textCenter,
-                              fontSize: 18,
-                              color: Colors.red,
-                            }}
-                          >
-                            NOT FOUND
-                          </Text>
+                  {scannedResult.length > 0 &&
+                    asset === undefined &&
+                    !loading && (
+                      <View style={{ ...baseStyles.container, marginTop: 100 }}>
+                        <View style={baseStyles.column}>
+                          <View>
+                            <Text
+                              style={{
+                                ...baseStyles.textCenter,
+                                fontSize: 18,
+                                color: Colors.yellow,
+                              }}
+                            >
+                              {scannedResult}
+                            </Text>
+                            <Text
+                              style={{
+                                ...baseStyles.textCenter,
+                                fontSize: 18,
+                                color: Colors.red,
+                              }}
+                            >
+                              NOT FOUND
+                            </Text>
+                          </View>
+                        </View>
+
+                        <View
+                          style={{
+                            width: '100%',
+                            padding: 5,
+                            justifyContent: 'space-between',
+                            flex: 0.5,
+                          }}
+                        >
+                          <Button
+                            icon={
+                              <Icon
+                                name="clipboard"
+                                type="font-awesome-5"
+                                size={28}
+                                color={Colors.white}
+                              />
+                            }
+                            title=" Report this item"
+                            onPress={() =>
+                              navigation.navigate('ReportAsset', {
+                                serialNo: searchText,
+                              })
+                            }
+                          />
                         </View>
                       </View>
-
-                      <View
-                        style={{
-                          width: '100%',
-                          padding: 5,
-                          justifyContent: 'space-between',
-                          flex: 0.5,
-                        }}
-                      >
-                        <Button
-                          icon={
-                            <Icon
-                              name="clipboard"
-                              type="font-awesome-5"
-                              size={28}
-                              color={Colors.white}
-                            />
-                          }
-                          title=" Report this item"
-                          onPress={() =>
-                            navigation.navigate('ReportAsset', {
-                              serialNo: searchText,
-                            })
-                          }
-                        />
-                      </View>
-                    </View>
-                  )}
+                    )}
                 </View>
               </View>
             </KeyboardAvoidingView>
@@ -317,7 +337,7 @@ export default function UpdateAssetStatusAndLocationScreen({
 
             {assets.length > 0 &&
               assetStatus.length > 0 &&
-              location.length > 0 && (
+              (!showLocation || (showLocation && location.length > 0)) && (
                 <>
                   <Button
                     icon={

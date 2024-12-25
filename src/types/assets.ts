@@ -59,7 +59,7 @@ export type ReportAssetModel = {
 export type UpdateAssetStatusAndLocationModel = {
   id: string
   assetStatusId: string
-  locationId: string
+  locationId?: string | null
 }
 
 export type AssetAgingListModel = {
