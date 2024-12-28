@@ -170,7 +170,7 @@ export default function UpdateAssetStatusAndLocationScreen({
       selectedItem.label ?? ''
     )
     setShowLocation(visible)
-    setAssetStatus(selectedItem.value ?? '')
+    //setAssetStatus(selectedItem.value ?? '')
     setLocation('')
   }
 
@@ -214,9 +214,8 @@ export default function UpdateAssetStatusAndLocationScreen({
                   value={assetStatus}
                   items={assetStatusOptions}
                   setOpen={toggleDropdown}
-                  //setValue={setAssetStatus}
+                  setValue={setAssetStatus}
                   onSelectItem={handleAssetStatusChange}
-                  //onChangeValue={() => console.log('onChangeValue')}
                   listMode="MODAL"
                   maxHeight={600}
                   selectedItemContainerStyle={{
