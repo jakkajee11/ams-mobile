@@ -62,11 +62,11 @@ export default function JobDetail({
         </View>
         <View style={baseStyles.row}>
           <Text>Due date:</Text>
-          <Text>{DateTimeFormat.toStandardDateTime(dueDate)}</Text>
+          <Text>{DateTimeFormat.toStandardDateTime(dueDate) as string}</Text>
         </View>
         <View style={baseStyles.row}>
           <Text>Created at:</Text>
-          <Text>{DateTimeFormat.toStandardDateTime(createdAt)}</Text>
+          <Text>{DateTimeFormat.toStandardDateTime(createdAt) as string}</Text>
         </View>
         <View style={baseStyles.row}>
           <Text>Status:</Text>

@@ -96,7 +96,7 @@ export default function Camera({
   const [showPickImage, setShowPickImage] = useState<boolean>(showImagePicker)
   const [scannedResult, setScannedResult] = useState('')
 
-  const camera = useRef<ExpoCamera>(null)
+  const camera = useRef<CameraView>(null)
 
   useEffect(() => {
     ;(async () => {

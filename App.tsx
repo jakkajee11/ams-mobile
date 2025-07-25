@@ -14,9 +14,11 @@ import { RootSiblingParent } from 'react-native-root-siblings'
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldShowBadge: true,
   }),
 })
 
@@ -31,16 +33,7 @@ const theme = {
       borderRadius: 8,
     },
   },
-  // Icon: {
-  //   iconStyle: {
-  //     //color: 'white',
-  //   },
-  // },
-  // Text: {
-  //   style: {
-  //     color: 'white',
-  //   },
-  // },
+
   View: {
     backgroundColor: Colors.yellow,
   },
@@ -61,8 +54,8 @@ export default function App() {
   const [expoPushToken, setExpoPushToken] = useState('')
   const [notification, setNotification] = useState<any>()
   const [notiCount, setNotiCount] = useState(0)
-  const notificationListener = useRef<any>()
-  const responseListener = useRef<any>()
+  const notificationListener = useRef<any>(null)
+  const responseListener = useRef<any>(null)
 
   const handleNotificationReceived = (response: Notifications.Notification) => {
     console.log(['handleNotificationReceived', response])
@@ -78,9 +71,9 @@ export default function App() {
   }
 
   useEffect(() => {
-    console.log('colorScheme', colorScheme)
+    
     registerForPushNotificationsAsync().then((token) => {
-      setExpoPushToken(token)
+      setExpoPushToken(token as string)
     })
 
     // This listener is fired whenever a notification is received while the app is foregrounded

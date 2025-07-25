@@ -2,7 +2,7 @@
   "expo": {
     "name": "AMS Mobile App",
     "slug": "ams-mobile",
-    "version": "2.0.6",
+    "version": "2.0.9",
     "orientation": "portrait",
     "icon": "./src/assets/images/ams-icon.png",
     "scheme": "myapp",
@@ -24,7 +24,8 @@
         }
       ],
       "expo-font",
-      "expo-asset"
+      "expo-asset",
+      "expo-web-browser"
     ],
     "assetBundlePatterns": [
       "**/*"
@@ -47,7 +48,6 @@
       },
       "package": "com.amsthjh.app",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 31,
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
