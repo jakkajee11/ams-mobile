@@ -12,8 +12,7 @@ import {
   View,
 } from 'react-native'
 import * as Notifications from 'expo-notifications'
-import { Button, Icon, Input, Image, Text } from 'react-native-elements'
-import { Divider } from 'react-native-elements/dist/divider/Divider'
+import { Button, Icon, Input, Image, Text, Divider } from '@rn-vui/themed'
 import Logo from '../components/shared/Logo'
 import * as AuthSession from 'expo-auth-session'
 import * as WebBrowser from 'expo-web-browser'

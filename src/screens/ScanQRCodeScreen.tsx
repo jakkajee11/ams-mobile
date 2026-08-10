@@ -16,7 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { Button, Icon } from 'react-native-elements'
+import { Button, Icon } from '@rn-vui/themed'
 import useAssetApi from '~apis/useAssetApi'
 import ModalCamera from '~components/shared/ModalCamera'
 import Camera from '../components/shared/Camera'

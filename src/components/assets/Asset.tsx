@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListItem } from 'react-native-elements';
+import { ListItem } from '@rn-vui/themed';
 import { AssetDetailModel } from '../../types/assets';
 
 interface AssetProps {

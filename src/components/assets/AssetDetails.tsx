@@ -1,6 +1,6 @@
 import React from 'react'
 import { View } from 'react-native'
-import { Image, Text } from 'react-native-elements'
+import { Image, Text } from '@rn-vui/themed'
 import { ATTACHMENT_TYPE } from '~constants/Status'
 import baseStyles from '~styles/baseStyles'
 import { AssetDetailModel } from '../../types/assets'

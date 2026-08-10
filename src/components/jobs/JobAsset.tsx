@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListItem } from 'react-native-elements';
+import { ListItem } from '@rn-vui/themed';
 import Colors from '~constants/Colors';
 import { JOB_ASSET_STATUS } from '~constants/Status';
 import { JobAssetModel } from '../../types/jobs';

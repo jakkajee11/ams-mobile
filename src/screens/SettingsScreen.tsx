@@ -12,7 +12,7 @@ import {
   Tab,
   TabView,
   ListItem,
-} from 'react-native-elements';
+} from '@rn-vui/themed';
 import useAuthApi from '~apis/useAuthApi';
 import { APP_CONFIG } from '~constants/Config';
 import Storages from '~utils/Storages';
@@ -66,7 +66,7 @@ export default function SettingsScreen({
         //backgroundColor: 'red',
       }}
     >
-      <StatusBar backgroundColor='#ffb900' />
+      <StatusBar style="light" />
       {/* <View style={{ backgroundColor: '#ffb900' }}>
         <Logo />
       </View> */}
@@ -81,10 +81,10 @@ export default function SettingsScreen({
         }}
       >
         <Text style={baseStyles.textCenter}>
-          App Version: {Constants.manifest?.version}
+          App Version: {Constants.expoConfig?.version}
         </Text>
         <Text style={baseStyles.textCenter}>
-          SDK Version: {Constants.manifest?.sdkVersion}
+          SDK Version: {Constants.expoConfig?.sdkVersion}
         </Text>
         <Text style={baseStyles.textCenter}>
           Device Name: {Constants.deviceName}

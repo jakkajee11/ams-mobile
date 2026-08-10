@@ -12,7 +12,7 @@ import {
   Tab,
   TabView,
   ListItem,
-} from 'react-native-elements'
+} from '@rn-vui/themed'
 import useAuthApi from '~apis/useAuthApi'
 import { APP_CONFIG } from '~constants/Config'
 import Storages from '~utils/Storages'
@@ -90,7 +90,7 @@ export default function ProfileScreen({
         alignContent: 'center',
       }}
     >
-      <StatusBar backgroundColor="#ffb900" />
+      <StatusBar style="light" />
       <View
         style={{
           flex: 1,

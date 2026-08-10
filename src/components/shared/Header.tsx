@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
-import { Header as RNHeader, Icon } from 'react-native-elements';
+import { Header as RNHeader, Icon } from '@rn-vui/themed';
 import Colors from '~/constants/Colors';
 
 interface HeaderProps {

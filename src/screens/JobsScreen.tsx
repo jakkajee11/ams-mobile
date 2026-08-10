@@ -18,7 +18,7 @@ import {
   Tab,
   TabView,
   ListItem,
-} from 'react-native-elements';
+} from '@rn-vui/themed';
 import Job from '../components/jobs/Job';
 
 import {

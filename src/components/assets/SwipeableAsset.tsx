@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Icon, ListItem, Text } from 'react-native-elements'
+import { Button, Icon, ListItem, Text } from '@rn-vui/themed'
 import { AssetDetailModel } from '../../types/assets'
 import { GestureResponderEvent } from 'react-native'
 import Colors from '~constants/Colors'

@@ -16,7 +16,7 @@ import {
   RefreshControl,
   SectionList,
 } from 'react-native'
-import { Button, Icon } from 'react-native-elements'
+import { Button, Icon } from '@rn-vui/themed'
 import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid'
 import useAssetApi from '~apis/useAssetApi'

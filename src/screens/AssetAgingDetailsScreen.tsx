@@ -2,7 +2,7 @@ import { StackScreenProps } from '@react-navigation/stack'
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 import { Alert, ScrollView, View } from 'react-native'
-import { Text, Image, Button, Icon, Dialog } from 'react-native-elements'
+import { Text, Image, Button, Icon, Dialog } from '@rn-vui/themed'
 
 import { RootStackParamList } from '../types'
 import Loading from '~components/shared/Loading'

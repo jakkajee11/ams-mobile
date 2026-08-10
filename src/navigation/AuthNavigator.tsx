@@ -3,7 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import LoginScreen from '../screens/LoginScreen';
 import { AuthStackParamList } from '../types';
-import { Header } from 'react-native-elements';
+import { Header } from '@rn-vui/themed';
 import Colors from '~constants/Colors';
 import Logo from '~components/shared/Logo';
 //import Header from '~components/shared/Header';

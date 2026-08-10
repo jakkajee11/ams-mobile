@@ -19,7 +19,7 @@ import {
   Tab,
   TabView,
   ListItem,
-} from 'react-native-elements'
+} from '@rn-vui/themed'
 
 import { JobsParamsList } from '../types'
 import JobDetail from '~components/jobs/JobDetail'

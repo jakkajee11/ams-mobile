@@ -2,7 +2,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { StatusBar, Text, View } from 'react-native';
-import { Button, Icon } from 'react-native-elements';
+import { Button, Icon } from '@rn-vui/themed';
 import baseStyles from '~styles/baseStyles';
 import Colors from '../constants/Colors';
 

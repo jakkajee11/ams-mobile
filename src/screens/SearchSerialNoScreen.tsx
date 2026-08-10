@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
   Pressable,
 } from 'react-native';
-import { Button, Icon, Input } from 'react-native-elements';
+import { Button, Icon, Input } from '@rn-vui/themed';
 import 'react-native-get-random-values';
 import useAssetApi from '~apis/useAssetApi';
 import { AssetDetailModel, ReportAssetModel } from '~types/assets';

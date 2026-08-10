@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { FlatList, View } from 'react-native';
-import { Text } from 'react-native-elements';
+import { Text } from '@rn-vui/themed';
 import { JOB_ASSET_STATUS, JOB_STATUS } from '~constants/Status';
 import baseStyles from '~styles/baseStyles';
 import { DateTimeFormat } from '~utils/format';

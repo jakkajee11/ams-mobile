@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { StyleSheet } from 'react-native'
-import { Image } from 'react-native-elements'
+import { Image } from '@rn-vui/themed'
 
 const Logo = () => (
   <Image

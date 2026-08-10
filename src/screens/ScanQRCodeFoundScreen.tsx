@@ -10,7 +10,7 @@ import {
   View,
   ActivityIndicator,
 } from 'react-native'
-import { Button, Icon } from 'react-native-elements'
+import { Button, Icon } from '@rn-vui/themed'
 import useUploadApi from '~apis/useUploadApi'
 import { AssetDetailModel, ReportAssetModel } from '~types/assets'
 import { UploadFileBase64Model } from '~types/fileUploads'

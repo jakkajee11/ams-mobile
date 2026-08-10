@@ -10,7 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native'
-import { Button, Dialog, Icon } from 'react-native-elements'
+import { Button, Dialog, Icon } from '@rn-vui/themed'
 import 'react-native-get-random-values'
 import useAssetApi from '~apis/useAssetApi'
 import useMasterDataApi from '~apis/useMasterDataApi'

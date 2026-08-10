@@ -1,5 +1,5 @@
 import { View } from 'react-native'
-import { Text } from 'react-native-elements'
+import { Text } from '@rn-vui/themed'
 import baseStyles from '~styles/baseStyles'
 
 type UnauthorizedProps = {

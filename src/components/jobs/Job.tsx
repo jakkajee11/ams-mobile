@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListItem, Icon, Text } from 'react-native-elements';
+import { ListItem, Icon, Text } from '@rn-vui/themed';
 import { DateTimeFormat } from '~utils/format';
 import { JobModel } from '~/types/jobs';
 

@@ -12,7 +12,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native'
-import { Button, CheckBox, Icon, Image, Input } from 'react-native-elements'
+import { Button, CheckBox, Icon, Image, Input } from '@rn-vui/themed'
 import 'react-native-get-random-values'
 import Toast from 'react-native-root-toast'
 import { v4 as uuidv4 } from 'uuid'

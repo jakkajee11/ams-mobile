@@ -6,15 +6,15 @@ dayjs.extend(relativeTime);
 dayjs.extend(utc);
 
 const DateTimeFormat = {
-  toStandardDate(date: string | number | Date | Dayjs) {
+  toStandardDate(date: string | number | Date | Dayjs): string {
     if (dayjs(date).isValid()) return dayjs(date).format('DD-MM-YYYY');
 
-    return date;
+    return date.toString();
   },
-  toStandardDateTime(date: string | number | Date | Dayjs) {
+  toStandardDateTime(date: string | number | Date | Dayjs): string {
     if (dayjs(date).isValid()) return dayjs(date).format('DD-MM-YYYY HH:mm');
 
-    return date;
+    return date.toString();
   },
   timeFromNow() {
     return dayjs().fromNow();
