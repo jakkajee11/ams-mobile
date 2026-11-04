@@ -2,7 +2,7 @@ import React from 'react';
 import { ListItem, Icon, Text, Button } from '@rn-vui/themed';
 import { DateTimeFormat } from '~utils/format';
 import { JobModel } from '~/types/jobs';
-import { FlatList, Pressable, RefreshControl, View } from 'react-native';
+import { FlatList, RefreshControl, View } from 'react-native';
 import Colors from '~constants/Colors';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -47,6 +47,8 @@ export default function JobItem({
         <TouchableOpacity
           style={{ width: '100%' }}
           onPress={() => goToJobDetail(jobNumber)}
+          accessibilityRole="button"
+          accessibilityLabel={`Job ${jobNumber}`}
         >
           <View
             style={{
@@ -57,18 +59,17 @@ export default function JobItem({
               width: '100%',
             }}
           >
-            <Pressable onPressIn={() => goToJobDetail(jobNumber)}>
+            {/* plain Views: the nested Pressables used onPressIn, which navigated
+                on touch-down (while scrolling) and in addition to the outer onPress */}
+            <View>
               <Text style={{ width: 170 }}>{jobNumber}</Text>
-            </Pressable>
+            </View>
 
             <Text>
               {DateTimeFormat.toStandardDate(dueDate ? dueDate : createdAt)}
             </Text>
 
-            <Pressable
-              onPressIn={() => goToJobDetail(jobNumber)}
-              style={{ width: 60 }}
-            >
+            <View style={{ width: 60 }}>
               <Icon
                 name='info-circle'
                 type='font-awesome-5'
@@ -76,7 +77,7 @@ export default function JobItem({
                 color={Colors.black}
                 style={{ marginTop: 0, marginRight: 5 }}
               />
-            </Pressable>
+            </View>
           </View>
         </TouchableOpacity>
         {/* </View> */}
@@ -89,6 +90,16 @@ export default function JobItem({
       keyExtractor={(item) => item.id}
       data={data}
       renderItem={renderItem}
+      contentContainerStyle={data.length === 0 ? { flexGrow: 1 } : undefined}
+      ListEmptyComponent={
+        !loading ? (
+          <View style={{ flex: 1, alignItems: 'center', padding: 30 }}>
+            <Text style={{ fontStyle: 'italic', color: Colors.darkGrey }}>
+              No jobs. Pull down to refresh.
+            </Text>
+          </View>
+        ) : null
+      }
       refreshControl={
         <RefreshControl
           refreshing={loading}

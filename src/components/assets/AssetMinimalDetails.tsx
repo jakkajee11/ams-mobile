@@ -22,10 +22,6 @@ export default function AssetMinimalDetails({
     onPress && onPress(id)
   }
 
-  const handleOnDelete = (id: string) => {
-    handleOnDelete && handleOnDelete(id)
-  }
-
   const renderItem = ({ item }: ListRenderItemInfo<AssetDetailModel>) => {
     return <SwipeableAsset data={item} onPress={onPress} onDelete={onDelete} />
   }

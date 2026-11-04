@@ -22,30 +22,28 @@ export default function HomeScreen({
 
   const setJobCount = async () => {
     setLoading(true)
-    const res = await getJobsCount({
-      startDate: '2021-07-01',
-      endDate: dayjs().utc().endOf('month').toISOString(),
-    })
+    try {
+      const res = await getJobsCount({
+        startDate: '2021-07-01',
+        endDate: dayjs().utc().endOf('month').toISOString(),
+      })
 
-    if (res && res.status === 200 && res.data) {
-      if (res.data['Pending']) setJobPendingCount(res.data['Pending'])
+      if (res && res.status === 200 && res.data) {
+        // also reset to 0 so a stale count isn't kept once no jobs are pending
+        setJobPendingCount(res.data['Pending'] ?? 0)
+      }
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   useEffect(() => {
-    nav.addListener('focus', setJobCount)
-
-    return () =>
-      nav.removeListener('focus', () => console.log('remove focus listener'))
-  }, [])
-
-  useEffect(() => {
-    ;(async function () {
-      await setJobCount()
-    })()
-  }, [])
+    // 'focus' also fires on first mount, so no separate initial fetch is needed.
+    // addListener returns the unsubscribe function; the previous cleanup passed a
+    // new function to removeListener, so the listener leaked.
+    const unsubscribe = nav.addListener('focus', setJobCount)
+    return unsubscribe
+  }, [nav])
 
   return (
     <View style={styles.container}>
@@ -101,7 +99,7 @@ export default function HomeScreen({
                 </Text>
               </View>
             }
-            onPress={() => navigation.navigate(m.navigate)}
+            onPress={() => navigation.navigate(m.navigate as any)}
           />
         ))}
       </View>
@@ -126,6 +124,7 @@ export default function HomeScreen({
               <Icon name="user" type="font-awesome-5" size={28} color="white" />
             }
             //title='Forgot Password?'
+            accessibilityLabel="My profile"
             onPress={() => navigation.navigate('MyProfile')}
           />
         </View>

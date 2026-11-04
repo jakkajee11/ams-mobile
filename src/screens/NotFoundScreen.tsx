@@ -10,7 +10,12 @@ export default function NotFoundScreen({
   return (
     <View style={styles.container}>
       <Text style={styles.title}>This screen doesn't exist.</Text>
-      <TouchableOpacity onPress={() => navigation.replace('Root')} style={styles.link}>
+      {/* 'Root' is not a route of this (nested) navigator, so replace('Root') threw;
+          'Main' is the home stack sibling of NotFound */}
+      <TouchableOpacity
+        onPress={() => (navigation as any).replace('Main')}
+        style={styles.link}
+      >
         <Text style={styles.linkText}>Go to home screen!</Text>
       </TouchableOpacity>
     </View>

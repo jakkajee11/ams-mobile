@@ -3,7 +3,7 @@ import { StackScreenProps } from '@react-navigation/stack'
 import { StatusBar } from 'expo-status-bar'
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 import {
   Button,
   Icon,
@@ -30,6 +30,7 @@ import { ProfileModel } from '~types/users'
 import useUserApi from '~apis/useUserApi'
 import Loading from '~components/shared/Loading'
 import * as Notifications from 'expo-notifications'
+import { resetToRoute } from '~utils/navigation'
 
 export default function ProfileScreen({
   route,
@@ -42,11 +43,22 @@ export default function ProfileScreen({
   const [loading, setLoading] = useState(false)
   const [pushToken, setPushToken] = useState('')
 
-  const logout = async () => {
+  const doLogout = async () => {
     setLoading(true)
-    await Storages.removeUserToken()
-    navigation.navigate('Auth')
-    setLoading(false)
+    try {
+      await Storages.removeUserToken()
+    } finally {
+      setLoading(false)
+      // reset (instead of navigate) so "back" can't return to authenticated screens
+      resetToRoute(navigation, 'Auth')
+    }
+  }
+
+  const logout = () => {
+    Alert.alert('Logout', 'Are you sure you want to log out?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Logout', style: 'destructive', onPress: doLogout },
+    ])
   }
 
   useEffect(() => {
@@ -54,30 +66,33 @@ export default function ProfileScreen({
       // const accessToken = await Storages.getAccessToken();
       // setToken(accessToken);
       setLoading(true)
-      const profile = await Storages.getProfile()
-      if (!profile) {
-        const res = await getMyProfile()
+      try {
+        const profile = await Storages.getProfile()
+        if (!profile) {
+          const res = await getMyProfile()
 
-        if (res && res.status === 200) {
-          const { id, userName, email, isAdmin, active } = res.data
-          const p: ProfileModel = {
-            id,
-            userName,
-            email,
-            isAdmin,
-            active,
+          if (res && res.status === 200 && res.data) {
+            const { id, userName, email, isAdmin, active } = res.data
+            const p: ProfileModel = {
+              id,
+              userName,
+              email,
+              isAdmin,
+              active,
+            }
+
+            await Storages.saveUserProfile(JSON.stringify(p))
+
+            setProfile(p)
           }
-
-          await Storages.saveUserProfile(JSON.stringify(p))
-
-          setProfile(p)
+        } else {
+          setProfile(profile)
         }
-      } else {
-        setProfile(profile)
+        //const token = (await Notifications.getExpoPushTokenAsync()).data;
+        //setPushToken(token);
+      } finally {
+        setLoading(false)
       }
-      //const token = (await Notifications.getExpoPushTokenAsync()).data;
-      //setPushToken(token);
-      setLoading(false)
     })()
   }, [])
 
@@ -158,6 +173,7 @@ export default function ProfileScreen({
               <Icon name="home" type="font-awesome-5" size={28} color="white" />
             }
             //title='Forgot Password?'
+            accessibilityLabel="Go to home"
             onPress={() => navigation.navigate('Home')}
           />
           {/* <Button

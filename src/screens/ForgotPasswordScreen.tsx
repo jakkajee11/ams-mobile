@@ -20,19 +20,25 @@ export default function ForgotPasswordScreen({
   const [buttonDisplay, setButtonDisplay] = useState<'flex' | 'none'>('flex')
 
   const isEmail = () => {
-    const regex = new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)
-    return regex.test(email)
+    // no `g` flag: a global RegExp is stateful (lastIndex) across test() calls
+    const regex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/
+    return regex.test(email.trim())
     // console.log(['res', res, email]);
     // return res;
   }
   const passwordReset = async () => {
-    setLoading(true)
+    if (loading) return
+    Keyboard.dismiss()
     if (email.length === 0) {
       //alert('Please input email');
       Toast.show('Email is required')
-    } else {
-      // call api to signin
-      const res = await resetPassword(email)
+      return
+    }
+    // loading was set but never reset/shown before; also blocks double-submit
+    setLoading(true)
+    try {
+      // call api to reset password
+      const res = await resetPassword(email.trim())
 
       if (res && res.status === 200) {
         //alert(`New password has been sent to ${email}`);
@@ -40,13 +46,20 @@ export default function ForgotPasswordScreen({
       } else {
         //alert('Reset password failed');
         Toast.show(
-          'Reset password failed, please ensure you put the correct email address',
+          'Reset password failed, please ensure you entered the correct email address',
           {
             textColor: Colors.red,
             backgroundColor: Colors.yellow,
           }
         )
       }
+    } catch (err) {
+      Toast.show('Reset password failed, please try again', {
+        textColor: Colors.red,
+        backgroundColor: Colors.yellow,
+      })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -59,13 +72,13 @@ export default function ForgotPasswordScreen({
   }
 
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', hideActionButton)
-    Keyboard.addListener('keyboardDidHide', showActionButton)
+    const showSub = Keyboard.addListener('keyboardDidShow', hideActionButton)
+    const hideSub = Keyboard.addListener('keyboardDidHide', showActionButton)
 
-    // cleanup function
+    // cleanup function: remove only this screen's listeners
     return () => {
-      Keyboard.removeAllListeners('keyboardDidShow')
-      Keyboard.removeAllListeners('keyboardDidHide')
+      showSub.remove()
+      hideSub.remove()
     }
   }, [])
 
@@ -133,6 +146,12 @@ export default function ForgotPasswordScreen({
             leftIcon={{ type: 'feather', name: 'mail' }}
             //style={styles}
             textContentType="emailAddress"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            autoComplete="email"
+            returnKeyType="send"
+            onSubmitEditing={() => isEmail() && passwordReset()}
             onChangeText={(email: string) => setEmail(email)}
           />
 
@@ -147,6 +166,7 @@ export default function ForgotPasswordScreen({
             }}
             buttonStyle={{ backgroundColor: Colors.yellow }}
             onPress={passwordReset}
+            loading={loading}
             disabled={!isEmail()}
           />
           <Button

@@ -58,19 +58,22 @@ export default function ReportAssetScreen({
       attachments: [],
     }
 
-    const res = await reportAssetLocation(data)
+    try {
+      const res = await reportAssetLocation(data)
 
-    if (res && res.status === 200) {
-      Toast.show(`Asset was reported successfully`, {})
-      reset()
-    } else {
-      Toast.show(
-        `Error (${res.status}): Report asset failed. please try again.`,
-        {
-          textColor: Colors.red,
-          backgroundColor: Colors.yellow,
-        }
-      )
+      if (res && res.status === 200) {
+        Toast.show(`Asset was reported successfully`, {})
+        reset()
+      } else {
+        Toast.show(
+          `Error (${res?.status}): Report asset failed. Please try again.`,
+          {
+            textColor: Colors.red,
+            backgroundColor: Colors.yellow,
+          }
+        )
+      }
+    } finally {
       setLoading(false)
     }
   }
@@ -90,14 +93,22 @@ export default function ReportAssetScreen({
         }
       )
     } else {
+      if (loading) return
       setLoading(true)
 
-      const res = await getAssetInfo(searchText)
+      let res
+      try {
+        res = await getAssetInfo(searchText)
+      } catch (err) {
+        setLoading(false)
+        Toast.show('Unable to verify the Serial No./QR Code, please try again')
+        return
+      }
 
       if (res && res.status === 204) {
         Alert.alert(
           'Warning!',
-          `Serial No./QR Code "${searchText}" not exist in system. Are you sure to submit a report?`,
+          `Serial No./QR Code "${searchText}" does not exist in the system. Are you sure you want to submit a report?`,
           [
             {
               text: 'Cancel',
@@ -106,7 +117,8 @@ export default function ReportAssetScreen({
             },
             { text: 'OK', onPress: submitReportAsset },
           ],
-          { cancelable: true }
+          // Android: tapping outside dismisses without calling Cancel -> loading stuck
+          { cancelable: true, onDismiss: () => setLoading(false) }
         )
       } else {
         await submitReportAsset()
@@ -120,16 +132,27 @@ export default function ReportAssetScreen({
   const addAttachment = async (photo: CameraCapturedPicture) => {
     // upload file
     if (photo && photo.uri && photo.base64) {
-      setAttachemnts([...attachments, photo])
+      setAttachemnts((prev) => [...prev, photo])
       const data: UploadFileBase64Model = {
         id: uuidv4(),
         fileName: extractFileName(photo.uri),
         base64: photo.base64,
         refCode: searchText,
       }
-      const res = await uploadFile(data)
-      if (res && res.status !== 200) {
-        setUploadErrors([...uploadErrors, extractFileName(photo.uri)])
+      let ok = false
+      try {
+        const res = await uploadFile(data)
+        ok = !!res && res.status === 200
+      } catch (err) {
+        ok = false
+      }
+      if (!ok) {
+        setUploadErrors((errs) => [...errs, extractFileName(photo.uri)])
+        // upload failures were silently recorded and never shown
+        Toast.show(`Photo upload failed: ${extractFileName(photo.uri)}`, {
+          textColor: Colors.red,
+          backgroundColor: Colors.yellow,
+        })
       }
     }
   }
@@ -151,19 +174,22 @@ export default function ReportAssetScreen({
   }
 
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', hideActionButton)
-    Keyboard.addListener('keyboardDidHide', showActionButton)
+    const showSub = Keyboard.addListener('keyboardDidShow', hideActionButton)
+    const hideSub = Keyboard.addListener('keyboardDidHide', showActionButton)
 
-    // cleanup function
+    // cleanup function: remove only this screen's listeners
     return () => {
-      Keyboard.removeAllListeners('keyboardDidShow')
-      Keyboard.removeAllListeners('keyboardDidHide')
+      showSub.remove()
+      hideSub.remove()
     }
   }, [])
 
   return (
     <>
-      <ScrollView style={baseStyles.scrollView}>
+      <ScrollView
+        style={baseStyles.scrollView}
+        keyboardShouldPersistTaps="handled"
+      >
         <KeyboardAvoidingView
           behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
           style={baseStyles.container}

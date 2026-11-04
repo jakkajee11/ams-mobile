@@ -43,6 +43,7 @@ export default function useApi() {
       return {
         ...config,
         headers: {
+          ...(config?.headers as any),
           Authorization: `Bearer ${access_token}`,
         },
       };
@@ -51,11 +52,17 @@ export default function useApi() {
     return { ...axiosConfig, ...config };
   };
 
+  const withoutAuth = (cfg?: AxiosRequestConfig): AxiosRequestConfig => {
+    const { Authorization, ...headers } = (cfg?.headers ?? {}) as any;
+    return { ...cfg, headers };
+  };
+
   const retryGet = async (url: string, cfg?: AxiosRequestConfig) => {
     const res = await instance.get(url, cfg);
     if (res && res.status === 401) {
       await sleep(1000);
-      return await instance.post(url, cfg);
+      // retry with the same verb (was wrongly retried as POST) and the refreshed token
+      return await instance.get(url, await getConfig(withoutAuth(cfg)));
     }
 
     return res;
@@ -69,7 +76,8 @@ export default function useApi() {
     const res = await instance.post(url, data, cfg);
     if (res && res.status === 401) {
       await sleep(1000);
-      return await instance.post(url, data, cfg);
+      // re-read the token so the retry uses the one refreshed by the 401 interceptor
+      return await instance.post(url, data, await getConfig(withoutAuth(cfg)));
     }
 
     return res;

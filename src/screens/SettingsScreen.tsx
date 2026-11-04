@@ -26,6 +26,7 @@ import {
   RootStackParamList,
 } from '../types';
 import baseStyles from '~styles/baseStyles';
+import { resetToRoute } from '~utils/navigation';
 
 export default function SettingsScreen({
   route,
@@ -43,9 +44,13 @@ export default function SettingsScreen({
     // if (res && res.status === 200) {
     //   await Storages.removeUserToken();
     // }
-    await Storages.removeUserToken();
-    navigation.navigate('Auth');
-    setLoading(false);
+    try {
+      await Storages.removeUserToken();
+    } finally {
+      setLoading(false);
+      // reset so "back" can't return to authenticated screens
+      resetToRoute(navigation, 'Auth');
+    }
   };
 
   useEffect(() => {

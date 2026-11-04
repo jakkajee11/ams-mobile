@@ -71,9 +71,10 @@ export default function UpdateAssetStatusAndLocationScreen({
   const resetSearchText = () => setSearchText('')
 
   const submitForm = async () => {
+    if (loading) return
     setLoading(true)
 
-    toggleDialog()
+    setDialogVisible(false)
 
     const data: UpdateAssetStatusAndLocationModel[] = assets.map((x) => ({
       id: x.id,
@@ -81,18 +82,20 @@ export default function UpdateAssetStatusAndLocationScreen({
       locationId: location === '' ? null : location,
     }))
 
-    const res = await updateStatusAndLocations(data)
+    try {
+      const res = await updateStatusAndLocations(data)
 
-    if (res && res.status === 200) {
-      Toast.show(`Asset was updated successfully`, {
-        position: Toast.positions.CENTER,
-      })
-      reset()
-    } else {
-      Alert.alert('Error', 'Update asset failed')
+      if (res && res.status === 200) {
+        Toast.show(`Asset was updated successfully`, {
+          position: Toast.positions.CENTER,
+        })
+        reset()
+      } else {
+        Alert.alert('Error', 'Update asset failed')
+      }
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   const fetchRights = async () => {
@@ -100,8 +103,8 @@ export default function UpdateAssetStatusAndLocationScreen({
       RESOURCES.AssetStatusAndLocation,
       PERMISSION.Update
     )
-    if (res.status === 200) {
-      setHasPermission(res.data)
+    if (res && res.status === 200) {
+      setHasPermission(!!res.data)
     } else {
       setHasPermission(false)
     }
@@ -109,34 +112,38 @@ export default function UpdateAssetStatusAndLocationScreen({
 
   const fetchStatus = async () => {
     setLoading(true)
-    const res = await getWarehouseAssetStatuses()
+    try {
+      const res = await getWarehouseAssetStatuses()
 
-    if (res.status === 200) {
-      const data = res.data as AssetStatusModel[]
-      setAssetStatusOptions(
-        data.map((item) => ({ label: item.name, value: item.id }))
-      )
+      if (res && res.status === 200) {
+        const data = (res.data ?? []) as AssetStatusModel[]
+        setAssetStatusOptions(
+          data.map((item) => ({ label: item.name, value: item.id }))
+        )
+      }
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   const fetchLocation = async () => {
     setLoading(true)
-    const res = await getLocations({
-      page: 0,
-      size: 20,
-      search: searchText,
-    })
+    try {
+      const res = await getLocations({
+        page: 0,
+        size: 20,
+        search: searchText,
+      })
 
-    if (res.status === 200) {
-      const data = res.data.records as LocationModel[]
-      setLocationOptions(
-        data.map((item) => ({ label: item.name, value: item.id }))
-      )
+      if (res && res.status === 200) {
+        const data = (res.data?.records ?? []) as LocationModel[]
+        setLocationOptions(
+          data.map((item) => ({ label: item.name, value: item.id }))
+        )
+      }
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   const toggleDropdown = () => setOpen(!open)
@@ -151,17 +158,24 @@ export default function UpdateAssetStatusAndLocationScreen({
     closeCamera()
     // check asset in system
     setLoading(true)
-    const res = await getAssetInfo(data)
-    if (res && res.status === 200 && res.data) {
-      setAsset(res.data)
-      if (!assets.some((x) => x.id === res.data.id))
-        setAssets([...assets, res.data])
-      else Alert.alert('Error', 'Item already added to list')
-    } else {
+    try {
+      const res = await getAssetInfo(data)
+      if (res && res.status === 200 && res.data) {
+        setAsset(res.data)
+        if (!assets.some((x) => x.id === res.data.id))
+          // functional update so rapid scans can't drop/duplicate items
+          setAssets((prev) =>
+            prev.some((x) => x.id === res.data.id) ? prev : [...prev, res.data]
+          )
+        else Alert.alert('Error', 'Item already added to list')
+      } else {
+        setAsset(undefined)
+      }
+    } catch (err) {
       setAsset(undefined)
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   const assetStatusThatShowLocation = ['At warehouse', 'Under Repair']
@@ -179,7 +193,7 @@ export default function UpdateAssetStatusAndLocationScreen({
   }
 
   const handleOnDelete = (id: string) => {
-    setAssets([...assets.filter((x) => x.id !== id)])
+    setAssets((prev) => prev.filter((x) => x.id !== id))
   }
 
   useEffect(() => {
@@ -200,7 +214,10 @@ export default function UpdateAssetStatusAndLocationScreen({
       {loading && <Loading loading={loading} />}
       {hasPermission ? (
         <>
-          <ScrollView style={baseStyles.scrollView}>
+          <ScrollView
+            style={baseStyles.scrollView}
+            keyboardShouldPersistTaps="handled"
+          >
             <KeyboardAvoidingView
               behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
               style={baseStyles.container}
@@ -307,8 +324,10 @@ export default function UpdateAssetStatusAndLocationScreen({
                             }
                             title=" Report this item"
                             onPress={() =>
+                              // was `searchText` (the location search box, usually
+                              // empty) instead of the scanned code shown above
                               navigation.navigate('ReportAsset', {
-                                serialNo: searchText,
+                                assetId: scannedResult,
                               })
                             }
                           />
@@ -348,6 +367,7 @@ export default function UpdateAssetStatusAndLocationScreen({
                       />
                     }
                     title="  Submit"
+                    loading={loading}
                     onPress={toggleDialog}
                   />
                   <Dialog

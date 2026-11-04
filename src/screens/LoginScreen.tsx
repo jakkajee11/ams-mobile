@@ -25,6 +25,7 @@ import useAuth from '~hooks/useAuth'
 import useUserApi from '~apis/useUserApi'
 import Colors from '~constants/Colors'
 import Toast from 'react-native-root-toast'
+import { resetToRoute } from '~utils/navigation'
 
 export default function LoginScreen({
   navigation,
@@ -40,59 +41,66 @@ export default function LoginScreen({
   const clientId = APP_CONFIG.clientId
 
   const login = async () => {
+    if (loading) return
+    Keyboard.dismiss()
     setLoading(true)
-    if (userName.length === 0 || password.length === 0) {
-      //Alert.alert('Error', 'Invalid UserName/Password');
-      Toast.show('Invalid UserName/Password', {
-        //position: Toast.positions.CENTER,
-        textColor: Colors.red,
-        backgroundColor: Colors.yellow,
-      })
-    } else {
-      // call api to signin
-      const res = await signIn({
-        clientId,
-        userName,
-        password,
-      })
-
-      if (res && res.status === 200 && res.data) {
-        await Storages.saveUserToken(JSON.stringify(res.data))
-        await Storages.saveUserName(userName)
-        await Storages.saveUserSecret(password)
-
-        // update notification Token
-        const token = (await Notifications.getExpoPushTokenAsync()).data
-
-        if (token) {
-          try {
-            const tokenRes = await updateUserNotificationToken({
-              token,
-            })
-          } catch {
-            //alert(`pushToken: ${token} failed`);
-            Toast.show(`pushToken: ${token} failed`, {
-              //position: Toast.positions.CENTER,
-              textColor: Colors.red,
-              backgroundColor: Colors.yellow,
-            })
-          }
-        } else {
-          //alert(`token not founded`);
-          Toast.show(`token not found`, {
-            //position: Toast.positions.CENTER,
-            textColor: Colors.red,
-            backgroundColor: Colors.yellow,
-          })
-        }
-        setLoading(false)
-
-        navigation.navigate('Root')
+    try {
+      if (userName.length === 0 || password.length === 0) {
+        //Alert.alert('Error', 'Invalid UserName/Password');
+        Toast.show('Please enter your username and password', {
+          //position: Toast.positions.CENTER,
+          textColor: Colors.red,
+          backgroundColor: Colors.yellow,
+        })
       } else {
-        Toast.show(`Error: Invalid username or password`)
+        // call api to signin
+        const res = await signIn({
+          clientId,
+          userName,
+          password,
+        })
+
+        if (res && res.status === 200 && res.data) {
+          await Storages.saveUserToken(JSON.stringify(res.data))
+          await Storages.saveUserName(userName)
+          await Storages.saveUserSecret(password)
+
+          // update notification Token (getExpoPushTokenAsync throws on emulators,
+          // when permission is denied or offline; that must not block login)
+          let token = ''
+          try {
+            token = (await Notifications.getExpoPushTokenAsync()).data
+          } catch (err) {
+            console.warn(['getExpoPushTokenAsync failed', err])
+          }
+
+          if (token) {
+            try {
+              const tokenRes = await updateUserNotificationToken({
+                token,
+              })
+            } catch {
+              //alert(`pushToken: ${token} failed`);
+              Toast.show(`Unable to register for push notifications`, {
+                //position: Toast.positions.CENTER,
+                textColor: Colors.red,
+                backgroundColor: Colors.yellow,
+              })
+            }
+          }
+          setLoading(false)
+
+          // reset so the Android back button can't return to the login screen
+          resetToRoute(navigation, 'Root')
+        } else {
+          Toast.show(`Error: Invalid username or password`)
+        }
       }
+    } catch (err) {
+      Toast.show('Sign in failed, please check your connection and try again')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const hideActionButton = () => {
@@ -104,21 +112,22 @@ export default function LoginScreen({
   }
 
   React.useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', hideActionButton)
-    Keyboard.addListener('keyboardDidHide', showActionButton)
+    const showSub = Keyboard.addListener('keyboardDidShow', hideActionButton)
+    const hideSub = Keyboard.addListener('keyboardDidHide', showActionButton)
 
     ;(async function () {
       const loggedIn = await isLoggedIn()
       if (loggedIn) {
         console.log('User already logged in :)')
-        navigation.navigate('Root')
+        resetToRoute(navigation, 'Root')
       }
     })()
 
-    // cleanup function
+    // cleanup function: remove only our own listeners (removeAllListeners would
+    // also drop listeners registered by navigation/other screens)
     return () => {
-      Keyboard.removeAllListeners('keyboardDidShow')
-      Keyboard.removeAllListeners('keyboardDidHide')
+      showSub.remove()
+      hideSub.remove()
     }
   }, [])
 
@@ -154,12 +163,23 @@ export default function LoginScreen({
         <Input
           placeholder="Username"
           leftIcon={{ type: 'font-awesome-5', name: 'user-alt' }}
+          autoCapitalize="none"
+          autoCorrect={false}
+          autoComplete="username"
+          textContentType="username"
+          returnKeyType="next"
           onChangeText={(username: string) => setUserName(username)}
         />
         <Input
           placeholder="Password"
           leftIcon={{ type: 'font-awesome-5', name: 'lock' }}
           secureTextEntry
+          autoCapitalize="none"
+          autoCorrect={false}
+          autoComplete="password"
+          textContentType="password"
+          returnKeyType="go"
+          onSubmitEditing={login}
           onChangeText={(password: string) => setPassword(password)}
         />
         <Button

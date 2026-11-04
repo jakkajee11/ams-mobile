@@ -53,8 +53,8 @@ export default function AssetAgingListScreen({
       assetTypeId: assetTypeId === '' ? [] : [assetTypeId],
       assetTypeDetailId: assetTypeDetailId === '' ? [] : [assetTypeDetailId],
     })
-    if (res.status === 200) {
-      setData(res.data.records)
+    if (res && res.status === 200) {
+      setData(res.data?.records ?? [])
     }
   }
 
@@ -74,51 +74,53 @@ export default function AssetAgingListScreen({
   useEffect(() => {
     ;(async function () {
       setLoading(true)
-      const [assetTypes, assetTypeDetails, reports] = await Promise.all([
-        getAssetTypes({
-          page: 1,
-          size: 100,
-          search: searchText,
-        }),
-        getAssetTypeDetails({
-          page: 1,
-          size: 100,
-          search: searchText,
-        }),
-        getAgingReport({
-          page: 0,
-          size: 10,
-          sort: '',
-        }),
-      ])
+      try {
+        const [assetTypes, assetTypeDetails, reports] = await Promise.all([
+          getAssetTypes({
+            page: 1,
+            size: 100,
+            search: searchText,
+          }),
+          getAssetTypeDetails({
+            page: 1,
+            size: 100,
+            search: searchText,
+          }),
+          getAgingReport({
+            page: 0,
+            size: 10,
+            sort: '',
+          }),
+        ])
 
-      if (assetTypes && assetTypes.status === 200 && assetTypes.data) {
-        setAssetTypeOptions(
-          assetTypes.data.records.map((x: AssetTypeModel) => ({
-            label: x.name,
-            value: x.id,
-          }))
-        )
+        if (assetTypes && assetTypes.status === 200 && assetTypes.data) {
+          setAssetTypeOptions(
+            (assetTypes.data.records ?? []).map((x: AssetTypeModel) => ({
+              label: x.name,
+              value: x.id,
+            }))
+          )
+        }
+
+        if (
+          assetTypeDetails &&
+          assetTypeDetails.status === 200 &&
+          assetTypeDetails.data
+        ) {
+          setAssetTypeDetailOptions(
+            (assetTypeDetails.data.records ?? []).map((x: AssetTypeDetailModel) => ({
+              label: x.name,
+              value: x.id,
+            }))
+          )
+        }
+
+        if (reports && reports.status === 200 && reports.data) {
+          setData(reports.data.records ?? [])
+        }
+      } finally {
+        setLoading(false)
       }
-
-      if (
-        assetTypeDetails &&
-        assetTypeDetails.status === 200 &&
-        assetTypeDetails.data
-      ) {
-        setAssetTypeDetailOptions(
-          assetTypeDetails.data.records.map((x: AssetTypeDetailModel) => ({
-            label: x.name,
-            value: x.id,
-          }))
-        )
-      }
-
-      if (reports && reports.status === 200 && reports.data) {
-        setData(reports.data.records)
-      }
-
-      setLoading(false)
     })()
   }, [])
 
@@ -192,6 +194,7 @@ export default function AssetAgingListScreen({
               <Button
                 type="clear"
                 icon={<Icon name="x" type="feather" size={28} color="white" />}
+                accessibilityLabel="Clear filter"
                 onPress={resetDropdown}
               />
             </View>

@@ -25,8 +25,9 @@ export default function BottomTabNavigator() {
   return (
     <BottomTab.Navigator
       initialRouteName='MyJobs'
-      tabBarOptions={{
-        activeTintColor: Colors[colorScheme].tint,
+      // tabBarOptions was removed in React Navigation 6+; use screenOptions
+      screenOptions={{
+        tabBarActiveTintColor: Colors[colorScheme].tint,
       }}
     >
       {/* <BottomTab.Screen

@@ -19,7 +19,7 @@ export default function useAssetApi() {
   }
 
   const searchAssets = async (serialNo: string) => {
-    const url = `${endpoint}/search/${serialNo}`
+    const url = `${endpoint}/search/${encodeURIComponent(serialNo)}`
     return await get(url)
   }
 

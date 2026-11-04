@@ -23,27 +23,33 @@ export default function AssetAgingDetailsScreen({
   const toggleDialog = () => setDialogVisible(!dialogVisible)
 
   const updateAssetAging = async () => {
+    if (loading) return
+    // close the confirm dialog first (it stayed open under the loader and
+    // CONFIRM could be tapped again, sending duplicate requests)
+    setDialogVisible(false)
     setLoading(true)
 
     const { serialNo, assetId } = route.params.data
 
-    const res = await resetAging({
-      serialNos: [serialNo],
-    })
+    try {
+      const res = await resetAging({
+        serialNos: [serialNo],
+      })
 
-    if (res.status === 200) {
-      const assetRes = await getAssetInfo(assetId)
-      if (assetRes.status === 200) {
-        setAssetDetail(assetRes.data)
+      if (res && res.status === 200) {
+        const assetRes = await getAssetInfo(assetId)
+        if (assetRes && assetRes.status === 200 && assetRes.data) {
+          setAssetDetail(assetRes.data)
+        }
+      } else {
+        Alert.alert(
+          'Error',
+          `Failed to reset aging for asset with serial no. '${serialNo}'`
+        )
       }
-    } else {
-      Alert.alert(
-        'Error',
-        `Asset with serialNo '${serialNo}' was failed to reset aging`
-      )
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   useEffect(() => {

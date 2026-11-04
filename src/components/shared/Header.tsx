@@ -20,8 +20,12 @@ const LeftComponent = () => {
   return (
     <TouchableOpacity
       style={{ width: '100%' }}
-      //onPress={() => handleOnPress(jobNumber)}
-      onPressIn={() => navigation.goBack()}
+      // onPress (not onPressIn) so a touch that is dragged away doesn't navigate,
+      // and guard goBack when there is no screen to go back to
+      onPress={() => navigation.canGoBack() && navigation.goBack()}
+      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      accessibilityRole="button"
+      accessibilityLabel="Go back"
     >
       <Icon
         name='arrow-left'
@@ -42,8 +46,10 @@ const RightComponent = () => {
   return (
     <TouchableOpacity
       style={{ width: '100%' }}
-      //onPress={() => handleOnPress(jobNumber)}
-      onPressIn={() => navigation.navigate('Home')}
+      onPress={() => navigation.navigate('Home' as never)}
+      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      accessibilityRole="button"
+      accessibilityLabel="Go to home"
     >
       <Icon
         name='home'
