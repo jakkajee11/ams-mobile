@@ -69,13 +69,17 @@ export default function AssetAgingScreen({
     closeCamera()
     // check asset in system
     setLoading(true)
-    const res = await getAssetInfo(data)
-    if (res && res.status === 200 && res.data) {
-      setAsset(res.data)
-      navigation.navigate('AssetAgingDetails', { data: res.data })
-    } else Alert.alert('Error', 'Item not found')
-
-    setLoading(false)
+    try {
+      const res = await getAssetInfo(data)
+      if (res && res.status === 200 && res.data) {
+        setAsset(res.data)
+        navigation.navigate('AssetAgingDetails', { data: res.data })
+      } else Alert.alert('Error', 'Item not found')
+    } catch (err) {
+      Alert.alert('Error', 'Unable to check this QR code, please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

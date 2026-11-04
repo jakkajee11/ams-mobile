@@ -43,23 +43,30 @@ export default function ScanQRCodeFoundScreen({
 
   const submitReport = async (photo: CameraCapturedPicture) => {
     setLoading(true)
+    try {
+      const uploadSuccess = await addAttachment(photo)
 
-    const uploadSuccess = await addAttachment(photo)
+      if (uploadSuccess) {
+        const data: ReportAssetModel = {
+          assetId: asset?.assetId ?? '',
+          serialNo: asset?.serialNo ?? '',
+          location: asset?.locationId ?? '',
+          details: asset?.details,
+          comments: 'Confirm Location',
+          attachments: [],
+        }
 
-    if (uploadSuccess) {
-      const data: ReportAssetModel = {
-        assetId: asset?.assetId ?? '',
-        serialNo: asset?.serialNo ?? '',
-        location: asset?.locationId ?? '',
-        details: asset?.details,
-        comments: 'Confirm Location',
-        attachments: [],
-      }
+        const res = await reportAssetLocation(data)
 
-      const res = await reportAssetLocation(data)
-
-      if (res && res.status === 200) {
-        Toast.show(`Asset was reported successfully`, {})
+        if (res && res.status === 200) {
+          Toast.show(`Asset was reported successfully`, {})
+        } else {
+          Toast.show(`Error: Report asset failed`, {
+            //position: Toast.positions.CENTER,
+            textColor: Colors.red,
+            backgroundColor: Colors.yellow,
+          })
+        }
       } else {
         Toast.show(`Error: Report asset failed`, {
           //position: Toast.positions.CENTER,
@@ -67,15 +74,14 @@ export default function ScanQRCodeFoundScreen({
           backgroundColor: Colors.yellow,
         })
       }
-    } else {
+    } catch (err) {
       Toast.show(`Error: Report asset failed`, {
-        //position: Toast.positions.CENTER,
         textColor: Colors.red,
         backgroundColor: Colors.yellow,
       })
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   const openCamera = () => setShowCamera(true)
@@ -84,7 +90,7 @@ export default function ScanQRCodeFoundScreen({
   const addAttachment = async (photo: CameraCapturedPicture) => {
     // upload file
     if (photo && photo.uri && photo.base64) {
-      setAttachemnts([...attachments, photo])
+      setAttachemnts((prev) => [...prev, photo])
       const data: UploadFileBase64Model = {
         id,
         fileName: extractFileName(photo.uri),
@@ -93,7 +99,7 @@ export default function ScanQRCodeFoundScreen({
       }
       const res = await uploadFile(data)
       if (res && res.status !== 200) {
-        setUploadErrors([...uploadErrors, extractFileName(photo.uri)])
+        setUploadErrors((errs) => [...errs, extractFileName(photo.uri)])
         return false
       }
 
@@ -105,7 +111,7 @@ export default function ScanQRCodeFoundScreen({
 
   return (
     <>
-      <Header title={asset?.serialNo ?? 'QR CODE FOUNDED'} />
+      <Header title={asset?.serialNo ?? 'QR CODE FOUND'} />
       <StatusBar backgroundColor={Colors.yellow} />
       <ScrollView style={baseStyles.scrollView}>
         {loading && <ActivityIndicator animating={loading} size="large" />}

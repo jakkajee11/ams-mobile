@@ -34,6 +34,7 @@ export default function SwipeableAsset({
       }}
       type="clear"
       icon={{ name: 'delete-outline' }}
+      accessibilityLabel="Remove from list"
       onPress={() => handleOnDelete(value.id)}
     />
   )

@@ -60,7 +60,7 @@ function AppNavigator({ isLoggedIn }: AppNavigatorProps) {
 
 function RootNavigator() {
   return (
-    <Stack.Navigator headerMode='screen' screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen
         name='Main'
         component={HomeStackNavigator}

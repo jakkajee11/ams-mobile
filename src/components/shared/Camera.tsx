@@ -8,7 +8,6 @@ import {
   GestureResponderEvent,
 } from 'react-native'
 import {
-  Camera as ExpoCamera,
   CameraViewProps,
   CameraCapturedPicture,
   CameraType,
@@ -18,7 +17,6 @@ import {
 } from 'expo-camera'
 import * as ImageManipulator from 'expo-image-manipulator'
 import * as ImagePicker from 'expo-image-picker'
-import * as FileSystem from 'expo-file-system/legacy'
 import Constants from 'expo-constants'
 import {
   Ionicons,
@@ -84,45 +82,44 @@ export default function Camera({
   mode = 'picture',
   displayMode = 'scan',
 }: CameraProps & CameraViewProps) {
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null)
   const [permission, requestPermission] = useCameraPermissions()
   const [cameraReady, setCameraReady] = useState(false)
-  const [type, setType] = useState(ImagePicker.CameraType.back)
+  const [type, setType] = useState<CameraType>('back')
   const [saving, setSaving] = useState<boolean>(false)
   const [newPhotos, setNewPhotos] = useState<boolean>(false)
   const [flash, toggleFlash] = useState<string>('off')
   const [whiteBalance, toggleWB] = useState<string>('auto')
   const [showMoreOptions, toggleMoreOptions] = useState<boolean>(showOptions)
   const [showPickImage, setShowPickImage] = useState<boolean>(showImagePicker)
-  const [scannedResult, setScannedResult] = useState('')
-
   const camera = useRef<CameraView>(null)
+  // CameraView fires onBarcodeScanned continuously while a code is in view;
+  // only forward the first result per camera session.
+  const scannedRef = useRef(false)
+  // prevent multiple shutter presses from submitting several photos
+  const takingPictureRef = useRef(false)
 
   useEffect(() => {
-    ;(async () => {
-      // Camera roll Permission
-      if (Platform.OS === 'ios') {
-        // const { status } = await Permissions.askAsync(
-        //   Permissions.MEDIA_LIBRARY
-        // );
+    // Request camera permission via the expo-camera hook. (The previous check
+    // read `permission` before it was loaded and wrongly alerted about camera-roll
+    // access on every iOS open.)
+    if (permission && permission.status === 'undetermined') {
+      requestPermission()
+    }
+  }, [permission])
 
-        const status = permission?.status
-        if (status !== ImagePicker.PermissionStatus.GRANTED) {
-          alert('Sorry, we need camera roll permissions to make this work!')
-        }
-      }
-      // Camera Permission
-      const { status } = await ExpoCamera.requestCameraPermissionsAsync()
-
-      setHasPermission(status === 'granted')
-    })()
-  }, [])
+  function handleBarcodeScanned(result: BarcodeScanningResult) {
+    if (scannedRef.current) return
+    scannedRef.current = true
+    onBarcodeScanned && onBarcodeScanned(result)
+  }
 
   async function takePicture() {
+    if (takingPictureRef.current) return
+    takingPictureRef.current = true
     try {
-      if (camera) {
-        //setSaving(true);
-        const photo = await camera.current?.takePictureAsync({
+      if (camera.current) {
+        setSaving(true)
+        const photo = await camera.current.takePictureAsync({
           quality: 0.1, //Images.cameraQuality,
           base64: true,
           onPictureSaved: onPictureSaved,
@@ -133,15 +130,18 @@ export default function Camera({
         //onClose();
       } else {
         console.log(['camera is undefined'])
+        takingPictureRef.current = false
+        setSaving(false)
       }
     } catch (err) {
       console.log(['error', err])
+      takingPictureRef.current = false
+      setSaving(false)
     }
   }
 
   async function onPictureSaved(photo: CameraCapturedPicture) {
     //setSaving(true);
-    const savedPhoto = `${FileSystem.documentDirectory}photos/${Date.now()}.jpg`
     // await FileSystem.moveAsync({
     //   from: photo.uri,
     //   to: savedPhoto,
@@ -194,7 +194,12 @@ export default function Camera({
       <TouchableOpacity style={styles.toggleButton} onPress={toggleFocus}>
         <Text style={[styles.autoFocusLabel, { color: autoFocus === 'on' ? "white" : "#6b6b6b" }]}>AF</Text>
       </TouchableOpacity>  */}
-        <TouchableOpacity style={styles.toggleButton} onPress={closeCamera}>
+        <TouchableOpacity
+          style={styles.toggleButton}
+          onPress={closeCamera}
+          accessibilityRole="button"
+          accessibilityLabel="Close camera"
+        >
           <Ionicons name="close-circle-outline" size={32} color="white" />
         </TouchableOpacity>
       </View>
@@ -217,7 +222,9 @@ export default function Camera({
             <TouchableOpacity
               onPress={takePicture}
               style={{ alignSelf: 'center' }}
-              //disabled={!cameraReady}
+              disabled={saving}
+              accessibilityRole="button"
+              accessibilityLabel="Take photo"
             >
               {saving && <Text style={{ color: 'white' }}>กำลังบันทึกภาพ</Text>}
               {!saving && (
@@ -261,11 +268,36 @@ export default function Camera({
   //   setScannedResult(result.data)
   // }
 
-  if (hasPermission === null) {
-    return <View />
+  if (!permission) {
+    return <View style={styles.container} />
   }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>
+  if (!permission.granted) {
+    // Previously a bare "No access to camera" text with no way to close the
+    // modal (iOS has no back button) or to grant access.
+    return (
+      <View style={[styles.container, styles.noPermissions]}>
+        <Text style={{ color: 'white', textAlign: 'center', marginBottom: 20 }}>
+          Camera access is required to {displayMode === 'scan' ? 'scan QR codes' : 'take photos'}.
+          {!permission.canAskAgain && '\nPlease enable it in your device settings.'}
+        </Text>
+        {permission.canAskAgain && (
+          <TouchableOpacity
+            onPress={requestPermission}
+            style={styles.permissionButton}
+            accessibilityRole="button"
+          >
+            <Text style={{ color: 'black', fontWeight: '600' }}>Allow camera</Text>
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity
+          onPress={closeCamera}
+          style={styles.permissionButton}
+          accessibilityRole="button"
+        >
+          <Text style={{ color: 'black', fontWeight: '600' }}>Close</Text>
+        </TouchableOpacity>
+      </View>
+    )
   }
 
   return (
@@ -278,7 +310,11 @@ export default function Camera({
         ratio={'4:3'}
         ref={camera}
         onCameraReady={onCameraReady}
-        onBarcodeScanned={onBarcodeScanned}
+        onBarcodeScanned={
+          displayMode === 'scan' && onBarcodeScanned
+            ? handleBarcodeScanned
+            : undefined
+        }
         barcodeScannerSettings={{
           barcodeTypes: ['qr', 'pdf417'],
         }}
@@ -316,6 +352,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flex: 0.12,
     flexDirection: 'row',
+  },
+  permissionButton: {
+    backgroundColor: '#ffb900',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 10,
+    minWidth: 160,
+    alignItems: 'center',
   },
   noPermissions: {
     flex: 1,

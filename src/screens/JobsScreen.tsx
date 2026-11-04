@@ -70,64 +70,74 @@ export default function JobsScreen({
 
   const prepareData = async () => {
     setLoading(true);
-    const query: JobQuery = {
-      page: 0, // no pagination
-      size: 10,
-      status: 0,
-      //startDate: '2021-07-01',
-      //endDate: '2021-12-31',
-    };
-    // const [pending, working, finished, completed] = await Promise.all([
-    //   getPendingJobs({ ...query, status: JOB_STATUS.Pending }),
-    //   getWorkingJobs({ ...query, status: JOB_STATUS.InProgress }),
-    //   getFinishedJobs({ ...query, status: JOB_STATUS.Finished }),
-    //   getCompletedJobs({ ...query, status: JOB_STATUS.Completed }),
-    // ]);
-    const [pending, working, finished] = await Promise.all([
-      getPendingJobs({ ...query, status: JOB_STATUS.Pending }),
-      getWorkingJobs({ ...query, status: JOB_STATUS.InProgress }),
-      getFinishedJobs({ ...query, status: JOB_STATUS.Finished }),
-    ]);
+    try {
+      const query: JobQuery = {
+        page: 0, // no pagination
+        size: 10,
+        status: 0,
+        //startDate: '2021-07-01',
+        //endDate: '2021-12-31',
+      };
+      // const [pending, working, finished, completed] = await Promise.all([
+      //   getPendingJobs({ ...query, status: JOB_STATUS.Pending }),
+      //   getWorkingJobs({ ...query, status: JOB_STATUS.InProgress }),
+      //   getFinishedJobs({ ...query, status: JOB_STATUS.Finished }),
+      //   getCompletedJobs({ ...query, status: JOB_STATUS.Completed }),
+      // ]);
+      const [pending, working, finished] = await Promise.all([
+        getPendingJobs({ ...query, status: JOB_STATUS.Pending }),
+        getWorkingJobs({ ...query, status: JOB_STATUS.InProgress }),
+        getFinishedJobs({ ...query, status: JOB_STATUS.Finished }),
+      ]);
 
-    let myJobs: { [key: number]: JobModel[] } = {
-      [JOB_STATUS.Completed]: [],
-    };
+      // start every tab with [] so its list (and pull-to-refresh) still renders
+      // when a request fails
+      let myJobs: { [key: number]: JobModel[] } = {
+        [JOB_STATUS.Pending]: [],
+        [JOB_STATUS.InProgress]: [],
+        [JOB_STATUS.Completed]: [],
+      };
 
-    if (pending && pending.status === 200 && pending.data) {
-      myJobs[JOB_STATUS.Pending] = pending.data.records;
-    } else {
-      Toast.show("You don't have permission, please contact administrator", {
-        position: Toast.positions.CENTER,
-        textColor: Colors.red,
-        backgroundColor: Colors.yellow,
-      });
-    }
-    if (working && working.status === 200 && working.data) {
-      myJobs[JOB_STATUS.InProgress] = working.data.records;
-    }
-    if (finished && finished.status === 200 && finished.data) {
-      myJobs[JOB_STATUS.Completed] = [
-        ...myJobs[JOB_STATUS.Completed],
-        ...finished.data.records,
-      ];
-    }
-    // if (completed && completed.status === 200 && completed.data) {
-    //   myJobs[JOB_STATUS.Completed] = [
-    //     ...myJobs[JOB_STATUS.Completed],
-    //     ...completed.data.records,
-    //   ];
-    // }
+      if (pending && pending.status === 200 && pending.data) {
+        myJobs[JOB_STATUS.Pending] = pending.data.records ?? [];
+      } else {
+        Toast.show(
+          'Unable to load jobs. Pull down to retry, or contact your administrator if you lack permission.',
+          {
+            position: Toast.positions.CENTER,
+            textColor: Colors.red,
+            backgroundColor: Colors.yellow,
+          }
+        );
+      }
+      if (working && working.status === 200 && working.data) {
+        myJobs[JOB_STATUS.InProgress] = working.data.records ?? [];
+      }
+      if (finished && finished.status === 200 && finished.data) {
+        myJobs[JOB_STATUS.Completed] = [
+          ...myJobs[JOB_STATUS.Completed],
+          ...(finished.data.records ?? []),
+        ];
+      }
+      // if (completed && completed.status === 200 && completed.data) {
+      //   myJobs[JOB_STATUS.Completed] = [
+      //     ...myJobs[JOB_STATUS.Completed],
+      //     ...completed.data.records,
+      //   ];
+      // }
 
-    setJobs(myJobs);
-    setLoading(false);
+      setJobs(myJobs);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // useEffect(() => {
-  //   if (isFocused) prepareData();
-  // }, [isFocused]);
+  // Reload whenever the screen gains focus (also fires on first mount), so the
+  // list isn't stale after starting/finishing a job in JobDetails.
   useEffect(() => {
-    prepareData();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', prepareData);
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <View style={styles.container}>

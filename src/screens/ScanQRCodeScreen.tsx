@@ -9,6 +9,7 @@ import {
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 import {
+  Alert,
   Modal,
   StyleSheet,
   Text,
@@ -50,13 +51,18 @@ export default function ScanQRCodeScreen({
     closeCamera()
     // check asset in system
     setLoading(true)
-    const res = await getAssetInfo(data)
-    if (res && res.status === 200 && res.data) {
-      navigation.navigate('ScanQRCodeFound', { data: res.data })
-    } else {
-      navigation.navigate('ScanQRCodeNotFound', { data })
+    try {
+      const res = await getAssetInfo(data)
+      if (res && res.status === 200 && res.data) {
+        navigation.navigate('ScanQRCodeFound', { data: res.data })
+      } else {
+        navigation.navigate('ScanQRCodeNotFound', { data })
+      }
+    } catch (err) {
+      Alert.alert('Error', 'Unable to check this QR code, please try again.')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   return (

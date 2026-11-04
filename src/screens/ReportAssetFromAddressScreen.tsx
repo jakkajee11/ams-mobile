@@ -50,22 +50,30 @@ export default function ReportAssetFromAddressScreen({
 
   //const [id] = useState(uuidv4());
   const [loading, setLoading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [buttonDisplay, setButtonDisplay] = useState<'flex' | 'none'>('flex')
 
   const reportAsset = async () => {
+    // block double taps, which created duplicate jobs
+    if (submitting) return
+    setSubmitting(true)
     const payload: CreateShipJobModel = {
       shipToId: shipToId,
     }
-    const res = await createShipJob(payload)
-    if (res.status === 200) {
-      Toast.show(`Job was created successfully`, {})
-      navigation.navigate('JobDetails', { id: res.data })
-    } else {
-      Toast.show(`Create job failed`, {
-        //position: Toast.positions.CENTER,
-        textColor: Colors.red,
-        backgroundColor: Colors.yellow,
-      })
+    try {
+      const res = await createShipJob(payload)
+      if (res && res.status === 200) {
+        Toast.show(`Job was created successfully`, {})
+        navigation.navigate('JobDetails', { id: res.data })
+      } else {
+        Toast.show(`Create job failed`, {
+          //position: Toast.positions.CENTER,
+          textColor: Colors.red,
+          backgroundColor: Colors.yellow,
+        })
+      }
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -92,23 +100,29 @@ export default function ReportAssetFromAddressScreen({
 
   const setAssetFromAddress = async () => {
     setLoading(true)
-    if (shipToId.length > 0) {
-      const res = await getAssetByAddressId(shipToId)
+    try {
+      if (shipToId.length > 0) {
+        const res = await getAssetByAddressId(shipToId)
 
-      if (res.status === 200) {
-        setAssets(res.data.records as AssetDetailModel[])
-        setTotalAssets(res.data.totalRecords)
+        if (res && res.status === 200) {
+          setAssets((res.data?.records ?? []) as AssetDetailModel[])
+          setTotalAssets(res.data?.totalRecords ?? 0)
+        } else {
+          // don't keep showing the previous address' assets
+          setAssets([])
+          setTotalAssets(0)
+        }
       }
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   const prepareData = async () => {
     const res = await getShipTos({ page: 0, size: 10, search: '' })
 
-    if (res.status === 200) {
-      const data = res.data.records as ShipToModel[]
+    if (res && res.status === 200) {
+      const data = (res.data?.records ?? []) as ShipToModel[]
       setAddressOptions(
         data.map((item) => ({ label: item.name, value: item.id }))
       )
@@ -118,15 +132,15 @@ export default function ReportAssetFromAddressScreen({
   }
 
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', hideActionButton)
-    Keyboard.addListener('keyboardDidHide', showActionButton)
+    const showSub = Keyboard.addListener('keyboardDidShow', hideActionButton)
+    const hideSub = Keyboard.addListener('keyboardDidHide', showActionButton)
 
     prepareData()
 
-    // cleanup function
+    // cleanup function: remove only this screen's listeners
     return () => {
-      Keyboard.removeAllListeners('keyboardDidShow')
-      Keyboard.removeAllListeners('keyboardDidHide')
+      showSub.remove()
+      hideSub.remove()
     }
   }, [])
 
@@ -140,6 +154,7 @@ export default function ReportAssetFromAddressScreen({
     <>
       <ScrollView
         style={baseStyles.scrollView}
+        keyboardShouldPersistTaps="handled"
         refreshControl={
           <RefreshControl
             refreshing={loading}
@@ -216,7 +231,7 @@ export default function ReportAssetFromAddressScreen({
           }
           title=" Create Job"
           disabled={shipToId.length === 0 || assets.length === 0}
-          loading={loading}
+          loading={loading || submitting}
           onPress={reportAsset}
         />
       </View>

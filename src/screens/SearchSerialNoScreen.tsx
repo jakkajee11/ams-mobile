@@ -59,23 +59,30 @@ export default function SearchSerialNoScreen({
 
   const submitReport = async (photo: CameraCapturedPicture) => {
     setLoading(true);
+    try {
+      const uploadSuccess = await addAttachment(photo);
 
-    const uploadSuccess = await addAttachment(photo);
+      if (uploadSuccess) {
+        const data: ReportAssetModel = {
+          assetId: asset?.assetId ?? '',
+          serialNo: asset?.serialNo ?? '',
+          location: asset?.locationId ?? '',
+          details: asset?.details,
+          comments: 'Confirm Location',
+          attachments: [],
+        };
 
-    if (uploadSuccess) {
-      const data: ReportAssetModel = {
-        assetId: asset?.assetId ?? '',
-        serialNo: asset?.serialNo ?? '',
-        location: asset?.locationId ?? '',
-        details: asset?.details,
-        comments: 'Confirm Location',
-        attachments: [],
-      };
+        const res = await reportAssetLocation(data);
 
-      const res = await reportAssetLocation(data);
-
-      if (res && res.status === 200) {
-        Toast.show(`Asset was reported successfully`, {});
+        if (res && res.status === 200) {
+          Toast.show(`Asset was reported successfully`, {});
+        } else {
+          Toast.show(`Error: Report asset failed`, {
+            //position: Toast.positions.CENTER,
+            textColor: Colors.red,
+            backgroundColor: Colors.yellow,
+          });
+        }
       } else {
         Toast.show(`Error: Report asset failed`, {
           //position: Toast.positions.CENTER,
@@ -83,21 +90,20 @@ export default function SearchSerialNoScreen({
           backgroundColor: Colors.yellow,
         });
       }
-    } else {
+    } catch (err) {
       Toast.show(`Error: Report asset failed`, {
-        //position: Toast.positions.CENTER,
         textColor: Colors.red,
         backgroundColor: Colors.yellow,
       });
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const addAttachment = async (photo: CameraCapturedPicture) => {
     // upload file
     if (photo && photo.uri && photo.base64) {
-      setAttachemnts([...attachments, photo]);
+      setAttachemnts((prev) => [...prev, photo]);
       const data: UploadFileBase64Model = {
         id: uuidv4(),
         fileName: extractFileName(photo.uri),
@@ -106,7 +112,7 @@ export default function SearchSerialNoScreen({
       };
       const res = await uploadFile(data);
       if (res && res.status !== 200) {
-        setUploadErrors([...uploadErrors, extractFileName(photo.uri)]);
+        setUploadErrors((errs) => [...errs, extractFileName(photo.uri)]);
         return false;
       }
 
@@ -116,19 +122,26 @@ export default function SearchSerialNoScreen({
     return false;
   };
 
+  // Each keystroke (>= 3 chars) starts a search; ignore responses from older
+  // queries that resolve after a newer one, so results match the current text.
+  const searchSeq = React.useRef(0);
   const search = async () => {
+    const seq = ++searchSeq.current;
     setLoading(true);
-    const res = await searchAssets(searchText);
+    try {
+      const res = await searchAssets(searchText);
+      if (seq !== searchSeq.current) return;
 
-    if (res.status === 200) {
-      const data = res.data.records as AssetDetailModel[];
-      setAssets(data);
-      setAssetOptions(
-        data.map((item) => ({ label: item.serialNo, value: item.serialNo }))
-      );
+      if (res && res.status === 200) {
+        const data = (res.data?.records ?? []) as AssetDetailModel[];
+        setAssets(data);
+        setAssetOptions(
+          data.map((item) => ({ label: item.serialNo, value: item.serialNo }))
+        );
+      }
+    } finally {
+      if (seq === searchSeq.current) setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const toggleDropdown = () => setOpen(!open);
@@ -141,7 +154,9 @@ export default function SearchSerialNoScreen({
   useEffect(() => {
     (async function () {
       if (searchText.length === 0) {
+        searchSeq.current++; // discard any in-flight search
         setAssetOptions([]);
+        setLoading(false);
       } else {
         if (searchText.length >= 3) await search();
       }
@@ -150,7 +165,10 @@ export default function SearchSerialNoScreen({
 
   return (
     <>
-      <ScrollView style={baseStyles.scrollView}>
+      <ScrollView
+        style={baseStyles.scrollView}
+        keyboardShouldPersistTaps="handled"
+      >
         <KeyboardAvoidingView
           behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
           style={baseStyles.container}
@@ -183,7 +201,8 @@ export default function SearchSerialNoScreen({
           <View style={{ ...baseStyles.container }}>
             {loading && <Loading loading={loading} />}
 
-            {searchText.length > 0 && assets.length === 0 && (
+            {/* only claim NOT FOUND once a search (>= 3 chars) has actually completed */}
+            {searchText.length >= 3 && !loading && assets.length === 0 && (
               <View style={{ ...baseStyles.container, marginTop: 100 }}>
                 <View style={baseStyles.column}>
                   <View>

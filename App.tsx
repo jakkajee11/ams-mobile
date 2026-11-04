@@ -18,7 +18,6 @@ Notifications.setNotificationHandler({
     shouldSetBadge: true,
     shouldShowBanner: true,
     shouldShowList: true,
-    shouldShowBadge: true,
   }),
 })
 
@@ -54,13 +53,14 @@ export default function App() {
   const [expoPushToken, setExpoPushToken] = useState('')
   const [notification, setNotification] = useState<any>()
   const [notiCount, setNotiCount] = useState(0)
-  const notificationListener = useRef<any>(null)
-  const responseListener = useRef<any>(null)
+  const notificationListener = useRef<Notifications.EventSubscription | null>(null)
+  const responseListener = useRef<Notifications.EventSubscription | null>(null)
 
   const handleNotificationReceived = (response: Notifications.Notification) => {
     console.log(['handleNotificationReceived', response])
     //alert(`noti received: ${notiCount}`);
-    setNotiCount(notiCount + 1)
+    // functional update: this handler is registered once, so `notiCount` would be stale
+    setNotiCount((count) => count + 1)
   }
   const handleNotificationResponse = (
     response: Notifications.NotificationResponse
@@ -72,9 +72,11 @@ export default function App() {
 
   useEffect(() => {
     
-    registerForPushNotificationsAsync().then((token) => {
-      setExpoPushToken(token as string)
-    })
+    registerForPushNotificationsAsync()
+      .then((token) => {
+        setExpoPushToken(token ?? '')
+      })
+      .catch((err) => console.warn(['registerForPushNotificationsAsync', err]))
 
     // This listener is fired whenever a notification is received while the app is foregrounded
     notificationListener.current =
@@ -87,8 +89,9 @@ export default function App() {
       )
 
     return () => {
-      Notifications.removeNotificationSubscription(notificationListener.current)
-      Notifications.removeNotificationSubscription(responseListener.current)
+      // removeNotificationSubscription was removed from expo-notifications; use the subscription's remove()
+      notificationListener.current?.remove()
+      responseListener.current?.remove()
     }
   }, [])
 

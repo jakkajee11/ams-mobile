@@ -23,12 +23,16 @@ export default function JobDetail({
     details,
     soldToName,
     shipToName,
-    assets,
+    assets: rawAssets,
     createdAt,
   },
   progress,
 }: JobDetailProps) {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
+  // API may return null/undefined assets; avoid crashing on .filter/.length
+  const assets = rawAssets ?? [];
+  const percent = (count: number) =>
+    assets.length === 0 ? '0.00' : ((count / assets.length) * 100).toFixed(2);
 
   const renderItem = ({ item }: any) => (
     <JobAsset
@@ -93,15 +97,13 @@ export default function JobDetail({
             <View style={baseStyles.row}>
               <Text>Checked:</Text>
               <Text>
-                {checkedCount}/{assets.length} (
-                {((checkedCount / assets.length) * 100).toFixed(2)} %)
+                {checkedCount}/{assets.length} ({percent(checkedCount)} %)
               </Text>
             </View>
             <View style={baseStyles.row}>
               <Text>NotCheck:</Text>
               <Text>
-                {notCheckCount} (
-                {((notCheckCount / assets.length) * 100).toFixed(2)} %)
+                {notCheckCount} ({percent(notCheckCount)} %)
               </Text>
             </View>
             <View style={baseStyles.row}>

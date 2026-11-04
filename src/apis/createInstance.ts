@@ -32,7 +32,9 @@ export default function createInstance(
         source.cancel(axiosCancelMessage);
         refreshAuth();
         return Promise.resolve(response);
-      } else if (response.status === 404) {
+      } else if (response && response.status === 404) {
+        // `response` is undefined for network errors/timeouts; guard so the
+        // interceptor itself doesn't throw a TypeError and leave callers' loading flags stuck
         return Promise.resolve(response);
       }
       return Promise.resolve({ status: 203, statusText: error });

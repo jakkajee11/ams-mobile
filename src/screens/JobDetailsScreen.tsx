@@ -47,21 +47,28 @@ export default function JobDetailsScreen({
   const [counter, setCounter] = useState(0)
 
   const startJob = async () => {
-    const res = await updateJobStatus(
-      jobDetail?.id ?? '',
-      JOB_STATUS.InProgress
-    )
-    if (res && res.status === 200) {
-      //Alert.alert('Success', 'Job is started');
-      //navigation.navigate('Jobs');
-      //await loadJob();
-      setCounter(() => counter + 1)
-    } else {
-      //Alert.alert('Failed', 'Start job failed');
-      Toast.show('Start job failed', {
-        textColor: Colors.red,
-        backgroundColor: Colors.yellow,
-      })
+    if (loading) return
+    // show progress and block double taps (START had no loading state)
+    setLoading(true)
+    try {
+      const res = await updateJobStatus(
+        jobDetail?.id ?? '',
+        JOB_STATUS.InProgress
+      )
+      if (res && res.status === 200) {
+        //Alert.alert('Success', 'Job is started');
+        //navigation.navigate('Jobs');
+        //await loadJob();
+        setCounter((c) => c + 1)
+      } else {
+        //Alert.alert('Failed', 'Start job failed');
+        Toast.show('Start job failed', {
+          textColor: Colors.red,
+          backgroundColor: Colors.yellow,
+        })
+      }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -82,7 +89,7 @@ export default function JobDetailsScreen({
 
   const finishJob = async () => {
     var uncheckedAssets =
-      jobDetail?.assets.filter(
+      jobDetail?.assets?.filter(
         (ja) => ja.jobAssetStatusId === JOB_ASSET_STATUS.NotCheck
       )?.length ?? 0
     if (uncheckedAssets > 0) {
@@ -99,7 +106,7 @@ export default function JobDetailsScreen({
           },
           { text: 'OK', onPress: doFinishJob },
         ],
-        { cancelable: true }
+        { cancelable: true, onDismiss: () => setLoading(false) }
       )
     } else {
       await doFinishJob()
@@ -109,21 +116,27 @@ export default function JobDetailsScreen({
   const doFinishJob = async () => {
     setLoading(true)
 
-    const res = await updateJobStatus(jobDetail?.id ?? '', JOB_STATUS.Finished)
-    if (res && res.status === 200) {
-      //Alert.alert('Success', 'Job is saved');
-      Toast.show('Job was saved', {
-        //textColor: Colors.white,
-        //backgroundColor: Colors.green,
-      })
-      setLoading(false)
-      navigation.navigate('Jobs')
-    } else {
-      //Alert.alert('Failed', 'Save job failed');
-      Toast.show('Save job failed', {
-        textColor: Colors.red,
-        backgroundColor: Colors.yellow,
-      })
+    try {
+      const res = await updateJobStatus(
+        jobDetail?.id ?? '',
+        JOB_STATUS.Finished
+      )
+      if (res && res.status === 200) {
+        //Alert.alert('Success', 'Job is saved');
+        Toast.show('Job was saved', {
+          //textColor: Colors.white,
+          //backgroundColor: Colors.green,
+        })
+        setLoading(false)
+        navigation.navigate('Jobs')
+      } else {
+        //Alert.alert('Failed', 'Save job failed');
+        Toast.show('Save job failed', {
+          textColor: Colors.red,
+          backgroundColor: Colors.yellow,
+        })
+      }
+    } finally {
       setLoading(false)
     }
   }
@@ -133,11 +146,19 @@ export default function JobDetailsScreen({
 
   const loadJob = async () => {
     setLoading(true)
-    const res = await getJob(route.params?.id)
-    if (res && res.status === 200 && res.data) {
-      setJobDetail(res.data)
+    try {
+      const res = await getJob(route.params?.id)
+      if (res && res.status === 200 && res.data) {
+        setJobDetail(res.data)
+      } else {
+        Toast.show('Unable to load job details', {
+          textColor: Colors.red,
+          backgroundColor: Colors.yellow,
+        })
+      }
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const handleBarCodeScanned = async ({
@@ -149,37 +170,52 @@ export default function JobDetailsScreen({
     closeCamera()
     // check asset in system
     setLoading(true)
-    const res = await updateJobAssetStatus({
-      jobId: jobDetail?.id ?? route.params?.id,
-      assetId: data,
-      status: JOB_ASSET_STATUS.Checked,
-    })
+    try {
+      const res = await updateJobAssetStatus({
+        jobId: jobDetail?.id ?? route.params?.id,
+        assetId: data,
+        status: JOB_ASSET_STATUS.Checked,
+      })
 
-    let title = ''
-    let bgColor = Colors.red
+      let title = ''
+      let bgColor = Colors.red
 
-    if (res && res.status === 200) {
-      if (res.data) {
-        if (res.data.repeated) {
-          title = `Asset serial no "${res.data.serialNo}" was Repeated`
-          bgColor = Colors.yellow
-        } else if (res.data.wrongShipTo) {
-          title = `Asset serial no "${res.data.serialNo}" was Wrong Ship-To`
+      if (res && res.status === 200) {
+        if (res.data) {
+          if (res.data.repeated) {
+            title = `Asset serial no "${res.data.serialNo}" was Repeated`
+            bgColor = Colors.yellow
+          } else if (res.data.wrongShipTo) {
+            title = `Asset serial no "${res.data.serialNo}" was Wrong Ship-To`
+          } else {
+            bgColor = Colors.green
+            title = `Asset serial no "${res.data.serialNo}" was checked`
+          }
+
+          Toast.show(title, {
+            position: Toast.positions.CENTER,
+            duration: Toast.durations.LONG,
+            backgroundColor: bgColor,
+            keyboardAvoiding: true,
+            hideOnPress: true,
+            animation: true,
+          })
         } else {
-          bgColor = Colors.green
-          title = `Asset serial no "${res.data.serialNo}" was checked`
+          Toast.show(`QR Code "${data}" Not Found`, {
+            position: Toast.positions.CENTER,
+            duration: Toast.durations.LONG,
+            backgroundColor: Colors.red,
+            keyboardAvoiding: true,
+            hideOnPress: true,
+            animation: true,
+          })
         }
 
-        Toast.show(title, {
-          position: Toast.positions.CENTER,
-          duration: Toast.durations.LONG,
-          backgroundColor: bgColor,
-          keyboardAvoiding: true,
-          hideOnPress: true,
-          animation: true,
-        })
+        //await loadJob();
+        setCounter((c) => c + 1)
       } else {
-        Toast.show(`QR Code "${data}" Not Found`, {
+        // statusText holds the axios error object for failed requests ("[object Object]")
+        Toast.show(`Request failed, please try again`, {
           position: Toast.positions.CENTER,
           duration: Toast.durations.LONG,
           backgroundColor: Colors.red,
@@ -188,29 +224,17 @@ export default function JobDetailsScreen({
           animation: true,
         })
       }
-
-      //await loadJob();
-      setCounter(() => counter + 1)
-    } else {
-      Toast.show(`Request failed "${res.statusText}"`, {
-        position: Toast.positions.CENTER,
-        duration: Toast.durations.LONG,
-        backgroundColor: Colors.red,
-        keyboardAvoiding: true,
-        hideOnPress: true,
-        animation: true,
-      })
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   const checkedItemCount = () =>
-    jobDetail?.assets.filter(
+    jobDetail?.assets?.filter(
       (ja) => ja.jobAssetStatusId !== JOB_ASSET_STATUS.NotCheck
     )?.length ?? 0
 
-  const itemCount = () => jobDetail?.assets.length ?? 0
+  const itemCount = () => jobDetail?.assets?.length ?? 0
 
   const jobProgress = () =>
     checkedItemCount() === 0
@@ -256,7 +280,7 @@ export default function JobDetailsScreen({
             //height: '10%',
           }}
         >
-          <Button title="START" onPress={startJob} />
+          <Button title="START" onPress={startJob} loading={loading} />
         </View>
       )}
       {jobDetail?.jobStatusId === JOB_STATUS.InProgress && (
@@ -266,13 +290,13 @@ export default function JobDetailsScreen({
             flex: 0.2,
           }}
         >
-          <Button title={'SCAN ASSET'} onPress={openCamera} />
+          <Button title={'SCAN ASSET'} onPress={openCamera} disabled={loading} />
           <View>
             <Text style={baseStyles.textCenter}>
               Progress {jobProgress()}% ({checkedItemCount()}/{itemCount()}{' '}
               checked)
             </Text>
-            <Button title="FINISH" onPress={finishJob} />
+            <Button title="FINISH" onPress={finishJob} loading={loading} />
           </View>
         </View>
       )}
